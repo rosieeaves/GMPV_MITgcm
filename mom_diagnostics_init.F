@@ -280,6 +280,15 @@ C     custom: parameterized EKE
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+C     custom: parameterized gEKE
+
+      diagName  = 'gEKE    '
+      diagTitle = 'parameterized EKE tendency'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
       diagName  = 'Strain  '
       diagTitle = 'Horizontal Strain of Horizontal Velocities'
       diagCode  = 'SZR     MR      '

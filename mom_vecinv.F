@@ -970,6 +970,8 @@ C       custom: relative vorticity squared
         CALL DIAGNOSTICS_FILL(vort3BC2,'VORTSQ  ',k,1,2,bi,bj,myThid)
 C       custom: parameterized EKE
         CALL DIAGNOSTICS_FILL(EKE,'EKE     ',k,1,2,bi,bj,myThid)
+C       custom: parameterized EKE tendency
+        CALL DIAGNOSTICS_FILL(gEKE,'gEKE    ',k,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(KE,     'momKE   ',k,1,2,bi,bj,myThid)
        IF (momViscosity) THEN
         CALL DIAGNOSTICS_FILL(hDiv,   'momHDiv ',k,1,2,bi,bj,myThid)

@@ -34,23 +34,30 @@ C           implicDiv2DFlow=1 => etaH=etaN ; =0 => etaH=etaN^(n-1);
 
 C     EKE    :: parameterized eddy kinetic energy
 C     gEKENm, gEKENm1   :: parameterixed eddy kinetic energy time tendencies
+C     Lambda    :: parameterized eddy kinetic energy
+C     gLambdaNm, gLambdaNm1   :: parameterixed eddy kinetic energy time tendencies
 
 #ifdef ALLOW_ADAMSBASHFORTH_3
       COMMON /DYNVARS_R/
      &                   etaN,
-     &                   uVel,vVel,wVel,theta,salt,EKE,psiVel,
+     &                   uVel,vVel,wVel,theta,salt,EKE,psiVelInt,
+     &                   gamma_q,r_EKE,r_Lambda,mu,
+     &                   quEDDY_YGXC,qvEDDY_YCXG,
      &                   gU,   gV, gEKE, 
      &                   guNm, gvNm, gtNm, gsNm, gEKENm
 #else /* ALLOW_ADAMSBASHFORTH_3 */
       COMMON /DYNVARS_R/
      &                   etaN,
-     &                   uVel,vVel,wVel,theta,salt,EKE,psiVel,
+     &                   uVel,vVel,wVel,theta,salt,EKE,psiVelInt,
+     &                   gamma_q,r_EKE,r_Lambda,mu,
+     &                   quEDDY_YGXC,qvEDDY_YCXG,
      &                   gU,   gV, gEKE,
-     &                   guNm1,gvNm1,gtNm1,gsNm1,gEKENm1
+     &                   guNm1,gvNm1,gtNm1,gsNm1,gEKENm
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
       _RL  etaN  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  EKE  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  psiVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  EKE  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
+      _RL  Lambda  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
+      _RL  psiVelInt  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  uVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  vVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  wVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -58,19 +65,26 @@ C     gEKENm, gEKENm1   :: parameterixed eddy kinetic energy time tendencies
       _RL  salt (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  gU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  gV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  gEKE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  gEKE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
+      _RL  gLambda(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
+      _RL  gamma_q
+      _RL  r_EKE
+      _RL  r_Lambda
+      _RL  mu
+      _RL  gEKENm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy,2)
+      _RL  gLambdaNm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy,2)
+      _RL  quEDDY_YGXC(1-OLx:sNx+OLx-1,1-OLy+1:sNy+OLy-1,nSx,nSy)
+      _RL  qvEDDY_YCXG(1-OLx+1:sNx+OLx-1,1-OLy:sNy+OLy-1,nSx,nSy)
 #ifdef ALLOW_ADAMSBASHFORTH_3
       _RL  guNm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,2)
       _RL  gvNm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,2)
       _RL  gtNm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,2)
       _RL  gsNm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,2)
-      _RL  gEKENm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,2)
 #else /* ALLOW_ADAMSBASHFORTH_3 */
       _RL  guNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  gvNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  gtNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  gsNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  gEKENm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
 
 #ifdef USE_OLD_EXTERNAL_FORCING

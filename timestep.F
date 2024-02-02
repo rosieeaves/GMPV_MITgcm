@@ -5,7 +5,7 @@
 #endif
 
 CBOP
-C     !ROUTINE: TIMESTEP
+C     !ROUTINE: TIMESTEP 
 C     !INTERFACE:
       SUBROUTINE TIMESTEP( bi, bj, iMin, iMax, jMin, jMax, k,
      I                     dPhiHydX,dPhiHydY, phiSurfX, phiSurfY,
@@ -145,20 +145,18 @@ C--   Forcing term inside the Adams-Bashforth:
         ENDDO
       ENDIF
 
-C--------------------------------------------------------------------
-C           PARAMETERIZATION
-C--------------------------------------------------------------------
-C     CALCULATE gEKE
-        CALL CALC_EKE(
-     I                     iMin,iMax,jMin,jMax, k, bi, bj,
-     I                     myTime, myIter, myThid )
-C     CALCULATE gLambda
-C     Step forward EKE
-C     Step forward Lambda
-C     CALCULATE kappa_q
-C     CALCULATE eddy flux terms bar{q'u'} and bar{q'v'}
-C     Add eddy flux terms to gU and gV
-C
+C -----------------------------------------------------------------
+C EDDY PARAMETERIZATION
+C -----------------------------------------------------------------
+      IF ( momForcing .AND. momForcingOutAB.NE.1 ) THEN
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+           gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj) - qvEDDY_YCXG(i,j,bi,bj)
+           gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj) + quEDDY_YGXC(i,j,bi,bj)
+         ENDDO
+        ENDDO
+      ENDIF
+
 
 #ifdef CD_CODE_NO_AB_MOMENTUM
       IF ( useCDscheme ) THEN
