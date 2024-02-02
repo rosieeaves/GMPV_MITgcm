@@ -161,21 +161,21 @@ C--------------------------------------------------------------
 C     CALCULATE K AND LAMBDA DIFFUSION    
 C--------------------------------------------------------------
 
-C      DO j=1-OLy+1,sNy+OLy-1
-C        DO i=1-OLx+1,sNx+OLx-1
-C          EKEDiff_YCXC(i,j,bi,bj) = (mu/rA)*(EKE(i,j+1,1,bi,bj) 
-C     &      + EKE(i+1,j,1,bi,bj) 
-C     &      + EKE(i,j-1,1,bi,bj) 
-C     &      + EKE(i-1,j,1,bi,bj) 
-C     &      - 4*EKE(i,j,1,bi,bj))
+      DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx+1,sNx+OLx-1
+          EKEDiff_YCXC(i,j,bi,bj) = (mu/rA)*(EKE(i,j+1,1,bi,bj) 
+     &      + EKE(i+1,j,1,bi,bj) 
+     &      + EKE(i,j-1,1,bi,bj) 
+     &      + EKE(i-1,j,1,bi,bj) 
+     &      - 4*EKE(i,j,1,bi,bj))
 
-C          LambdaDiff_YCXC(i,j,bi,bj) = (mu/rA)*(Lambda(i,j+1,1,bi,bj) 
-C     &      + Lambda(i+1,j,1,bi,bj) 
-C     &      + Lambda(i,j-1,1,bi,bj) 
-C     &      + Lambda(i-1,j,1,bi,bj) 
-C     &      - 4*Lambda(i,j,1,bi,bj))
-C        ENDDO
-C      ENDDO
+          LambdaDiff_YCXC(i,j,bi,bj) = (mu/rA)*(Lambda(i,j+1,1,bi,bj) 
+     &      + Lambda(i+1,j,1,bi,bj) 
+     &      + Lambda(i,j-1,1,bi,bj) 
+     &      + Lambda(i-1,j,1,bi,bj) 
+     &      - 4*Lambda(i,j,1,bi,bj))
+        ENDDO
+      ENDDO
 
       WRITE(standardMessageUnit,*)
      &      'calc_EKE: gEKEAdv = ', gEKEAdv
@@ -210,23 +210,24 @@ C     DEFINE Q (MOVE THIS TO OUTSIDE OF TIME LOOP AND ADD FACTOR 1/H IN)
       ENDDO
 
 C     DQDX AND DPSIDX AT YGXC
-C      DO j=1-OLy,sNy+OLy
-C        DO i=1-OLx,sNx+OLx-1
-C          dqdx_YGXC(i,j,bi,bj) = (q_YGXG(i+1,j,bi,bj) 
-C     &      - q_YGXG(i,j,bi,bj))/dxG
-C          dpsidx_YGXC(i,j,bi,bj) = (psiVelInt(i+1,j,bi,bj) 
-C     &      - psiVelInt(i,j,bi,bj))/dxG
-C        ENDDO
-C      ENDDO
+      DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx-1
+          dqdx_YGXC(i,j,bi,bj) = (q_YGXG(i+1,j,bi,bj) 
+     &      - q_YGXG(i,j,bi,bj))/dxG
+          dpsidx_YGXC(i,j,bi,bj) = (psiVelInt(i+1,j,bi,bj) 
+     &      - psiVelInt(i,j,bi,bj))/dxG
+        ENDDO
+      ENDDO
 C     DQDY AND DPSIDY AT YCXG
-C      DO j=1-OLy,sNy+OLy-1
-C        DO i=1-OLx,sNx+OLx
-C          dqdy_YCXG(i,j,bi,bj) = (q_YGXG(i,j+1,bi,bj) 
-C     &      - q_YGXG(i,j,bi,bj))/dyG
-C          dpsidy_YCXG(i,j,bi,bj) = (psiVelInt(i,j+1,bi,bj) 
-C     &      - psiVelInt(i,j,bi,bj))/dyG
-C        ENDDO
-C      ENDDO
+      DO j=1-OLy,sNy+OLy-1
+        DO i=1-OLx,sNx+OLx
+          dqdy_YCXG(i,j,bi,bj) = (q_YGXG(i,j+1,bi,bj) 
+     &      - q_YGXG(i,j,bi,bj))/dyG
+          dpsidy_YCXG(i,j,bi,bj) = (psiVelInt(i,j+1,bi,bj) 
+     &      - psiVelInt(i,j,bi,bj))/dyG
+        ENDDO
+      ENDDO
+
 C     4 POINT AVERAGE OF DQDX_YGXC TO YCXG
       DO j=1-OLy,sNy+OLy-1
         DO i=1-OLx+1,sNx+OLx-1
@@ -247,38 +248,38 @@ C     4 POINT AVERAGE OF DQDY TO YGXC
       ENDDO
 C     MOG(GRAD(Q)), KAPPA_Q, BAR(Q'U'), BAR(Q'U')*DPSIDX (ENERGY CONVERSION) 
 C     and BAR(Q'U')*DQDX (ENSTROPHY GENERATION)AT YGXC
-C      DO j=1-OLy+1,sNy+OLy-1
-C        DO i=1-OLx,sNx+OLx-1
-C          modGradq_YGXC(i,j,bi,bj) = sqrt(dqdx_YGXC(i,j+1,bi,bj)**2 
-C     &      + dqdy_YGXC(i,j,bi,bj)**2)
-C          kappa_q_YGXC(i,j,bi,bj) = (2*gamma_q
-C     &      *sqrt(EKE_YGXC(i,j,bi,bj)*Lambda_YGXC(i,j,bi,bj)))
-C     &      /modGradq_YGXC
-C          quEDDY_YGXC(i,j,bi,bj) = -kappa_q_YGXC(i,j,bi,bj)
-C     &      *dqdx_YGXC(i,j+1,bi,bj)
-C          energyConv_YGXC(i,j,bi,bj) = quEDDY_YGXC(i,j,bi,bj)
-C     &      *dpsidx_YGXC(i,j+1,bi,bj)
-C          enstrophyGen_YGXC(i,j,bi,bj) = quEDDY_YGXC(i,j,bi,bj)
-C     &      *dqdx_YGXC(i,j+1,bi,bj)
-C        ENDDO
-C      ENDDO
+      DO j=1-OLy+1,sNy+OLy-1
+        DO i=1-OLx,sNx+OLx-1
+          modGradq_YGXC(i,j,bi,bj) = sqrt(dqdx_YGXC(i,j+1,bi,bj)**2 
+     &      + dqdy_YGXC(i,j,bi,bj)**2)
+          kappa_q_YGXC(i,j,bi,bj) = (2*gamma_q
+     &      *sqrt(EKE_YGXC(i,j,bi,bj)*Lambda_YGXC(i,j,bi,bj)))
+     &      /modGradq_YGXC
+          quEDDY_YGXC(i,j,bi,bj) = -kappa_q_YGXC(i,j,bi,bj)
+     &      *dqdx_YGXC(i,j+1,bi,bj)
+          energyConv_YGXC(i,j,bi,bj) = quEDDY_YGXC(i,j,bi,bj)
+     &      *dpsidx_YGXC(i,j+1,bi,bj)
+          enstrophyGen_YGXC(i,j,bi,bj) = quEDDY_YGXC(i,j,bi,bj)
+     &      *dqdx_YGXC(i,j+1,bi,bj)
+        ENDDO
+      ENDDO
 C     MOG(GRAD(Q)), KAPPA_Q, BAR(Q'V') AND BAR(Q'V')*DPSIDY (ENERGY CONVERSION) 
 C     and BAR(Q'V')*DQDY (ENSTROPHY GENERATION)AT YCXG
-C      DO j=1-OLy,sNy+OLy-1
-C        DO i=1-OLx+1,sNx+OLx-1
-C          modGradq_YCXG(i,j,bi,bj) = sqrt(dqdx_YCXG(i,j,bi,bj)**2 
-C     &      + dqdy_YCXG(i+1,j,bi,bj)**2)
-C          kappa_q_YCXG(i,j,bi,bj) = (2*gamma_q
-C     &      *sqrt(EKE_YCXG(i,j,bi,bj)*Lambda_YCXG(i,j,bi,bj)))
-C     &      /modGradq_YCXG
-C          qvEDDY_YCXG(i,j,bi,bj) = -kappa_q_YCXG(i,j,bi,bj)
-C     &      *dqdY_YCXG(i+1,j,bi,bj)
-C          energyConv_YCXG(i,j,bi,bj) = qvEDDY_YCXG(i,j,bi,bj)
-C     &      *dpsidy_YCXG(i+1,j,bi,bj)
-C          enstrophyGen_YCXG(i,j,bi,bj) = qvEDDY_YCXG(i,j,bi,bj)
-C     &      *dqdy_YCXG(i+1,j,bi,bj)
-C        ENDDO
-C      ENDDO
+      DO j=1-OLy,sNy+OLy-1
+        DO i=1-OLx+1,sNx+OLx-1
+          modGradq_YCXG(i,j,bi,bj) = sqrt(dqdx_YCXG(i,j,bi,bj)**2 
+     &      + dqdy_YCXG(i+1,j,bi,bj)**2)
+          kappa_q_YCXG(i,j,bi,bj) = (2*gamma_q
+     &      *sqrt(EKE_YCXG(i,j,bi,bj)*Lambda_YCXG(i,j,bi,bj)))
+     &      /modGradq_YCXG
+          qvEDDY_YCXG(i,j,bi,bj) = -kappa_q_YCXG(i,j,bi,bj)
+     &      *dqdY_YCXG(i+1,j,bi,bj)
+          energyConv_YCXG(i,j,bi,bj) = qvEDDY_YCXG(i,j,bi,bj)
+     &      *dpsidy_YCXG(i+1,j,bi,bj)
+          enstrophyGen_YCXG(i,j,bi,bj) = qvEDDY_YCXG(i,j,bi,bj)
+     &      *dqdy_YCXG(i+1,j,bi,bj)
+        ENDDO
+      ENDDO
 
 C     ENERGY CONVERSION AND ENSTROPHY GENERATION AT YCXC
       DO j=1-OLy+1,sNy+OLy-2
