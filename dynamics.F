@@ -274,6 +274,9 @@ CHPF$ INDEPENDENT
 
       DO bj=myByLo(myThid),myByHi(myThid)
 
+       WRITE(standardMessageUnit,*)
+     &      'dynamics: bj = ', bj
+
 #ifdef ALLOW_AUTODIFF_TAMC
 C--    HPF directive to help TAMC
 CHPF$  INDEPENDENT, NEW (fVerU,fVerV
@@ -283,6 +286,9 @@ CHPF$&                  )
 #endif /* ALLOW_AUTODIFF_TAMC */
 
        DO bi=myBxLo(myThid),myBxHi(myThid)
+
+        WRITE(standardMessageUnit,*)
+     &      'dynamics: bi = ', bi
 
 #ifdef ALLOW_AUTODIFF_TAMC
         act1 = bi - myBxLo(myThid)
@@ -438,10 +444,7 @@ C     CALCULATE EKE
         CALL CALC_EKE(
      I                     iMin,iMax,jMin,jMax, bi, bj,
      I                     myTime, myIter, myThid )
-C     CALCULATE Lambda
-C     CALCULATE kappa_q
-C     CALCULATE eddy flux terms bar{q'u'} and bar{q'v'}
-C     Add eddy flux terms to gU and gV
+
 C
 
 C--     Start of dynamics loop

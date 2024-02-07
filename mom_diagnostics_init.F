@@ -289,6 +289,96 @@ C     custom: parameterized gEKE
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+C     custom: parameterized gEKEConv
+
+      diagName  = 'gEKEConv'
+      diagTitle = 'parameterized EKE conversion'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+C     custom: parameterized gEKEAdv
+
+      diagName  = 'gEKEAdv '
+      diagTitle = 'parameterized EKE advection'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+C     custom: parameterized gEKEDiff
+
+      diagName  = 'gEKEDiff'
+      diagTitle = 'parameterized EKE diffusion'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+C     custom: parameterized gEKEr
+
+      diagName  = 'gEKEr   '
+      diagTitle = 'parameterized EKE linear drag'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+C     custom: parameterized Lambda
+
+      diagName  = 'Lambda  '
+      diagTitle = 'parameterized Lambda'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^-2s^-2            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+C     custom: parameterized gLambda
+
+      diagName  = 'gLambda '
+      diagTitle = 'parameterized Lambda tendency'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^-2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+C     custom: parameterized gLambdaGen
+
+      diagName  = 'gLambdaGen'
+      diagTitle = 'parameterized Lambda generation'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^-2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+C     custom: parameterized gLambdaAdv
+
+      diagName  = 'gLambdaAdv'
+      diagTitle = 'parameterized Lambda advection'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^-2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+C     custom: parameterized gLambdaDiff
+
+      diagName  = 'gLambdaDiff'
+      diagTitle = 'parameterized Lambda diffusion'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^-2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+C     custom: parameterized gLambdar
+
+      diagName  = 'gLambdar'
+      diagTitle = 'parameterized Lambda linear drag'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^-2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
       diagName  = 'Strain  '
       diagTitle = 'Horizontal Strain of Horizontal Velocities'
       diagCode  = 'SZR     MR      '

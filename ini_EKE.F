@@ -31,7 +31,6 @@ C     == Local variables ==
 C     i,j,k  :: Loop counters
 C     bi,bj  :: tile indices
       INTEGER bi,bj,i,j,k
-      _RL gamma_q,r_EKE,r_Lambda,mu
 CEOP
 
 C--   Initialise parameterized EKE
@@ -41,47 +40,21 @@ C
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
-          EKE(i,j,1,bi,bj)=1.E-4
+          IF (R_low(i,j,bi,bj).NE.0) THEN
+            EKE(i,j,1,bi,bj)=1.E-4
+          ELSE 
+            EKE(i,j,1,bi,bj)=0.
+          END IF
+          gamma_q(i,j,bi,bj)=0.1
+          r_EKE(i,j,bi,bj)=0.
+          mu(i,j,bi,bj)=5000.
          ENDDO
         ENDDO
        ENDDO
       ENDDO
 
-      gamma_q = 0.1
-      r_Lambda = 5.E-8
-      r_K = 0.
-      mu = 5000.
-
       WRITE(standardMessageUnit,*)
      &      'ini_EKE = ', EKE
-
-C      DO bj = myByLo(myThid), myByHi(myThid)
-C       DO bi = myBxLo(myThid), myBxHi(myThid)
-C        DO j=1-Oly,sNy+Oly
-C         DO i=1-Olx,sNx+Olx
-C          EKE(i,j,1,bi,bj)=EKE(i,j,1,bi,bj)*maskC(i,j,1,bi,bj)
-C         ENDDO
-C        ENDDO
-C       ENDDO
-C      ENDDO
-
-      WRITE(standardMessageUnit,*)
-     &      'maskC = ', maskC
-
-      WRITE(standardMessageUnit,*)
-     &      'maskInC = ', maskInC
-
-      WRITE(standardMessageUnit,*)
-     &      'maskW = ', maskW
-
-      WRITE(standardMessageUnit,*)
-     &      'maskInW = ', maskInW
-
-      WRITE(standardMessageUnit,*)
-     &      'maskS = ', maskS
-
-      WRITE(standardMessageUnit,*)
-     &      'maskInS = ', maskInS
 
       RETURN
       END

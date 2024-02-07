@@ -40,7 +40,12 @@ C
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
-          Lambda(i,j,1,bi,bj)=1.E-20
+           IF (R_low(i,j,bi,bj).NE.0) THEN
+            Lambda(i,j,1,bi,bj)=1.E-20
+           ELSE 
+            Lambda(i,j,1,bi,bj)=0.
+           END IF 
+           r_Lambda(i,j,bi,bj)=5.E-8
          ENDDO
         ENDDO
        ENDDO
