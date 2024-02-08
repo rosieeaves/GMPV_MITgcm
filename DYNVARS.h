@@ -67,8 +67,6 @@ C     gLambdaNm, gLambdaNm1   :: parameterixed eddy kinetic energy time tendenci
      &                   gEKENm, gLambdaNm
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
       _RL  etaN  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  EKE  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
-      _RL  Lambda  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
       _RL  psiVelInt  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  uVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  vVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -77,6 +75,9 @@ C     gLambdaNm, gLambdaNm1   :: parameterixed eddy kinetic energy time tendenci
       _RL  salt (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  gU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  gV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+C     PARAMETERIZATION
+      _RL  EKE  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
+      _RL  Lambda  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
       _RL  gamma_q(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  r_EKE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  r_Lambda(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

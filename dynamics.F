@@ -442,10 +442,9 @@ C           PARAMETERIZATION
 C--------------------------------------------------------------------
 C     CALCULATE EKE
         CALL CALC_EKE(
-     I                     iMin,iMax,jMin,jMax, bi, bj,
+     I                     iMin,iMax,jMin,jMax,bi,bj,
      I                     myTime, myIter, myThid )
 
-C
 
 C--     Start of dynamics loop
         DO k=1,Nr
