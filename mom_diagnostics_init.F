@@ -379,6 +379,160 @@ C     custom: parameterized gLambdar
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+C     custom: parameterized bar(q'u')
+
+      diagName  = 'quEDDY  '
+      diagTitle = 'quEDDY'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 's^-2            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+C     custom: parameterized bar(q'v')
+
+      diagName  = 'qvEDDY  '
+      diagTitle = 'qvEDDY'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 's^-2            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+C --------------------------------------------------------------------
+C TESTING
+C --------------------------------------------------------------------
+
+      diagName  = 'EKE_YGXC'
+      diagTitle = 'EKE_YGXC'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^-2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'L_YGXC  '
+      diagTitle = 'L_YGXC'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^-2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'dqdxYGXC'
+      diagTitle = 'dqdxYGXC'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^-2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'dqdyYGXC'
+      diagTitle = 'dqdyYGXC'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^-2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'dpsidx  '
+      diagTitle = 'dpsidx'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^-2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'modqYGXC'
+      diagTitle = 'modGradq_YGXC'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^-2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'kqYGXC  '
+      diagTitle = 'kappa_q_YGXC'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^-2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ECYGXC  '
+      diagTitle = 'energyConv_YGXC'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^-2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'EGYGXC  '
+      diagTitle = 'enstrophyGen_YGXC'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^-2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'EKE_YCXG'
+      diagTitle = 'EKE_YCXG'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^-2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'L_YCXG  '
+      diagTitle = 'L_YCXG'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^-2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'dqdxYCXG'
+      diagTitle = 'dqdxYCXG'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^-2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'dqdyYCXG'
+      diagTitle = 'dqdyYCXG'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^-2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'dpsidy  '
+      diagTitle = 'dpsidy_YCXG'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^-2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'modqYCXG'
+      diagTitle = 'modGradq_YCXG'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^-2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'kqYCXG  '
+      diagTitle = 'kappa_q_YCXG'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^-2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ECYCXG  '
+      diagTitle = 'energyConv_YCXG'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^-2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'EGYCXG  '
+      diagTitle = 'enstrophyGen_YCXG'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^-2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+C --------------------------------------------------------------------
+C TESTING
+C --------------------------------------------------------------------
+
+
+
       diagName  = 'Strain  '
       diagTitle = 'Horizontal Strain of Horizontal Velocities'
       diagCode  = 'SZR     MR      '

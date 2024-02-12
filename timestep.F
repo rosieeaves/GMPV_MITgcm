@@ -148,14 +148,14 @@ C--   Forcing term inside the Adams-Bashforth:
 C -----------------------------------------------------------------
 C EDDY PARAMETERIZATION
 C -----------------------------------------------------------------
-C      IF ( momForcing .AND. momForcingOutAB.NE.1 ) THEN
-C        DO j=jMin,jMax
-C         DO i=iMin,iMax
-C           gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj) - qvEDDY_YCXG(i,j,bi,bj)
-C           gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj) + quEDDY_YGXC(i,j,bi,bj)
-C         ENDDO
-C        ENDDO
-C      ENDIF
+      DO j=jMin,jMax
+        DO i=iMin,iMax
+          gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj) 
+     &      - drF(k)*qvEDDY_YCXG(i,j,bi,bj)
+          gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj) 
+     &      + drF(k)*quEDDY_YGXC(i,j,bi,bj)
+        ENDDO
+      ENDDO
 
 
 #ifdef CD_CODE_NO_AB_MOMENTUM

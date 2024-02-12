@@ -54,35 +54,29 @@ C     gEKEr    :: EKE tendency from linear drag
 C     gEKEDiff    :: EKE tendency from diffusion
       INTEGER i, j
 C     YCXC
-C      _RL  gEKEAdv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy) 
-C      _RL  gEKEr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-C      _RL  gEKEDiff(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  gEKE_AB(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-C      _RL  gLambdaAdv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-C      _RL  gLambdar(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-C      _RL  gLambdaDiff(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  gLambda_AB(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  q_YCXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     YGXC
-      _RL  EKE_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  Lambda_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  dqdx_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  dqdy_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  dpsidx_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  modGradq_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  kappa_q_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  energyConv_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  enstrophyGen_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C      _RL  EKE_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C      _RL  Lambda_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C      _RL  dqdx_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C      _RL  dqdy_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C      _RL  dpsidx_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C      _RL  modGradq_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C      _RL  kappa_q_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C      _RL  energyConv_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C      _RL  enstrophyGen_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     YCXG
-      _RL  EKE_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  Lambda_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  dqdx_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  dqdy_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  dpsidy_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  modGradq_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  kappa_q_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  energyConv_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  enstrophyGen_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C      _RL  EKE_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C      _RL  Lambda_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C      _RL  dqdx_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C      _RL  dqdy_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C      _RL  dpsidy_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C      _RL  modGradq_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C      _RL  kappa_q_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C      _RL  energyConv_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C      _RL  enstrophyGen_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 
 C    Initialize arrays with zero values
@@ -94,16 +88,42 @@ C    Initialize arrays with zero values
           gEKEDiff(i,j,bi,bj) = 0. _d 0
           gEKE_AB(i,j,bi,bj) = 0. _d 0
 
+
           gLambdaAdv(i,j,bi,bj) = 0. _d 0
           gLambdaGen(i,j,bi,bj) = 0. _d 0
           gLambdar(i,j,bi,bj) = 0. _d 0
           gLambdaDiff(i,j,bi,bj) = 0. _d 0
           gLambda_AB(i,j,bi,bj) = 0. _d 0
+
+          EKE_YGXC(i,j,bi,bj) = 0. _d 0
+          Lambda_YGXC(i,j,bi,bj) = 0. _d 0
+          dqdx_YGXC(i,j,bi,bj) = 0. _d 0
+          dqdy_YGXC(i,j,bi,bj) = 0. _d 0
+          dpsidx_YGXC(i,j,bi,bj) = 0. _d 0
+          modGradq_YGXC(i,j,bi,bj) = 0. _d 0
+          kappa_q_YGXC(i,j,bi,bj) = 0. _d 0
+          energyConv_YGXC(i,j,bi,bj) = 0. _d 0
+          enstrophyGen_YGXC(i,j,bi,bj) = 0. _d 0
+          quEDDY_YGXC(i,j,bi,bj) = 0. _d 0
+
+          EKE_YCXG(i,j,bi,bj) = 0. _d 0
+          Lambda_YCXG(i,j,bi,bj) = 0. _d 0
+          dqdx_YCXG(i,j,bi,bj) = 0. _d 0
+          dqdy_YCXG(i,j,bi,bj) = 0. _d 0
+          dpsidy_YCXG(i,j,bi,bj) = 0. _d 0
+          modGradq_YCXG(i,j,bi,bj) = 0. _d 0
+          kappa_q_YCXG(i,j,bi,bj) = 0. _d 0
+          energyConv_YCXG(i,j,bi,bj) = 0. _d 0
+          enstrophyGen_YCXG(i,j,bi,bj) = 0. _d 0
+          qvEDDY_YCXG(i,j,bi,bj) = 0. _d 0
+
         ENDDO
       ENDDO 
 C--------------------------------------------------------------
 C     CALCULATE EKE & Lambda ADVECTION TERM AND LINEAR DRAG
 C--------------------------------------------------------------
+      WRITE(standardMessageUnit,*)
+     &      'calc_EKE: EKE  = ', EKE
 
       DO j=1,sNy
         DO i=1,sNx
@@ -115,23 +135,31 @@ C   H = -1*R_low => 1/H = -1/R_low
      &        *rA(i,j,bi,bj)))
      &        *((EKE(i,j,1,bi,bj) + EKE(i,j+1,1,bi,bj))
      &        *(psiVelInt(i+1,j+1,bi,bj) - psiVelInt(i,j+1,bi,bj)) 
+     &        *min(ceiling(R_low(i,j,bi,bj)*R_low(i,j+1,bi,bj)),1)
      &        - (EKE(i,j,1,bi,bj) + EKE(i+1,j,1,bi,bj))
      &        *(psiVelInt(i+1,j+1,bi,bj) - psiVelInt(i+1,j,bi,bj))
+     &        *min(ceiling(R_low(i,j,bi,bj)*R_low(i+1,j,bi,bj)),1)
      &        - (EKE(i,j,1,bi,bj) + EKE(i,j-1,1,bi,bj))
      &        *(psiVelInt(i+1,j,bi,bj) - psiVelInt(i,j,bi,bj)) 
+     &        *min(ceiling(R_low(i,j,bi,bj)*R_low(i,j-1,bi,bj)),1)
      &        + (EKE(i,j,1,bi,bj) + EKE(i-1,j,1,bi,bj))
      &        *(psiVelInt(i,j+1,bi,bj) - psiVelInt(i,j,bi,bj)))
+     &        *min(ceiling(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj)),1)
 
             gLambdaAdv(i,j,bi,bj) = (-1/(2*R_low(i,j,bi,bj)
      &        *rA(i,j,bi,bj)))
      &        *((Lambda(i,j,1,bi,bj) + Lambda(i,j+1,1,bi,bj))
      &        *(psiVelInt(i+1,j+1,bi,bj) - psiVelInt(i,j+1,bi,bj)) 
+     &        *min(ceiling(R_low(i,j,bi,bj)*R_low(i,j+1,bi,bj)),1)
      &        - (Lambda(i,j,1,bi,bj) + Lambda(i+1,j,1,bi,bj))
      &        *(psiVelInt(i+1,j+1,bi,bj) - psiVelInt(i+1,j,bi,bj))
+     &        *min(ceiling(R_low(i,j,bi,bj)*R_low(i+1,j,bi,bj)),1)
      &        - (Lambda(i,j,1,bi,bj) + Lambda(i,j-1,1,bi,bj))
      &        *(psiVelInt(i+1,j,bi,bj) - psiVelInt(i,j,bi,bj)) 
+     &        *min(ceiling(R_low(i,j,bi,bj)*R_low(i,j-1,bi,bj)),1)
      &        + (Lambda(i,j,1,bi,bj) + Lambda(i-1,j,1,bi,bj))
      &        *(psiVelInt(i,j+1,bi,bj) - psiVelInt(i,j,bi,bj)))
+     &        *min(ceiling(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj)),1)
 
             gEKEr(i,j,bi,bj) = r_EKE(i,j,bi,bj)
      &        *EKE(i,j,1,bi,bj)
@@ -146,9 +174,22 @@ C   H = -1*R_low => 1/H = -1/R_low
             gLambdar(i,j,bi,bj)=0.
 
           END IF
+
+          WRITE(standardMessageUnit,*)
+     &      'calc_EKE: gEKEAdv(i,j)  = ', gEKEAdv(i,j,bi,bj)
+
+          WRITE(standardMessageUnit,*)
+     &      'calc_EKE: gLambdaAdv(i,j)  = ', gLambdaAdv(i,j,bi,bj)
+
+          WRITE(standardMessageUnit,*)
+     &      'calc_EKE: gEKEr(i,j)  = ', gEKEr(i,j,bi,bj)
+
+          WRITE(standardMessageUnit,*)
+     &      'calc_EKE: gLambdar(i,j)  = ', gLambdar(i,j,bi,bj)
             
         ENDDO
       ENDDO
+
 C--------------------------------------------------------------
 C     CALCULATE K AND LAMBDA DIFFUSION    
 C--------------------------------------------------------------
@@ -179,6 +220,12 @@ C min => get zero when one or both of R_low is zero and one when neither is zero
      &      *min(ceiling(R_low(i,j,bi,bj)*R_low(i,j-1,bi,bj)),1)
      &      -(Lambda(i,j,1,bi,bj) - Lambda(i-1,j,1,bi,bj))
      &      *min(ceiling(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj)),1))
+
+           WRITE(standardMessageUnit,*)
+     &      'calc_EKE: gEKEDiff(i,j)  = ', gEKEDiff(i,j,bi,bj)
+
+          WRITE(standardMessageUnit,*)
+     &      'calc_EKE: gLambdaDiff(i,j)  = ', gLambdaDiff(i,j,bi,bj)
         ENDDO
       ENDDO
 
@@ -192,8 +239,14 @@ C     INTERPOLATE K & Lambda TO YGXC
       DO j=1,sNy
         DO i=1,sNx
 
+        WRITE(standardMessageUnit,*)
+     &      'calc_EKE: i,j  = ', i,j
+
           EKE_YGXC(i,j,bi,bj) = (EKE(i,j+1,1,bi,bj) 
      &      + EKE(i,j,1,bi,bj))/2
+
+          WRITE(standardMessageUnit,*)
+     &      'calc_EKE: EKE_YGXC(i,j)  = ', EKE_YGXC(i,j,bi,bj)
 
           Lambda_YGXC(i,j,bi,bj) = (Lambda(i,j+1,1,bi,bj) 
      &      + Lambda(i,j,1,bi,bj))/2
@@ -203,58 +256,52 @@ C     INTERPOLATE K & Lambda TO YGXC
 
           Lambda_YCXG(i,j,bi,bj) = (Lambda(i+1,j,1,bi,bj) 
      &      + Lambda(i,j,1,bi,bj))/2
+
         ENDDO
       ENDDO
 
 C     DEFINE Q (MOVE THIS TO OUTSIDE OF TIME LOOP)
 C     Q DEFINED AT CELL CENTRE POINTS
+C     no more Infinites
       DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-          q_YCXC(i,j,bi,bj) = -fCori(i,j,bi,bj)/R_low(i,j,bi,bj)
+          IF (R_low(i,j,bi,bj).NE.0) THEN
+            q_YCXC(i,j,bi,bj) = -fCori(i,j,bi,bj)/R_low(i,j,bi,bj)
 
-          WRITE(standardMessageUnit,*)
-     &      'calc_EKE: i,j = ', i,j
+          ELSE
+            q_YCXC(i,j,bi,bj) = 0.
+          END IF
 
-          WRITE(standardMessageUnit,*)
-     &      'calc_EKE: q_YCXC(i,j) = ', q_YCXC(i,j,bi,bj)
         ENDDO
       ENDDO
 
 C     DQDX AND DPSIDY AT YCXG AND  DQDY AND DPSIDX YGXC
+C     no more NaNs
       DO j=1,sNy
         DO i=1,sNx
 
-          WRITE(standardMessageUnit,*)
-     &      'calc_EKE: i,j = ', i,j
-
           dqdx_YCXG(i,j,bi,bj) = (q_YCXC(i+1,j,bi,bj) 
      &      - q_YCXC(i,j,bi,bj))/dxC(i,j,bi,bj)
-
-          WRITE(standardMessageUnit,*)
-     &      'calc_EKE: dqdx_YCXG(i,j) = ', dqdx_YCXG(i,j,bi,bj) 
+     &      *min(ceiling(R_low(i+1,j,bi,bj)*R_low(i,j,bi,bj)),1)
 
           dpsidx_YGXC(i,j,bi,bj) = (psiVelInt(i+1,j,bi,bj) 
      &      - psiVelInt(i,j,bi,bj))/dxG(i,j,bi,bj)
 
-          WRITE(standardMessageUnit,*)
-     &      'calc_EKE: dpsidx_YGXC(i,j) = ', dpsidx_YGXC(i,j,bi,bj) 
-
           dqdy_YGXC(i,j,bi,bj) = (q_YCXC(i,j+1,bi,bj) 
      &      - q_YCXC(i,j,bi,bj))/dyC(i,j,bi,bj)
-
-          WRITE(standardMessageUnit,*)
-     &      'calc_EKE: dqdy_YGXC(i,j) = ', dqdy_YGXC(i,j,bi,bj) 
+     &      *min(ceiling(R_low(i,j+1,bi,bj)*R_low(i,j,bi,bj)),1)
 
           dpsidy_YCXG(i,j,bi,bj) = (psiVelInt(i,j+1,bi,bj) 
      &      - psiVelInt(i,j,bi,bj))/dyG(i,j,bi,bj)
-
-          WRITE(standardMessageUnit,*)
-     &      'calc_EKE: dpsidy_YCXG(i,j) = ', dpsidy_YCXG(i,j,bi,bj) 
 
         ENDDO
       ENDDO
 
 C     4 POINT AVERAGE OF DQDX_YCXG TO YGXC AND DQDY_YGXC TO YCXG
+C     no more Nans
+C !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+C     need to check what happens at land boundaries
+C !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       DO j=1,sNy
         DO i=1,sNx
           dqdx_YGXC(i,j,bi,bj) = (dqdx_YCXG(i,j,bi,bj) 
@@ -266,6 +313,7 @@ C     4 POINT AVERAGE OF DQDX_YCXG TO YGXC AND DQDY_YGXC TO YCXG
      &      + dqdy_YGXC(i,j+1,bi,bj) 
      &      + dqdy_YGXC(i+1,j,bi,bj) 
      &      + dqdy_YGXC(i+1,j+1,bi,bj))/4
+
         ENDDO
       ENDDO
 
@@ -274,38 +322,53 @@ C     4 POINT AVERAGE OF DQDX_YCXG TO YGXC AND DQDY_YGXC TO YCXG
 
 C     MOG(GRAD(Q)), KAPPA_Q, BAR(Q'U'), BAR(Q'U')*DPSIDX (ENERGY CONVERSION) 
 C     and BAR(Q'U')*DQDX (ENSTROPHY GENERATION)AT YGXC
-          modGradq_YGXC(i,j,bi,bj) = sqrt(dqdx_YGXC(i,j,bi,bj)**2 
-     &      + dqdy_YGXC(i+1,j,bi,bj)**2)
+C     no more NaNs in first time step
+
+          modGradq_YGXC(i,j,bi,bj) = max(sqrt(dqdx_YGXC(i,j,bi,bj)**2 
+     &      + dqdy_YGXC(i+1,j,bi,bj)**2),1.E-16)
+
           kappa_q_YGXC(i,j,bi,bj) = (2*gamma_q(i,j,bi,bj)
      &      *sqrt(EKE_YGXC(i+1,j,bi,bj)*Lambda_YGXC(i+1,j,bi,bj)))
      &      /modGradq_YGXC(i,j,bi,bj)
      &      *min(ceiling(R_low(i,j,bi,bj)*R_low(i,j-1,bi,bj)),1)
+          
           quEDDY_YGXC(i,j,bi,bj) = -kappa_q_YGXC(i,j,bi,bj)
      &      *dqdx_YGXC(i,j,bi,bj)
+
           energyConv_YGXC(i,j,bi,bj) = quEDDY_YGXC(i,j,bi,bj)
      &      *dpsidx_YGXC(i+1,j+1,bi,bj)
+
           enstrophyGen_YGXC(i,j,bi,bj) = quEDDY_YGXC(i,j,bi,bj)
      &      *dqdx_YGXC(i,j,bi,bj)
 
 C     MOG(GRAD(Q)), KAPPA_Q, BAR(Q'V') AND BAR(Q'V')*DPSIDY (ENERGY CONVERSION) 
 C     and BAR(Q'V')*DQDY (ENSTROPHY GENERATION)AT YCXG
 
-          modGradq_YCXG(i,j,bi,bj) = sqrt(dqdx_YCXG(i,j+1,bi,bj)**2 
-     &      + dqdy_YCXG(i,j,bi,bj)**2)
+          modGradq_YCXG(i,j,bi,bj) = max(sqrt(dqdx_YCXG(i,j+1,bi,bj)**2 
+     &      + dqdy_YCXG(i,j,bi,bj)**2),1.E-16)
+
           kappa_q_YCXG(i,j,bi,bj) = (2*gamma_q(i,j,bi,bj)
      &      *sqrt(EKE_YCXG(i,j+1,bi,bj)*Lambda_YCXG(i,j+1,bi,bj)))
      &      /modGradq_YCXG(i,j,bi,bj)
      &      *min(ceiling(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj)),1)
+          
+
           qvEDDY_YCXG(i,j,bi,bj) = -kappa_q_YCXG(i,j,bi,bj)
-     &      *dqdY_YCXG(i,j,bi,bj)
+     &      *dqdy_YCXG(i,j,bi,bj)
+
           energyConv_YCXG(i,j,bi,bj) = qvEDDY_YCXG(i,j,bi,bj)
      &      *dpsidy_YCXG(i+1,j+1,bi,bj)
+
           enstrophyGen_YCXG(i,j,bi,bj) = qvEDDY_YCXG(i,j,bi,bj)
      &      *dqdy_YCXG(i,j,bi,bj)
+
         ENDDO
       ENDDO
 
 C     ENERGY CONVERSION AND ENSTROPHY GENERATION AT YCXC
+C !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+C     need to check what happens at land boundaries
+C !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       DO j=1,sNy
         DO i=1,sNx
           gEKEConv(i,j,bi,bj) = (energyConv_YGXC(i,j,bi,bj) 
@@ -316,6 +379,12 @@ C     ENERGY CONVERSION AND ENSTROPHY GENERATION AT YCXC
      &      + enstrophyGen_YGXC(i,j+1,bi,bj) 
      &      + enstrophyGen_YCXG(i,j,bi,bj) 
      &      + enstrophyGen_YCXG(i+1,j,bi,bj))/2
+
+          WRITE(standardMessageUnit,*)
+     &      'calc_EKE: gEKEConv(i,j)  = ', gEKEConv(i,j,bi,bj)
+
+          WRITE(standardMessageUnit,*)
+     &      'calc_EKE: gLambdaGen(i,j)  = ', gLambdaGen(i,j,bi,bj)
         ENDDO
       ENDDO 
 
@@ -334,6 +403,13 @@ C--------------------------------------------------------------
      &      - gLambdaGen(i,j,bi,bj) 
      &      - gLambdar(i,j,bi,bj) 
      &      + gLambdaDiff(i,j,bi,bj)
+
+          WRITE(standardMessageUnit,*)
+     &      'calc_EKE: gEKE(i,j)  = ', gEKE(i,j,1,bi,bj)
+
+          WRITE(standardMessageUnit,*)
+     &      'calc_EKE: gLambda(i,j)  = ', gLambda(i,j,1,bi,bj)
+
         ENDDO
       ENDDO
 
@@ -354,7 +430,15 @@ C--------------------------------------------------------------
      O                        gLambda_AB,
      I                        mom_StartAB, myIter, myThid )
 
+       DO j=1,sNy
+        DO i=1,sNx
+          WRITE(standardMessageUnit,*)
+     &      'calc_EKE: AB gEKE(i,j)  = ', gEKE(i,j,1,bi,bj)
 
+          WRITE(standardMessageUnit,*)
+     &      'calc_EKE: AB gLambda(i,j)  = ', gLambda(i,j,1,bi,bj)
+        ENDDO
+       ENDDO
 
 C--------------------------------------------------------------
 C     STEP FORWARD EKE AND LAMBDA
@@ -367,11 +451,14 @@ C--------------------------------------------------------------
 
           Lambda(i,j,1,bi,bj) = Lambda(i,j,1,bi,bj)
      &     + deltaTMom*( gLambda(i,j,1,bi,bj) )
+
+          WRITE(standardMessageUnit,*)
+     &      'calc_EKE: EKE(i,j)  = ', EKE(i,j,1,bi,bj)
+
+          WRITE(standardMessageUnit,*)
+     &      'calc_EKE: Lambda(i,j)  = ', Lambda(i,j,1,bi,bj)
         ENDDO
       ENDDO
-
-      WRITE(standardMessageUnit,*)
-     &      'calc_EKE: EKE = ', EKE
 
 
       RETURN

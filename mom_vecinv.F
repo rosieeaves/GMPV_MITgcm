@@ -999,6 +999,77 @@ C       custom: parameterized Lambda diffusion
         CALL DIAGNOSTICS_FILL(gLambdaDiff,'gLambdaDiff',
      &     k,1,2,bi,bj,myThid)
 
+C       custom: parameterized bar(q'u')
+        CALL DIAGNOSTICS_FILL(quEDDY_YGXC,'quEDDY  ',
+     &     k,1,2,bi,bj,myThid)
+
+C       custom: parameterized bar(q'v')
+        CALL DIAGNOSTICS_FILL(qvEDDY_YCXG,'qvEDDY  ',
+     &     k,1,2,bi,bj,myThid)
+
+C --------------------------------------------------------------------
+C TESTING
+C --------------------------------------------------------------------
+
+        CALL DIAGNOSTICS_FILL(EKE_YGXC,'EKE_YGXC',
+     &     k,1,2,bi,bj,myThid)
+
+        CALL DIAGNOSTICS_FILL(Lambda_YGXC,'L_YGXC  ',
+     &     k,1,2,bi,bj,myThid)
+
+        CALL DIAGNOSTICS_FILL(dqdx_YGXC,'dqdxYGXC',
+     &     k,1,2,bi,bj,myThid)
+
+        CALL DIAGNOSTICS_FILL(dqdy_YGXC,'dqdyYGXC',
+     &     k,1,2,bi,bj,myThid)
+
+        CALL DIAGNOSTICS_FILL(dpsidx_YGXC,'dpsidx  ',
+     &     k,1,2,bi,bj,myThid)
+
+        CALL DIAGNOSTICS_FILL(modGradq_YGXC,'modqYGXC',
+     &     k,1,2,bi,bj,myThid)
+
+        CALL DIAGNOSTICS_FILL(kappa_q_YGXC,'kqYGXC  ',
+     &     k,1,2,bi,bj,myThid)
+
+        CALL DIAGNOSTICS_FILL(energyConv_YGXC,'ECYGXC  ',
+     &     k,1,2,bi,bj,myThid)
+
+        CALL DIAGNOSTICS_FILL(enstrophyGen_YGXC,'EGYGXC  ',
+     &     k,1,2,bi,bj,myThid)
+
+        CALL DIAGNOSTICS_FILL(EKE_YCXG,'EKE_YCXG',
+     &     k,1,2,bi,bj,myThid)
+
+        CALL DIAGNOSTICS_FILL(Lambda_YCXG,'L_YCXG  ',
+     &     k,1,2,bi,bj,myThid)
+
+        CALL DIAGNOSTICS_FILL(dqdx_YCXG,'dqdxYCXG',
+     &     k,1,2,bi,bj,myThid)
+
+        CALL DIAGNOSTICS_FILL(dqdy_YCXG,'dqdyYCXG',
+     &     k,1,2,bi,bj,myThid)
+
+        CALL DIAGNOSTICS_FILL(dpsidy_YCXG,'dpsidy  ',
+     &     k,1,2,bi,bj,myThid)
+
+        CALL DIAGNOSTICS_FILL(modGradq_YCXG,'modqYCXG',
+     &     k,1,2,bi,bj,myThid)
+
+        CALL DIAGNOSTICS_FILL(kappa_q_YCXG,'kqYCXG  ',
+     &     k,1,2,bi,bj,myThid)
+
+        CALL DIAGNOSTICS_FILL(energyConv_YCXG,'ECYCXG  ',
+     &     k,1,2,bi,bj,myThid)
+
+        CALL DIAGNOSTICS_FILL(enstrophyGen_YCXG,'EGYCXG  ',
+     &     k,1,2,bi,bj,myThid)
+
+
+C --------------------------------------------------------------------
+C TESTING
+C --------------------------------------------------------------------
+
         CALL DIAGNOSTICS_FILL(KE,     'momKE   ',k,1,2,bi,bj,myThid)
        IF (momViscosity) THEN
         CALL DIAGNOSTICS_FILL(hDiv,   'momHDiv ',k,1,2,bi,bj,myThid)
