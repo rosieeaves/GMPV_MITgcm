@@ -325,10 +325,10 @@ C     and BAR(Q'U')*DQDX (ENSTROPHY GENERATION)AT YGXC
 C     no more NaNs in first time step
 
           modGradq_YGXC(i,j,bi,bj) = max(sqrt(dqdx_YGXC(i,j,bi,bj)**2 
-     &      + dqdy_YGXC(i+1,j,bi,bj)**2),1.E-16)
+     &      + dqdy_YGXC(i,j,bi,bj)**2),1.E-16)
 
           kappa_q_YGXC(i,j,bi,bj) = (2*gamma_q(i,j,bi,bj)
-     &      *sqrt(EKE_YGXC(i+1,j,bi,bj)*Lambda_YGXC(i+1,j,bi,bj)))
+     &      *sqrt(EKE_YGXC(i,j,bi,bj)*Lambda_YGXC(i,j,bi,bj)))
      &      /modGradq_YGXC(i,j,bi,bj)
      &      *min(ceiling(R_low(i,j,bi,bj)*R_low(i,j-1,bi,bj)),1)
           
@@ -344,11 +344,11 @@ C     no more NaNs in first time step
 C     MOG(GRAD(Q)), KAPPA_Q, BAR(Q'V') AND BAR(Q'V')*DPSIDY (ENERGY CONVERSION) 
 C     and BAR(Q'V')*DQDY (ENSTROPHY GENERATION)AT YCXG
 
-          modGradq_YCXG(i,j,bi,bj) = max(sqrt(dqdx_YCXG(i,j+1,bi,bj)**2 
+          modGradq_YCXG(i,j,bi,bj) = max(sqrt(dqdx_YCXG(i,j,bi,bj)**2 
      &      + dqdy_YCXG(i,j,bi,bj)**2),1.E-16)
 
           kappa_q_YCXG(i,j,bi,bj) = (2*gamma_q(i,j,bi,bj)
-     &      *sqrt(EKE_YCXG(i,j+1,bi,bj)*Lambda_YCXG(i,j+1,bi,bj)))
+     &      *sqrt(EKE_YCXG(i,j,bi,bj)*Lambda_YCXG(i,j,bi,bj)))
      &      /modGradq_YCXG(i,j,bi,bj)
      &      *min(ceiling(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj)),1)
           
