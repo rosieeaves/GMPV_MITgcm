@@ -78,6 +78,9 @@ CEOP
       IF (debugMode) CALL DEBUG_ENTER('DIAG_CALC_PSIVEL',myThid)
 #endif
 
+      WRITE(standardMessageUnit,*)
+     &      'psivel time:  = ', myIter
+
 C--   Initialise
       zeroPsi = iPsi0(1,1).GE.0
       psiLoc(1) = 0.

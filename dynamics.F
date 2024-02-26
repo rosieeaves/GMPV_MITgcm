@@ -440,8 +440,8 @@ C     (copied) to a narrow strip outside the domain
 C--------------------------------------------------------------------
 C           PARAMETERIZATION
 C--------------------------------------------------------------------
-C     CALCULATE EKE
-        CALL CALC_EKE(
+C     CALCULATE EDDY FLUXES
+        CALL CALC_EDDY_FLUX(
      I                     iMin,iMax,jMin,jMax,bi,bj,
      I                     myTime, myIter, myThid )
 
