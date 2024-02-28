@@ -243,17 +243,17 @@ C     INTERPOLATE K & Lambda TO YGXC
       DO j=1,sNy
         DO i=1,sNx
 
-          EKE_YGXC(i,j,bi,bj) = (EKE(i,j+1,1,bi,bj) 
-     &      + EKE(i,j,1,bi,bj))/2
+          EKE_YGXC(i,j,bi,bj) = (EKE(i,j,1,bi,bj) 
+     &      + EKE(i,j-1,1,bi,bj))/2
 
-          Lambda_YGXC(i,j,bi,bj) = (Lambda(i,j+1,1,bi,bj) 
-     &      + Lambda(i,j,1,bi,bj))/2
+          Lambda_YGXC(i,j,bi,bj) = (Lambda(i,j,1,bi,bj) 
+     &      + Lambda(i,j-1,1,bi,bj))/2
 
-          EKE_YCXG(i,j,bi,bj) = (EKE(i+1,j,1,bi,bj) 
-     &      + EKE(i,j,1,bi,bj))/2
+          EKE_YCXG(i,j,bi,bj) = (EKE(i,j,1,bi,bj) 
+     &      + EKE(i-1,j,1,bi,bj))/2
 
-          Lambda_YCXG(i,j,bi,bj) = (Lambda(i+1,j,1,bi,bj) 
-     &      + Lambda(i,j,1,bi,bj))/2
+          Lambda_YCXG(i,j,bi,bj) = (Lambda(i,j,1,bi,bj) 
+     &      + Lambda(i-1,j,1,bi,bj))/2
 
         ENDDO
       ENDDO
@@ -278,18 +278,18 @@ C     no more Infinites
 
 C     DQDX AND DPSIDY AT YCXG 
 
-          dqdx_YCXG(i,j,bi,bj) = (q_YCXC(i+1,j,bi,bj) 
-     &      - q_YCXC(i,j,bi,bj))/dxC(i,j,bi,bj)
-     &      *min(ceiling(abs(R_low(i+1,j,bi,bj)*R_low(i,j,bi,bj))),1)
+          dqdx_YCXG(i,j,bi,bj) = (q_YCXC(i,j,bi,bj) 
+     &      - q_YCXC(i-1,j,bi,bj))/dxC(i,j,bi,bj)
+     &      *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1)
 
           dpsidx_YGXC(i,j,bi,bj) = (psiVelInt(i+1,j,bi,bj) 
      &      - psiVelInt(i,j,bi,bj))/dxG(i,j,bi,bj)
 
 C     DQDY AND DPSIDX AT YGXC
 
-          dqdy_YGXC(i,j,bi,bj) = (q_YCXC(i,j+1,bi,bj) 
-     &      - q_YCXC(i,j,bi,bj))/dyC(i,j,bi,bj)
-     &      *min(ceiling(abs(R_low(i,j+1,bi,bj)*R_low(i,j,bi,bj))),1)
+          dqdy_YGXC(i,j,bi,bj) = (q_YCXC(i,j,bi,bj) 
+     &      - q_YCXC(i,j-1,bi,bj))/dyC(i,j,bi,bj)
+     &      *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i,j-1,bi,bj))),1)
 
           dpsidy_YCXG(i,j,bi,bj) = (psiVelInt(i,j+1,bi,bj) 
      &      - psiVelInt(i,j,bi,bj))/dyG(i,j,bi,bj)
@@ -305,14 +305,14 @@ C !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       DO j=1,sNy
         DO i=1,sNx
           dqdx_YGXC(i,j,bi,bj) = (dqdx_YCXG(i,j,bi,bj) 
-     &      + dqdx_YCXG(i,j+1,bi,bj) 
      &      + dqdx_YCXG(i+1,j,bi,bj) 
-     &      + dqdx_YCXG(i+1,j+1,bi,bj))/4
+     &      + dqdx_YCXG(i,j-1,bi,bj) 
+     &      + dqdx_YCXG(i+1,j-1,bi,bj))/4
 
          dqdy_YCXG(i,j,bi,bj) = (dqdy_YGXC(i,j,bi,bj) 
      &      + dqdy_YGXC(i,j+1,bi,bj) 
-     &      + dqdy_YGXC(i+1,j,bi,bj) 
-     &      + dqdy_YGXC(i+1,j+1,bi,bj))/4
+     &      + dqdy_YGXC(i-1,j,bi,bj) 
+     &      + dqdy_YGXC(i-1,j+1,bi,bj))/4
 
         ENDDO
       ENDDO
