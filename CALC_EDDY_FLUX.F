@@ -60,7 +60,7 @@ C     gEKEDiff    :: EKE tendency from diffusion
 C     YCXC
       _RL  gEKE_AB(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  gLambda_AB(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  q_YCXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C      _RL  q_YCXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     YGXC
 C      _RL  EKE_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C      _RL  Lambda_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -178,18 +178,6 @@ C   H = abs(R_low)
             gLambdar(i,j,bi,bj)=0.
 
           END IF
-
-          WRITE(standardMessageUnit,*)
-     &      'calc_EKE: gEKEAdv(i,j)  = ', gEKEAdv(i,j,bi,bj)
-
-          WRITE(standardMessageUnit,*)
-     &      'calc_EKE: gLambdaAdv(i,j)  = ', gLambdaAdv(i,j,bi,bj)
-
-          WRITE(standardMessageUnit,*)
-     &      'calc_EKE: gEKEr(i,j)  = ', gEKEr(i,j,bi,bj)
-
-          WRITE(standardMessageUnit,*)
-     &      'calc_EKE: gLambdar(i,j)  = ', gLambdar(i,j,bi,bj)
             
         ENDDO
       ENDDO
@@ -225,11 +213,6 @@ C min => get zero when one or both of R_low is zero and one when neither is zero
      &      -(Lambda(i,j,1,bi,bj) - Lambda(i-1,j,1,bi,bj))
      &      *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1))
 
-           WRITE(standardMessageUnit,*)
-     &      'calc_EKE: gEKEDiff(i,j)  = ', gEKEDiff(i,j,bi,bj)
-
-          WRITE(standardMessageUnit,*)
-     &      'calc_EKE: gLambdaDiff(i,j)  = ', gLambdaDiff(i,j,bi,bj)
         ENDDO
       ENDDO
 
@@ -243,17 +226,17 @@ C     INTERPOLATE K & Lambda TO YGXC
       DO j=1,sNy
         DO i=1,sNx
 
-          EKE_YGXC(i,j,bi,bj) = (EKE(i,j,1,bi,bj) 
-     &      + EKE(i,j-1,1,bi,bj))/2
+          EKE_YGXC(i,j,bi,bj) = max((EKE(i,j,1,bi,bj) 
+     &      + EKE(i,j-1,1,bi,bj))/2,0.)
 
-          Lambda_YGXC(i,j,bi,bj) = (Lambda(i,j,1,bi,bj) 
-     &      + Lambda(i,j-1,1,bi,bj))/2
+          Lambda_YGXC(i,j,bi,bj) = max((Lambda(i,j,1,bi,bj) 
+     &      + Lambda(i,j-1,1,bi,bj))/2,0.)
 
-          EKE_YCXG(i,j,bi,bj) = (EKE(i,j,1,bi,bj) 
-     &      + EKE(i-1,j,1,bi,bj))/2
+          EKE_YCXG(i,j,bi,bj) = max((EKE(i,j,1,bi,bj) 
+     &      + EKE(i-1,j,1,bi,bj))/2,0.)
 
-          Lambda_YCXG(i,j,bi,bj) = (Lambda(i,j,1,bi,bj) 
-     &      + Lambda(i-1,j,1,bi,bj))/2
+          Lambda_YCXG(i,j,bi,bj) = max((Lambda(i,j,1,bi,bj) 
+     &      + Lambda(i-1,j,1,bi,bj))/2,0.)
 
         ENDDO
       ENDDO
@@ -418,15 +401,14 @@ C--------------------------------------------------------------
      O                        gLambda_AB,
      I                        mom_StartAB, myIter, myThid )
 
-       DO j=1,sNy
-        DO i=1,sNx
+      DO j=jMin,jMax
+        DO i=iMin,iMax
           WRITE(standardMessageUnit,*)
-     &      'calc_EKE: AB gEKE(i,j)  = ', gEKE(i,j,1,bi,bj)
-
-          WRITE(standardMessageUnit,*)
-     &      'calc_EKE: AB gLambda(i,j)  = ', gLambda(i,j,1,bi,bj)
+     &      'time:  = ', myIter, 'i,j = ', i,j,
+     &      'AB gEKE(i,j) = ', gEKE(i,j,1,bi,bj), 
+     &      'AB gLambda(i,j) =', gLambda(i,j,1,bi,bj)
         ENDDO
-       ENDDO
+      ENDDO
 
 C--------------------------------------------------------------
 C     STEP FORWARD EKE AND LAMBDA
@@ -434,17 +416,12 @@ C--------------------------------------------------------------
 
       DO j=jMin,jMax
         DO i=iMin,iMax
-          EKE(i,j,1,bi,bj) = EKE(i,j,1,bi,bj)
-     &     + deltaTMom*( gEKE(i,j,1,bi,bj) )
+          EKE(i,j,1,bi,bj) = max(EKE(i,j,1,bi,bj)
+     &     + deltaTMom*( gEKE(i,j,1,bi,bj) ),0.)
 
-          Lambda(i,j,1,bi,bj) = Lambda(i,j,1,bi,bj)
-     &     + deltaTMom*( gLambda(i,j,1,bi,bj) )
+          Lambda(i,j,1,bi,bj) = max(Lambda(i,j,1,bi,bj)
+     &     + deltaTMom*( gLambda(i,j,1,bi,bj) ),0.)
 
-          WRITE(standardMessageUnit,*)
-     &      'calc_EKE: EKE(i,j)  = ', EKE(i,j,1,bi,bj)
-
-          WRITE(standardMessageUnit,*)
-     &      'calc_EKE: Lambda(i,j)  = ', Lambda(i,j,1,bi,bj)
         ENDDO
       ENDDO
 

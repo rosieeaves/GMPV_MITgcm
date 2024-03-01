@@ -50,7 +50,7 @@ C     gLambdaNm, gLambdaNm1   :: parameterixed eddy kinetic energy time tendenci
      &                   gLambdaGen, gLambdaAdv,
      &                   gLambdaDiff, gLambdar,
      &                   guNm, gvNm, gtNm, gsNm, 
-     &                   gEKENm, gLambdaNm
+     &                   gEKENm, gLambdaNm, q_YCXC
 #else /* ALLOW_ADAMSBASHFORTH_3 */
       COMMON /DYNVARS_R/
      &                   etaN,
@@ -64,7 +64,7 @@ C     gLambdaNm, gLambdaNm1   :: parameterixed eddy kinetic energy time tendenci
      &                   gLambdaGen, gLambdaAdv,
      &                   gLambdaDiff, gLambdar,
      &                   guNm1,gvNm1,gtNm1,gsNm1,
-     &                   gEKENm, gLambdaNm
+     &                   gEKENm, gLambdaNm, q_YCXC
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
       _RL  etaN  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  psiVelInt  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -96,6 +96,7 @@ C     PARAMETERIZATION
       _RL  gLambdaDiff(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  quEDDY_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  qvEDDY_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  q_YCXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     TESTING
 C     YGXC
       _RL  EKE_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

@@ -1065,6 +1065,9 @@ C --------------------------------------------------------------------
         CALL DIAGNOSTICS_FILL(enstrophyGen_YCXG,'EGYCXG  ',
      &     k,1,2,bi,bj,myThid)
 
+        CALL DIAGNOSTICS_FILL(q_YCXC,'q_YCXC  ',
+     &     k,1,2,bi,bj,myThid)
+
 
 C --------------------------------------------------------------------
 C TESTING
