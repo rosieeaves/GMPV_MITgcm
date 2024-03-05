@@ -101,8 +101,6 @@ C    Initialize arrays with zero values
 
           EKE_YGXC(i,j,bi,bj) = 0. _d 0
           Lambda_YGXC(i,j,bi,bj) = 0. _d 0
-          dqdx_YGXC(i,j,bi,bj) = 0. _d 0
-          dqdy_YGXC(i,j,bi,bj) = 0. _d 0
           dpsidx_YGXC(i,j,bi,bj) = 0. _d 0
           modGradq_YGXC(i,j,bi,bj) = 0. _d 0
           kappa_q_YGXC(i,j,bi,bj) = 0. _d 0
@@ -112,8 +110,6 @@ C    Initialize arrays with zero values
 
           EKE_YCXG(i,j,bi,bj) = 0. _d 0
           Lambda_YCXG(i,j,bi,bj) = 0. _d 0
-          dqdx_YCXG(i,j,bi,bj) = 0. _d 0
-          dqdy_YCXG(i,j,bi,bj) = 0. _d 0
           dpsidy_YCXG(i,j,bi,bj) = 0. _d 0
           modGradq_YCXG(i,j,bi,bj) = 0. _d 0
           kappa_q_YCXG(i,j,bi,bj) = 0. _d 0
@@ -241,61 +237,18 @@ C     INTERPOLATE K & Lambda TO YGXC
         ENDDO
       ENDDO
 
-C     DEFINE Q (MOVE THIS TO OUTSIDE OF TIME LOOP)
-C     Q DEFINED AT CELL CENTRE POINTS
-C     no more Infinites
-      DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-          IF (R_low(i,j,bi,bj).NE.0) THEN
-            q_YCXC(i,j,bi,bj) = fCori(i,j,bi,bj)/abs(R_low(i,j,bi,bj))
-
-          ELSE
-            q_YCXC(i,j,bi,bj) = 0.
-          END IF
-
-        ENDDO
-      ENDDO
-
       DO j=1,sNy
         DO i=1,sNx
 
-C     DQDX AND DPSIDY AT YCXG 
-
-          dqdx_YCXG(i,j,bi,bj) = (q_YCXC(i,j,bi,bj) 
-     &      - q_YCXC(i-1,j,bi,bj))/dxC(i,j,bi,bj)
-     &      *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1)
+C     DPSIDY AT YCXG 
 
           dpsidx_YGXC(i,j,bi,bj) = (psiVelInt(i+1,j,bi,bj) 
      &      - psiVelInt(i,j,bi,bj))/dxG(i,j,bi,bj)
 
-C     DQDY AND DPSIDX AT YGXC
-
-          dqdy_YGXC(i,j,bi,bj) = (q_YCXC(i,j,bi,bj) 
-     &      - q_YCXC(i,j-1,bi,bj))/dyC(i,j,bi,bj)
-     &      *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i,j-1,bi,bj))),1)
+C     DPSIDX AT YGXC
 
           dpsidy_YCXG(i,j,bi,bj) = (psiVelInt(i,j+1,bi,bj) 
      &      - psiVelInt(i,j,bi,bj))/dyG(i,j,bi,bj)
-
-        ENDDO
-      ENDDO
-
-C     4 POINT AVERAGE OF DQDX_YCXG TO YGXC AND DQDY_YGXC TO YCXG
-C     no more Nans
-C !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-C     need to check what happens at land boundaries
-C !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      DO j=1,sNy
-        DO i=1,sNx
-          dqdx_YGXC(i,j,bi,bj) = (dqdx_YCXG(i,j,bi,bj) 
-     &      + dqdx_YCXG(i+1,j,bi,bj) 
-     &      + dqdx_YCXG(i,j-1,bi,bj) 
-     &      + dqdx_YCXG(i+1,j-1,bi,bj))/4
-
-         dqdy_YCXG(i,j,bi,bj) = (dqdy_YGXC(i,j,bi,bj) 
-     &      + dqdy_YGXC(i,j+1,bi,bj) 
-     &      + dqdy_YGXC(i-1,j,bi,bj) 
-     &      + dqdy_YGXC(i-1,j+1,bi,bj))/4
 
         ENDDO
       ENDDO
