@@ -117,16 +117,14 @@ C    Initialize arrays with zero values
 
         ENDDO
       ENDDO 
-C--------------------------------------------------------------
-C     CALCULATE EKE & Lambda ADVECTION TERM AND LINEAR DRAG
-C--------------------------------------------------------------
-      WRITE(standardMessageUnit,*)
-     &      'calc_EKE: EKE  = ', EKE
 
       DO j=1,sNy
         DO i=1,sNx
           IF (abs(R_low(i,j,bi,bj)).NE.0) THEN
 
+C--------------------------------------------------------------
+C     CALCULATE EKE & Lambda ADVECTION TERM 
+C--------------------------------------------------------------
 C   H = abs(R_low)
 
             gEKEAdv(i,j,bi,bj) = (1/(2*abs(R_low(i,j,bi,bj))
@@ -159,6 +157,10 @@ C   H = abs(R_low)
      &        *(psiVelInt(i,j+1,bi,bj) - psiVelInt(i,j,bi,bj)))
      &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1)
 
+C--------------------------------------------------------------
+C     CALCULATE EKE & Lambda LINEAR DRAG
+C--------------------------------------------------------------
+
             gEKEr(i,j,bi,bj) = r_EKE(i,j,bi,bj)
      &        *EKE(i,j,1,bi,bj)
 
@@ -172,16 +174,10 @@ C   H = abs(R_low)
             gLambdar(i,j,bi,bj)=0.
 
           END IF
-            
-        ENDDO
-      ENDDO
 
 C--------------------------------------------------------------
 C     CALCULATE K AND LAMBDA DIFFUSION    
 C--------------------------------------------------------------
-
-      DO j=1,sNy
-        DO i=1,sNx
 
 C if one or both of R_low = 0 then product = 0
 C if neither R_low are zero then product > 0 => ceiling >= 1
@@ -206,18 +202,19 @@ C min => get zero when one or both of R_low is zero and one when neither is zero
      &      *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i,j-1,bi,bj))),1)
      &      -(Lambda(i,j,1,bi,bj) - Lambda(i-1,j,1,bi,bj))
      &      *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1))
-
+            
         ENDDO
       ENDDO
+
 
 C--------------------------------------------------------------
 C     CALCULATE ENERGY CONVERSION AND ENSTROPHY GENERATION
 C--------------------------------------------------------------
 
-C     INTERPOLATE K & Lambda TO YGXC
       DO j=1,sNy
         DO i=1,sNx
 
+C     INTERPOLATE K & Lambda TO YGXC
           EKE_YGXC(i,j,bi,bj) = max((EKE(i,j,1,bi,bj) 
      &      + EKE(i,j-1,1,bi,bj))/2,0.)
 
@@ -230,27 +227,13 @@ C     INTERPOLATE K & Lambda TO YGXC
           Lambda_YCXG(i,j,bi,bj) = max((Lambda(i,j,1,bi,bj) 
      &      + Lambda(i-1,j,1,bi,bj))/2,0.)
 
-        ENDDO
-      ENDDO
-
-      DO j=1,sNy
-        DO i=1,sNx
-
 C     DPSIDY AT YCXG 
-
           dpsidx_YGXC(i,j,bi,bj) = (psiVelInt(i+1,j,bi,bj) 
      &      - psiVelInt(i,j,bi,bj))/dxG(i,j,bi,bj)
 
 C     DPSIDX AT YGXC
-
           dpsidy_YCXG(i,j,bi,bj) = (psiVelInt(i,j+1,bi,bj) 
      &      - psiVelInt(i,j,bi,bj))/dyG(i,j,bi,bj)
-
-        ENDDO
-      ENDDO
-
-      DO j=1,sNy
-        DO i=1,sNx
 
 C     MOG(GRAD(Q)), KAPPA_Q, BAR(Q'U'), BAR(Q'U')*DPSIDX (ENERGY CONVERSION) 
 C     and BAR(Q'U')*DQDX (ENSTROPHY GENERATION)AT YGXC
