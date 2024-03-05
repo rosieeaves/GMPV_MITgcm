@@ -102,7 +102,6 @@ C    Initialize arrays with zero values
           EKE_YGXC(i,j,bi,bj) = 0. _d 0
           Lambda_YGXC(i,j,bi,bj) = 0. _d 0
           dpsidx_YGXC(i,j,bi,bj) = 0. _d 0
-          modGradq_YGXC(i,j,bi,bj) = 0. _d 0
           kappa_q_YGXC(i,j,bi,bj) = 0. _d 0
           energyConv_YGXC(i,j,bi,bj) = 0. _d 0
           enstrophyGen_YGXC(i,j,bi,bj) = 0. _d 0
@@ -111,7 +110,6 @@ C    Initialize arrays with zero values
           EKE_YCXG(i,j,bi,bj) = 0. _d 0
           Lambda_YCXG(i,j,bi,bj) = 0. _d 0
           dpsidy_YCXG(i,j,bi,bj) = 0. _d 0
-          modGradq_YCXG(i,j,bi,bj) = 0. _d 0
           kappa_q_YCXG(i,j,bi,bj) = 0. _d 0
           energyConv_YCXG(i,j,bi,bj) = 0. _d 0
           enstrophyGen_YCXG(i,j,bi,bj) = 0. _d 0
@@ -216,8 +214,6 @@ C--------------------------------------------------------------
 C     CALCULATE ENERGY CONVERSION AND ENSTROPHY GENERATION
 C--------------------------------------------------------------
 
-
-
 C     INTERPOLATE K & Lambda TO YGXC
       DO j=1,sNy
         DO i=1,sNx
@@ -260,9 +256,6 @@ C     MOG(GRAD(Q)), KAPPA_Q, BAR(Q'U'), BAR(Q'U')*DPSIDX (ENERGY CONVERSION)
 C     and BAR(Q'U')*DQDX (ENSTROPHY GENERATION)AT YGXC
 C     no more NaNs in first time step
 
-          modGradq_YGXC(i,j,bi,bj) = max(sqrt(dqdx_YGXC(i,j,bi,bj)**2 
-     &      + dqdy_YGXC(i,j,bi,bj)**2),1.E-16)
-
           kappa_q_YGXC(i,j,bi,bj) = (2*gamma_q(i,j,bi,bj)
      &      *sqrt(EKE_YGXC(i,j,bi,bj)*Lambda_YGXC(i,j,bi,bj)))
      &      /modGradq_YGXC(i,j,bi,bj)
@@ -280,14 +273,10 @@ C     no more NaNs in first time step
 C     MOG(GRAD(Q)), KAPPA_Q, BAR(Q'V') AND BAR(Q'V')*DPSIDY (ENERGY CONVERSION) 
 C     and BAR(Q'V')*DQDY (ENSTROPHY GENERATION)AT YCXG
 
-          modGradq_YCXG(i,j,bi,bj) = max(sqrt(dqdx_YCXG(i,j,bi,bj)**2 
-     &      + dqdy_YCXG(i,j,bi,bj)**2),1.E-16)
-
           kappa_q_YCXG(i,j,bi,bj) = (2*gamma_q(i,j,bi,bj)
      &      *sqrt(EKE_YCXG(i,j,bi,bj)*Lambda_YCXG(i,j,bi,bj)))
      &      /modGradq_YCXG(i,j,bi,bj)
      &      *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1)
-          
 
           qvEDDY_YCXG(i,j,bi,bj) = -kappa_q_YCXG(i,j,bi,bj)
      &      *dqdy_YCXG(i,j,bi,bj)
