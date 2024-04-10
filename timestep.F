@@ -151,9 +151,9 @@ C -----------------------------------------------------------------
       DO j=jMin,jMax
         DO i=iMin,iMax
           gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj) 
-     &      + drF(k)*qvEDDY_YCXG(i,j,bi,bj)
+     &      + hFacW(i,j,k,bi,bj)*drF(k)*qvEDDY_YCXG(i,j,bi,bj)
           gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj) 
-     &      - drF(k)*quEDDY_YGXC(i,j,bi,bj)
+     &      - hFacS(i,j,k,bi,bj)*drF(k)*quEDDY_YGXC(i,j,bi,bj)
         ENDDO
       ENDDO
 
