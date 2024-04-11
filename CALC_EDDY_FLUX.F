@@ -121,6 +121,23 @@ C    Initialize arrays with zero values
         ENDDO
       ENDDO 
 
+C--------------------------------------------------------------
+C     DEPTH INTEGRAL OF U AND V FOR ENERGY CONVERSION
+C     AND ADVECTION
+C--------------------------------------------------------------
+      DO j=1,sNy
+        DO i=1,sNx
+          DO k=1,Nr
+            uVelInt(i,j,bi,bj) = uVelInt(i,j,bi,bj) + 
+     &          hFacW(i,j,k,bi,bj)*drF(k)*uVel(i,j,k,bi,bj)
+
+            vVelInt(i,j,bi,bj) = vVelInt(i,j,bi,bj) + 
+     &          hFacS(i,j,k,bi,bj)*drF(k)*vVel(i,j,k,bi,bj)
+          ENDDO
+        ENDDO
+      ENDDO
+
+
       DO j=1,sNy
         DO i=1,sNx
           IF (abs(R_low(i,j,bi,bj)).NE.0) THEN
@@ -130,35 +147,45 @@ C     CALCULATE EKE & Lambda ADVECTION TERM
 C--------------------------------------------------------------
 C   H = abs(R_low)
 
-            gEKEAdv(i,j,bi,bj) = (1/(2*abs(R_low(i,j,bi,bj))
+            gEKEAdv(i,j,bi,bj) = (1/(4*abs(R_low(i,j,bi,bj))
      &        *rA(i,j,bi,bj)))
-     &        *((EKE(i,j,1,bi,bj) + EKE(i,j+1,1,bi,bj))
-     &        *(psiVelInt(i+1,j+1,bi,bj) - psiVelInt(i,j+1,bi,bj)) 
-     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i,j+1,bi,bj))),1)
-     &        - (EKE(i,j,1,bi,bj) + EKE(i+1,j,1,bi,bj))
-     &        *(psiVelInt(i+1,j+1,bi,bj) - psiVelInt(i+1,j,bi,bj))
-     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i+1,j,bi,bj))),1)
-     &        - (EKE(i,j,1,bi,bj) + EKE(i,j-1,1,bi,bj))
-     &        *(psiVelInt(i+1,j,bi,bj) - psiVelInt(i,j,bi,bj)) 
-     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i,j-1,bi,bj))),1)
-     &        + (EKE(i,j,1,bi,bj) + EKE(i-1,j,1,bi,bj))
-     &        *(psiVelInt(i,j+1,bi,bj) - psiVelInt(i,j,bi,bj)))
-     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1)
 
-            gLambdaAdv(i,j,bi,bj) = (1/(2*abs(R_low(i,j,bi,bj))
-     &        *rA(i,j,bi,bj)))
-     &        *((Lambda(i,j,1,bi,bj) + Lambda(i,j+1,1,bi,bj))
-     &        *(psiVelInt(i+1,j+1,bi,bj) - psiVelInt(i,j+1,bi,bj)) 
+     &        *((EKE(i,j,1,bi,bj) + EKE(i,j+1,1,bi,bj))
+     &        *vVelInt(i,j+1,bi,bj)*dxG(i,j+1,bi,bj)
      &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i,j+1,bi,bj))),1)
-     &        - (Lambda(i,j,1,bi,bj) + Lambda(i+1,j,1,bi,bj))
-     &        *(psiVelInt(i+1,j+1,bi,bj) - psiVelInt(i+1,j,bi,bj))
+
+     &        + (EKE(i,j,1,bi,bj) + EKE(i+1,j,1,bi,bj))
+     &        *uVelInt(i+1,j,bi,bj)*dyG(i+1,j,bi,bj)
      &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i+1,j,bi,bj))),1)
-     &        - (Lambda(i,j,1,bi,bj) + Lambda(i,j-1,1,bi,bj))
-     &        *(psiVelInt(i+1,j,bi,bj) - psiVelInt(i,j,bi,bj)) 
+
+     &        - (EKE(i,j,1,bi,bj) + EKE(i,j-1,1,bi,bj))
+     &        *vVelInt(i,j,bi,bj)*dxG(i,j,bi,bj)
      &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i,j-1,bi,bj))),1)
-     &        + (Lambda(i,j,1,bi,bj) + Lambda(i-1,j,1,bi,bj))
-     &        *(psiVelInt(i,j+1,bi,bj) - psiVelInt(i,j,bi,bj)))
-     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1)
+
+     &        - (EKE(i,j,1,bi,bj) + EKE(i-1,j,1,bi,bj))
+     &        *uVelInt(i,j,bi,bj)*dyG(i,j,bi,bj)
+     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1))
+
+            gLambdaAdv(i,j,bi,bj) = (1/(4*abs(R_low(i,j,bi,bj))
+     &        *rA(i,j,bi,bj)))
+
+     &        *((Lambda(i,j,1,bi,bj) + Lambda(i,j+1,1,bi,bj))
+     &        *vVelInt(i,j+1,bi,bj)*dxG(i,j+1,bi,bj)
+     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i,j+1,bi,bj))),1)
+
+     &        + (Lambda(i,j,1,bi,bj) + Lambda(i+1,j,1,bi,bj))
+     &        *uVelInt(i+1,j,bi,bj)*dyG(i+1,j,bi,bj)
+     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i+1,j,bi,bj))),1)
+
+     &        - (Lambda(i,j,1,bi,bj) + Lambda(i,j-1,1,bi,bj))
+     &        *vVelInt(i,j,bi,bj)*dxG(i,j,bi,bj)
+     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i,j-1,bi,bj))),1)
+
+     &        - (Lambda(i,j,1,bi,bj) + Lambda(i-1,j,1,bi,bj))
+     &        *uVelInt(i,j,bi,bj)*dyG(i,j,bi,bj)
+     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1))
+
+
 
 C--------------------------------------------------------------
 C     CALCULATE EKE & Lambda LINEAR DRAG
@@ -223,20 +250,6 @@ C min => get zero when one or both of R_low is zero and one when neither is zero
         ENDDO
       ENDDO
 
-C--------------------------------------------------------------
-C     DEPTH INTEGRAL OF U AND V FOR ENERGY CONVERSION
-C--------------------------------------------------------------
-      DO j=1,sNy
-        DO i=1,sNx
-          DO k=1,Nr
-            uVelInt(i,j,bi,bj) = uVelInt(i,j,bi,bj) + 
-     &          hFacW(i,j,k,bi,bj)*drF(k)*uVel(i,j,k,bi,bj)
-
-            vVelInt(i,j,bi,bj) = vVelInt(i,j,bi,bj) + 
-     &          hFacS(i,j,k,bi,bj)*drF(k)*vVel(i,j,k,bi,bj)
-          ENDDO
-        ENDDO
-      ENDDO
 
 
 C--------------------------------------------------------------

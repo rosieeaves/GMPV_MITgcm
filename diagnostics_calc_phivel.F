@@ -87,17 +87,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF (debugMode) CALL DEBUG_ENTER('DIAGNOSTICS_CALC_PHIVEL',myThid)
 #endif
 
-C    RESEAT psiVelTran to zero before k loop
-      DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-              psiVelInt(i,j,bi,bj) = 0. _d 0
-            ENDDO
-          ENDDO
-        ENDDO
-      ENDDO
-
       DO ks = 1,nlevels(listId)
         k = NINT(levs(ks,listId))
 C--   Solve for velocity potential for each level:
@@ -292,18 +281,6 @@ C-    Compte divergence-free transport:
      O                         psiVel, psiLoc,
      I                         prtFirstCall, myTime, myIter, myThid )
           
-       
-C      Add psiVel*dz to psiVelInt
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-            DO j=1-OLy,sNy+OLy
-              DO i=1-OLx,sNx+OLx
-                psiVelInt(i,j,bi,bj) = psiVelInt(i,j,bi,bj) 
-     &        + psiVel(i,j,bi,bj)
-              ENDDO
-            ENDDO
-          ENDDO
-        ENDDO
 
         _BEGIN_MASTER( myThid)
         IF ( useCubedSphereExchange .AND.
@@ -349,8 +326,6 @@ C-    Put the results back in qtmp[1,2]
 
       ENDDO
 
-      WRITE(standardMessageUnit,*)
-     &      'calc_phivel: psiVelInt = ', psiVelInt
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('DIAGNOSTICS_CALC_PHIVEL',myThid)

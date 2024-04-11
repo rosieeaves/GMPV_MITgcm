@@ -41,7 +41,7 @@ C     gLambdaNm, gLambdaNm1   :: parameterixed eddy kinetic energy time tendenci
       COMMON /DYNVARS_R/
      &                   etaN,
      &                   uVel,vVel,wVel,theta,salt,
-     &                   EKE,psiVelInt,Lambda,
+     &                   EKE,Lambda,
      &                   gamma_q,r_EKE,r_Lambda,mu,
      &                   quEDDY_YGXC,qvEDDY_YCXG,
      &                   gU,   gV, gEKE, gLambda,
@@ -59,7 +59,7 @@ C     gLambdaNm, gLambdaNm1   :: parameterixed eddy kinetic energy time tendenci
       COMMON /DYNVARS_R/
      &                   etaN,
      &                   uVel,vVel,wVel,theta,salt,
-     &                   EKE,psiVelInt,Lambda,
+     &                   EKE,Lambda,
      &                   gamma_q,r_EKE,r_Lambda,mu,
      &                   quEDDY_YGXC,qvEDDY_YCXG,
      &                   gU,   gV, gEKE, gLambda,
@@ -75,7 +75,6 @@ C     gLambdaNm, gLambdaNm1   :: parameterixed eddy kinetic energy time tendenci
      &                   uVelInt, vVelInt
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
       _RL  etaN  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  psiVelInt  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  uVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  vVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  wVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
