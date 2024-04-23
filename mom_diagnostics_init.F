@@ -2,7 +2,7 @@
 
 CBOP
 C     !ROUTINE: MOM_DIAGNOSTICS_INIT
-C     !INTERFACE: 
+C     !INTERFACE:
       SUBROUTINE MOM_DIAGNOSTICS_INIT( myThid )
 
 C     !DESCRIPTION:
@@ -537,8 +537,6 @@ C --------------------------------------------------------------------
 C --------------------------------------------------------------------
 C TESTING
 C --------------------------------------------------------------------
-
-
 
       diagName  = 'Strain  '
       diagTitle = 'Horizontal Strain of Horizontal Velocities'
