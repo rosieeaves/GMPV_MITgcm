@@ -955,6 +955,9 @@ C       custom: parameterized EKE drag
         CALL DIAGNOSTICS_FILL(gEKEr,'gEKEr   ',k,1,2,bi,bj,myThid)
 C       custom: parameterized EKE diffusion
         CALL DIAGNOSTICS_FILL(gEKEDiff,'gEKEDiff',k,1,2,bi,bj,myThid)
+C     SOURCE TERM
+C       custom: parameterized EKE source term
+        CALL DIAGNOSTICS_FILL(gEKESource,'gEKESour',k,1,2,bi,bj,myThid)
 
 
 C       custom: parameterized Lambda

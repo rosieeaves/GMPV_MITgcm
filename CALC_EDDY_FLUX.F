@@ -60,6 +60,14 @@ C     gEKEDiff    :: EKE tendency from diffusion
 C     YCXC
       _RL  gEKE_AB(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  gLambda_AB(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C    VARIABLES FOR SOURCE TERM
+      _RL  b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  dbdx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  dbdy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  dbdz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  grad_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  flux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  flux_zInt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C      _RL  q_YCXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     YGXC
 C      _RL  EKE_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -121,13 +129,27 @@ C    Initialize arrays with zero values
         ENDDO
       ENDDO 
 
+      DO k=1,Nr
+        DO j=1,sNy
+          DO i=1,sNx
+            b(i,j,k,bi,bj) = 0. _d 0
+            dbdx(i,j,k,bi,bj) = 0. _d 0
+            dbdy(i,j,k,bi,bj) = 0. _d 0
+            dbdz(i,j,k,bi,bj) = 0. _d 0
+            grad_b(i,j,k,bi,bj) = 0. _d 0
+            flux(i,j,k,bi,bj) = 0. _d 0
+            flux_zInt(i,j,bi,bj) = 0. _d 0
+           ENDDO
+        ENDDO
+      ENDDO
+
 C--------------------------------------------------------------
 C     DEPTH INTEGRAL OF U AND V FOR ENERGY CONVERSION
 C     AND ADVECTION
 C--------------------------------------------------------------
-      DO j=1,sNy
-        DO i=1,sNx
-          DO k=1,Nr
+      DO k=1,Nr
+        DO j=1,sNy
+          DO i=1,sNx
             uVelInt(i,j,bi,bj) = uVelInt(i,j,bi,bj) + 
      &          hFacW(i,j,k,bi,bj)*drF(k)*uVel(i,j,k,bi,bj)
 
@@ -334,11 +356,20 @@ C Calculate b
       DO k=1,Nr
         DO j=1,sNy
           DO i=1,sNx
+            WRITE(standardMessageUnit,*)
+     &      'i,j,k:  = ', i,j,k
+            WRITE(standardMessageUnit,*)
+     &      'rho(i,j,k,bi,bj):  = ', rhoInSitu(i,j,k,bi,bj)
             b(i,j,k,bi,bj) = gravity*(rhoInSitu(i,j,k,bi,bj) 
      &        - rhoConst)/rhoConst
+            WRITE(standardMessageUnit,*)
+     &      'b(i,j,k,bi,bj):  = ', b(i,j,k,bi,bj)
           ENDDO
         ENDDO
       ENDDO
+
+      WRITE(standardMessageUnit,*)
+     &      'b:  = ', b
      
 C calculate dbdx, dbdy, dbdz except at top and bottom
       DO k=2,Nr-1
@@ -353,6 +384,7 @@ C calculate dbdx, dbdy, dbdz except at top and bottom
           ENDDO
         ENDDO
       ENDDO
+
 C calculate for k = 1 and k = Nr
       DO j=1,sNy
         DO i=1,sNx
@@ -378,10 +410,22 @@ C calculate |grad b| and flux = bar(b'w')
       DO k=1,Nr
         DO j=1,sNy
           DO i=1,sNx
+            WRITE(standardMessageUnit,*)
+     &      'i,j,k:  = ', i,j,k
+            WRITE(standardMessageUnit,*)
+     &      'dbdx(i,j,k,bi,bj):  = ', dbdx(i,j,k,bi,bj)
+            WRITE(standardMessageUnit,*)
+     &      'dbdy(i,j,k,bi,bj):  = ', dbdy(i,j,k,bi,bj)
+          
             grad_b(i,j,k,bi,bj) = SQRT(dbdx(i,j,k,bi,bj)**2
      &        + dbdy(i,j,k,bi,bj)**2)
+
+            WRITE(standardMessageUnit,*)
+     &      'grad_b(i,j,k,bi,bj):  = ', grad_b(i,j,k,bi,bj)
             flux(i,j,k,bi,bj) = (K*grad_b(i,j,k,bi,bj))/
      &        dbdz(i,j,k,bi,bj)
+            WRITE(standardMessageUnit,*)
+     &      'flux(i,j,k,bi,bj):  = ', flux(i,j,k,bi,bj)
           ENDDO
         ENDDO
       ENDDO
@@ -396,13 +440,23 @@ C calculate depth integral of flux
         ENDDO
       ENDDO
 
+      WRITE(standardMessageUnit,*)
+     &      'flux_zInt:  = ', flux_zInt
+
 C calculate EKE source term = depth average of flux term
       DO j=1,sNy
         DO i=1,sNx
-          gEKESource(i,j,bi,bj) = flux_zInt(i,j,bi,bj)/
-     &      abs(R_low(i,j,bi,bj))
+          IF (abs(R_low(i,j,bi,bj)).NE.0) THEN
+            gEKESource(i,j,bi,bj) = flux_zInt(i,j,bi,bj)/
+     &        abs(R_low(i,j,bi,bj))
+          ELSE
+            gEKESource(i,j,bi,bj) = 0
+          END IF   
         ENDDO
       ENDDO
+
+      WRITE(standardMessageUnit,*)
+     &      'gEKESource:  = ', gEKESource
 
 C--------------------------------------------------------------
 C     CALCULATE TOTAL EKE AND LAMBDA TENDENCY  
@@ -423,6 +477,9 @@ C--------------------------------------------------------------
 
         ENDDO
       ENDDO
+
+      WRITE(standardMessageUnit,*)
+     &      'gEKE:  = ', gEKE
 
 
 C--------------------------------------------------------------

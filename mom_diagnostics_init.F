@@ -397,6 +397,20 @@ C     custom: parameterized bar(q'v')
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+
+C --------------------------------------------------------------------
+C SOURCE TERM
+C --------------------------------------------------------------------
+
+C     custom: parameterized gEKESource
+
+      diagName  = 'gEKESour'
+      diagTitle = 'parameterized EKE source term'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
 C --------------------------------------------------------------------
 C TESTING
 C --------------------------------------------------------------------

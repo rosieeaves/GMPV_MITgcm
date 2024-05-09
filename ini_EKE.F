@@ -41,7 +41,7 @@ C
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
           IF (R_low(i,j,bi,bj).NE.0) THEN
-            EKE(i,j,1,bi,bj)=1.5E-4
+            EKE(i,j,1,bi,bj)=1.E-4
           ELSE 
             EKE(i,j,1,bi,bj)=0.
           END IF
