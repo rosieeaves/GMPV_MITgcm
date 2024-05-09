@@ -328,6 +328,83 @@ C !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       ENDDO 
 
 C--------------------------------------------------------------
+C     CALCULATE EKE SOURCE TERM 
+C--------------------------------------------------------------
+C Calculate b
+      DO k=1,Nr
+        DO j=1,sNy
+          DO i=1,sNx
+            b(i,j,k,bi,bj) = gravity*(rhoInSitu(i,j,k,bi,bj) 
+     &        - rhoConst)/rhoConst
+          ENDDO
+        ENDDO
+      ENDDO
+     
+C calculate dbdx, dbdy, dbdz except at top and bottom
+      DO k=2,Nr-1
+        DO j=1,sNy
+          DO i=1,sNx
+            dbdx(i,j,k,bi,bj) = (b(i+1,j,k,bi,bj) - 
+     &        b(i-1,j,k,bi,bj))/(2*dxC(i,j,bi,bj))
+            dbdy(i,j,k,bi,bj) = (b(i,j+1,k,bi,bj) - 
+     &        b(i,j-1,k,bi,bj))/(2*dyC(i,j,bi,bj))
+            dbdz(i,j,k,bi,bj) = (b(i,j,k+1,bi,bj) - 
+     &        b(i,j,k-1,bi,bj))/(drC(k) + drC(k+1))
+          ENDDO
+        ENDDO
+      ENDDO
+C calculate for k = 1 and k = Nr
+      DO j=1,sNy
+        DO i=1,sNx
+          dbdx(i,j,1,bi,bj) = (b(i+1,j,1,bi,bj) - 
+     &      b(i-1,j,1,bi,bj))/(2*dxC(i,j,bi,bj))
+          dbdx(i,j,Nr,bi,bj) = (b(i+1,j,Nr,bi,bj) - 
+     &      b(i-1,j,Nr,bi,bj))/(2*dxC(i,j,bi,bj))
+
+          dbdy(i,j,1,bi,bj) = (b(i,j+1,1,bi,bj) - 
+     &      b(i,j-1,1,bi,bj))/(2*dyC(i,j,bi,bj))
+          dbdy(i,j,Nr,bi,bj) = (b(i,j+1,Nr,bi,bj) - 
+     &      b(i,j-1,Nr,bi,bj))/(2*dyC(i,j,bi,bj))
+
+          dbdz(i,j,1,bi,bj) = (b(i,j,2,bi,bj) - 
+     &      b(i,j,1,bi,bj))/(drC(1))
+
+          dbdz(i,j,Nr,bi,bj) = (b(i,j,Nr,bi,bj) - 
+     &      b(i,j,Nr-1,bi,bj))/(drC(Nr))
+        ENDDO
+      ENDDO
+
+C calculate |grad b| and flux = bar(b'w')
+      DO k=1,Nr
+        DO j=1,sNy
+          DO i=1,sNx
+            grad_b(i,j,k,bi,bj) = SQRT(dbdx(i,j,k,bi,bj)**2
+     &        + dbdy(i,j,k,bi,bj)**2)
+            flux(i,j,k,bi,bj) = (K*grad_b(i,j,k,bi,bj))/
+     &        dbdz(i,j,k,bi,bj)
+          ENDDO
+        ENDDO
+      ENDDO
+
+C calculate depth integral of flux
+      DO k=1,Nr
+        DO j=1,sNy
+          DO i=1,sNx
+            flux_zInt(i,j,bi,bj) = flux_zInt(i,j,bi,bj) + 
+     &        flux(i,j,k,bi,bj)*drF(k)*hFacC(i,j,k,bi,bj)
+          ENDDO
+        ENDDO
+      ENDDO
+
+C calculate EKE source term = depth average of flux term
+      DO j=1,sNy
+        DO i=1,sNx
+          gEKESource(i,j,bi,bj) = flux_zInt(i,j,bi,bj)/
+     &      abs(R_low(i,j,bi,bj))
+        ENDDO
+      ENDDO
+
+C--------------------------------------------------------------
 C     CALCULATE TOTAL EKE AND LAMBDA TENDENCY  
 C--------------------------------------------------------------
 
@@ -337,6 +414,7 @@ C--------------------------------------------------------------
      &      + gEKEConv(i,j,bi,bj) 
      &      - gEKEr(i,j,bi,bj) 
      &      + gEKEDiff(i,j,bi,bj)
+     &      + gEKESource(i,j,bi,bj)
 
           gLambda(i,j,1,bi,bj) = -gLambdaAdv(i,j,bi,bj) 
      &      - gLambdaGen(i,j,bi,bj) 
