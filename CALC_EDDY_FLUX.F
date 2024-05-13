@@ -68,6 +68,8 @@ C    VARIABLES FOR SOURCE TERM
       _RL  grad_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  flux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  flux_zInt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  kappa_GM
+      _RL  kappa_DIA
 C      _RL  q_YCXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     YGXC
 C      _RL  EKE_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -142,6 +144,10 @@ C    Initialize arrays with zero values
            ENDDO
         ENDDO
       ENDDO
+
+C Set kappa_GM value
+      kappa_GM = 1000.
+      kappa_DIA = 0.
 
 C--------------------------------------------------------------
 C     DEPTH INTEGRAL OF U AND V FOR ENERGY CONVERSION
@@ -356,14 +362,8 @@ C Calculate b
       DO k=1,Nr
         DO j=1,sNy
           DO i=1,sNx
-            WRITE(standardMessageUnit,*)
-     &      'i,j,k:  = ', i,j,k
-            WRITE(standardMessageUnit,*)
-     &      'rho(i,j,k,bi,bj):  = ', rhoInSitu(i,j,k,bi,bj)
             b(i,j,k,bi,bj) = gravity*(rhoInSitu(i,j,k,bi,bj) 
      &        - rhoConst)/rhoConst
-            WRITE(standardMessageUnit,*)
-     &      'b(i,j,k,bi,bj):  = ', b(i,j,k,bi,bj)
           ENDDO
         ENDDO
       ENDDO
@@ -406,23 +406,25 @@ C calculate for k = 1 and k = Nr
         ENDDO
       ENDDO
 
+      WRITE(standardMessageUnit,*)
+     &      'dbdx:  = ', dbdx
+
+      WRITE(standardMessageUnit,*)
+     &      'dbdy:  = ', dbdy
+
+      WRITE(standardMessageUnit,*)
+     &      'dbdz:  = ', dbdz
+
 C calculate |grad b| and flux = bar(b'w')
       DO k=1,Nr
         DO j=1,sNy
           DO i=1,sNx
-            WRITE(standardMessageUnit,*)
-     &      'i,j,k:  = ', i,j,k
-            WRITE(standardMessageUnit,*)
-     &      'dbdx(i,j,k,bi,bj):  = ', dbdx(i,j,k,bi,bj)
-            WRITE(standardMessageUnit,*)
-     &      'dbdy(i,j,k,bi,bj):  = ', dbdy(i,j,k,bi,bj)
-          
             grad_b(i,j,k,bi,bj) = SQRT(dbdx(i,j,k,bi,bj)**2
      &        + dbdy(i,j,k,bi,bj)**2)
 
             WRITE(standardMessageUnit,*)
      &      'grad_b(i,j,k,bi,bj):  = ', grad_b(i,j,k,bi,bj)
-            flux(i,j,k,bi,bj) = (K*grad_b(i,j,k,bi,bj))/
+            flux(i,j,k,bi,bj) = (kappa_GM*grad_b(i,j,k,bi,bj))/
      &        dbdz(i,j,k,bi,bj)
             WRITE(standardMessageUnit,*)
      &      'flux(i,j,k,bi,bj):  = ', flux(i,j,k,bi,bj)
