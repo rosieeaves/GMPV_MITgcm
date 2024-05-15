@@ -61,13 +61,13 @@ C     YCXC
       _RL  gEKE_AB(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  gLambda_AB(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C    VARIABLES FOR SOURCE TERM
-      _RL  b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  dbdx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  dbdy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  dbdz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  grad_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  flux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  flux_zInt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C      _RL  b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+C      _RL  dbdx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+C      _RL  dbdy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+C      _RL  dbdz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+C      _RL  grad_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+C      _RL  flux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+C      _RL  flux_zInt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  kappa_GM
       _RL  kappa_DIA
 C      _RL  q_YCXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -134,13 +134,13 @@ C    Initialize arrays with zero values
       DO k=1,Nr
         DO j=1,sNy
           DO i=1,sNx
-            b(i,j,k,bi,bj) = 0. _d 0
-            dbdx(i,j,k,bi,bj) = 0. _d 0
-            dbdy(i,j,k,bi,bj) = 0. _d 0
-            dbdz(i,j,k,bi,bj) = 0. _d 0
-            grad_b(i,j,k,bi,bj) = 0. _d 0
-            flux(i,j,k,bi,bj) = 0. _d 0
-            flux_zInt(i,j,bi,bj) = 0. _d 0
+            b_EKESource(i,j,k,bi,bj) = 0. _d 0
+            dbdx_EKESource(i,j,k,bi,bj) = 0. _d 0
+            dbdy_EKESource(i,j,k,bi,bj) = 0. _d 0
+            dbdz_EKESource(i,j,k,bi,bj) = 0. _d 0
+            grad_b_EKESource(i,j,k,bi,bj) = 0. _d 0
+            flux_EKESource(i,j,k,bi,bj) = 0. _d 0
+            flux_zInt_EKESource(i,j,bi,bj) = 0. _d 0
            ENDDO
         ENDDO
       ENDDO
@@ -362,25 +362,28 @@ C Calculate b
       DO k=1,Nr
         DO j=1,sNy
           DO i=1,sNx
-            b(i,j,k,bi,bj) = gravity*(rhoInSitu(i,j,k,bi,bj) 
-     &        - rhoConst)/rhoConst
+            b_EKESource(i,j,k,bi,bj) = gravity*
+     &      (rhoInSitu(i,j,k,bi,bj) - rhoConst)/rhoConst
           ENDDO
         ENDDO
       ENDDO
-
-      WRITE(standardMessageUnit,*)
-     &      'b:  = ', b
      
 C calculate dbdx, dbdy, dbdz except at top and bottom
       DO k=2,Nr-1
         DO j=1,sNy
           DO i=1,sNx
-            dbdx(i,j,k,bi,bj) = (b(i+1,j,k,bi,bj) - 
-     &        b(i-1,j,k,bi,bj))/(2*dxC(i,j,bi,bj))
-            dbdy(i,j,k,bi,bj) = (b(i,j+1,k,bi,bj) - 
-     &        b(i,j-1,k,bi,bj))/(2*dyC(i,j,bi,bj))
-            dbdz(i,j,k,bi,bj) = (b(i,j,k+1,bi,bj) - 
-     &        b(i,j,k-1,bi,bj))/(drC(k) + drC(k+1))
+            dbdx_EKESource(i,j,k,bi,bj) = 
+     &        (b_EKESource(i+1,j,k,bi,bj) - 
+     &        b_EKESource(i-1,j,k,bi,bj))/(2*
+     &        dxC(i,j,bi,bj))
+            dbdy_EKESource(i,j,k,bi,bj) = 
+     &        (b_EKESource(i,j+1,k,bi,bj) - 
+     &        b_EKESource(i,j-1,k,bi,bj))/(2*
+     &        dyC(i,j,bi,bj))
+            dbdz_EKESource(i,j,k,bi,bj) = 
+     &        (b_EKESource(i,j,k+1,bi,bj) - 
+     &        b_EKESource(i,j,k-1,bi,bj))/(drC(k)
+     &        + drC(k+1))
           ENDDO
         ENDDO
       ENDDO
@@ -388,46 +391,46 @@ C calculate dbdx, dbdy, dbdz except at top and bottom
 C calculate for k = 1 and k = Nr
       DO j=1,sNy
         DO i=1,sNx
-          dbdx(i,j,1,bi,bj) = (b(i+1,j,1,bi,bj) - 
-     &      b(i-1,j,1,bi,bj))/(2*dxC(i,j,bi,bj))
-          dbdx(i,j,Nr,bi,bj) = (b(i+1,j,Nr,bi,bj) - 
-     &      b(i-1,j,Nr,bi,bj))/(2*dxC(i,j,bi,bj))
+          dbdx_EKESource(i,j,1,bi,bj) = 
+     &      (b_EKESource(i+1,j,1,bi,bj) - 
+     &      b_EKESource(i-1,j,1,bi,bj))/(2*
+     &      dxC(i,j,bi,bj))
+          dbdx_EKESource(i,j,Nr,bi,bj) = 
+     &      (b_EKESource(i+1,j,Nr,bi,bj) - 
+     &      b_EKESource(i-1,j,Nr,bi,bj))/(2*
+     &      dxC(i,j,bi,bj))
 
-          dbdy(i,j,1,bi,bj) = (b(i,j+1,1,bi,bj) - 
-     &      b(i,j-1,1,bi,bj))/(2*dyC(i,j,bi,bj))
-          dbdy(i,j,Nr,bi,bj) = (b(i,j+1,Nr,bi,bj) - 
-     &      b(i,j-1,Nr,bi,bj))/(2*dyC(i,j,bi,bj))
+          dbdy_EKESource(i,j,1,bi,bj) = 
+     &      (b_EKESource(i,j+1,1,bi,bj) - 
+     &      b_EKESource(i,j-1,1,bi,bj))/(2*
+     &      dyC(i,j,bi,bj))
+          dbdy_EKESource(i,j,Nr,bi,bj) = 
+     &      (b_EKESource(i,j+1,Nr,bi,bj) - 
+     &      b_EKESource(i,j-1,Nr,bi,bj))/(2*
+     &      dyC(i,j,bi,bj))
 
-          dbdz(i,j,1,bi,bj) = (b(i,j,2,bi,bj) - 
-     &      b(i,j,1,bi,bj))/(drC(1))
+          dbdz_EKESource(i,j,1,bi,bj) = 
+     &      (b_EKESource(i,j,2,bi,bj) - 
+     &      b_EKESource(i,j,1,bi,bj))/(drC(1))
 
-          dbdz(i,j,Nr,bi,bj) = (b(i,j,Nr,bi,bj) - 
-     &      b(i,j,Nr-1,bi,bj))/(drC(Nr))
+          dbdz_EKESource(i,j,Nr,bi,bj) = 
+     &      (b_EKESource(i,j,Nr,bi,bj) - 
+     &      b_EKESource(i,j,Nr-1,bi,bj))/(drC(Nr))
         ENDDO
       ENDDO
-
-      WRITE(standardMessageUnit,*)
-     &      'dbdx:  = ', dbdx
-
-      WRITE(standardMessageUnit,*)
-     &      'dbdy:  = ', dbdy
-
-      WRITE(standardMessageUnit,*)
-     &      'dbdz:  = ', dbdz
 
 C calculate |grad b| and flux = bar(b'w')
       DO k=1,Nr
         DO j=1,sNy
           DO i=1,sNx
-            grad_b(i,j,k,bi,bj) = SQRT(dbdx(i,j,k,bi,bj)**2
-     &        + dbdy(i,j,k,bi,bj)**2)
+            grad_b_EKESource(i,j,k,bi,bj) = 
+     &        (SQRT(dbdx_EKESource(i,j,k,bi,bj)**2
+     &        + dbdy_EKESource(i,j,k,bi,bj)**2))**2
 
-            WRITE(standardMessageUnit,*)
-     &      'grad_b(i,j,k,bi,bj):  = ', grad_b(i,j,k,bi,bj)
-            flux(i,j,k,bi,bj) = (kappa_GM*grad_b(i,j,k,bi,bj))/
-     &        dbdz(i,j,k,bi,bj)
-            WRITE(standardMessageUnit,*)
-     &      'flux(i,j,k,bi,bj):  = ', flux(i,j,k,bi,bj)
+            flux_EKESource(i,j,k,bi,bj) = 
+     &      (kappa_GM*grad_b_EKESource(i,j,k,bi,bj))/
+     &        dbdz_EKESource(i,j,k,bi,bj)
+
           ENDDO
         ENDDO
       ENDDO
@@ -436,29 +439,26 @@ C calculate depth integral of flux
       DO k=1,Nr
         DO j=1,sNy
           DO i=1,sNx
-            flux_zInt(i,j,bi,bj) = flux_zInt(i,j,bi,bj) + 
-     &        flux(i,j,k,bi,bj)*drF(k)*hFacC(i,j,k,bi,bj)
+            flux_zInt_EKESource(i,j,bi,bj) = 
+     &        flux_zInt_EKESource(i,j,bi,bj) + 
+     &        flux_EKESource(i,j,k,bi,bj)*
+     &        drF(k)*hFacC(i,j,k,bi,bj)
           ENDDO
         ENDDO
       ENDDO
-
-      WRITE(standardMessageUnit,*)
-     &      'flux_zInt:  = ', flux_zInt
 
 C calculate EKE source term = depth average of flux term
       DO j=1,sNy
         DO i=1,sNx
           IF (abs(R_low(i,j,bi,bj)).NE.0) THEN
-            gEKESource(i,j,bi,bj) = flux_zInt(i,j,bi,bj)/
+            gEKESource(i,j,bi,bj) = 
+     &        0.5*flux_zInt_EKESource(i,j,bi,bj)/
      &        abs(R_low(i,j,bi,bj))
           ELSE
             gEKESource(i,j,bi,bj) = 0
           END IF   
         ENDDO
       ENDDO
-
-      WRITE(standardMessageUnit,*)
-     &      'gEKESource:  = ', gEKESource
 
 C--------------------------------------------------------------
 C     CALCULATE TOTAL EKE AND LAMBDA TENDENCY  
@@ -479,9 +479,6 @@ C--------------------------------------------------------------
 
         ENDDO
       ENDDO
-
-      WRITE(standardMessageUnit,*)
-     &      'gEKE:  = ', gEKE
 
 
 C--------------------------------------------------------------

@@ -959,6 +959,24 @@ C     SOURCE TERM
 C       custom: parameterized EKE source term
         CALL DIAGNOSTICS_FILL(gEKESource,'gEKESour',k,1,2,bi,bj,myThid)
 
+C     SOURCE TERM TESTING
+C       custom: parameterized buoyancy
+        CALL DIAGNOSTICS_FILL(b_EKESource,'b',k,1,2,bi,bj,myThid)
+C       custom: parameterized dbdx
+        CALL DIAGNOSTICS_FILL(dbdx_EKESource,'dbdx',k,1,2,bi,bj,myThid)
+C       custom: parameterized dbdy
+        CALL DIAGNOSTICS_FILL(dbdy_EKESource,'dbdy',k,1,2,bi,bj,myThid)
+C       custom: parameterized dbdz
+        CALL DIAGNOSTICS_FILL(dbdz_EKESource,'dbdz',k,1,2,bi,bj,myThid)
+C       custom: parameterized grad_b
+        CALL DIAGNOSTICS_FILL(grad_b_EKESource,
+     &    'grad_b',k,1,2,bi,bj,myThid)
+C       custom: parameterized flux
+        CALL DIAGNOSTICS_FILL(flux_EKESource,'flux',k,1,2,bi,bj,myThid)
+C       custom: parameterized dbdy
+        CALL DIAGNOSTICS_FILL(flux_zInt_EKESource,
+     &    'flux_zInt',k,1,2,bi,bj,myThid)
+
 
 C       custom: parameterized Lambda
         CALL DIAGNOSTICS_FILL(Lambda,'Lambda  ',k,1,2,bi,bj,myThid)
