@@ -422,22 +422,43 @@ C --------------------------------------------------------------------
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'dbdx'
-      diagTitle = 'dbdx'
+      diagName  = 'dbdx_YCXG'
+      diagTitle = 'dbdx_YCXG'
       diagCode  = 'SMR     MR      '
       diagUnits = 'm^2s^-3            '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'dbdy'
-      diagTitle = 'dbdy'
+      diagName  = 'dbdx_YCXC'
+      diagTitle = 'dbdx_YCXC'
       diagCode  = 'SMR     MR      '
       diagUnits = 'm^2s^-3            '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'dbdz'
-      diagTitle = 'dbdz'
+      diagName  = 'dbdy_YGXC'
+      diagTitle = 'dbdy_YGXC'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'dbdy_YCXC'
+      diagTitle = 'dbdy_YCXC'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'dbdz_ZG'
+      diagTitle = 'dbdz_ZG'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'dbdz_ZC'
+      diagTitle = 'dbdz_ZC'
       diagCode  = 'SMR     MR      '
       diagUnits = 'm^2s^-3            '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,

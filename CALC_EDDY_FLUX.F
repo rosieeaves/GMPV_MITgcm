@@ -135,9 +135,12 @@ C    Initialize arrays with zero values
         DO j=1,sNy
           DO i=1,sNx
             b_EKESource(i,j,k,bi,bj) = 0. _d 0
-            dbdx_EKESource(i,j,k,bi,bj) = 0. _d 0
-            dbdy_EKESource(i,j,k,bi,bj) = 0. _d 0
-            dbdz_EKESource(i,j,k,bi,bj) = 0. _d 0
+            dbdx_YCXG(i,j,k,bi,bj) = 0. _d 0
+            dbdx_YCXC(i,j,k,bi,bj) = 0. _d 0
+            dbdy_YGXC(i,j,k,bi,bj) = 0. _d 0
+            dbdy_YCXC(i,j,k,bi,bj) = 0. _d 0
+            dbdz_ZG(i,j,k,bi,bj) = 0. _d 0
+            dbdz_ZC(i,j,k,bi,bj) = 0. _d 0
             grad_b_EKESource(i,j,k,bi,bj) = 0. _d 0
             flux_EKESource(i,j,k,bi,bj) = 0. _d 0
             flux_zInt_EKESource(i,j,bi,bj) = 0. _d 0
@@ -368,54 +371,56 @@ C Calculate b
         ENDDO
       ENDDO
      
-C calculate dbdx, dbdy, dbdz except at top and bottom
-      DO k=2,Nr-1
-        DO j=1,sNy
-          DO i=1,sNx
-            dbdx_EKESource(i,j,k,bi,bj) = 
-     &        (b_EKESource(i+1,j,k,bi,bj) - 
-     &        b_EKESource(i-1,j,k,bi,bj))/(2*
-     &        dxC(i,j,bi,bj))
-            dbdy_EKESource(i,j,k,bi,bj) = 
-     &        (b_EKESource(i,j+1,k,bi,bj) - 
-     &        b_EKESource(i,j-1,k,bi,bj))/(2*
-     &        dyC(i,j,bi,bj))
-            dbdz_EKESource(i,j,k,bi,bj) = 
-     &        (b_EKESource(i,j,k+1,bi,bj) - 
-     &        b_EKESource(i,j,k-1,bi,bj))/(drC(k)
-     &        + drC(k+1))
+C calculate dbdx, dbdy, dbdz at cell faces
+C set to zero on boundaries
+C run through extra value in x and y direction to get extra cell 
+C face after last b (YCXC) point
+
+      DO k=2,Nr
+        DO j=1,sNy+1
+          DO i=1,sNx+1
+            dbdx_YCXG(i,j,k,bi,bj) = (b_EKESource(i,j,k,bi,bj) 
+     &        - b_EKESource(i-1,j,k,bi,bj))/dxC(i,j,bi,bj)
+     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1)
+
+            dbdy_YGXC(i,j,k,bi,bj) = (b_EKESource(i,j,k,bi,bj) 
+     &        - b_EKESource(i,j-1,k,bi,bj))/dyC(i,j,bi,bj)
+     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i,j-1,bi,bj))),1)
+
+C !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+C     still need to figure out partial cells
+C !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+            dbdz_ZG(i,j,k,bi,bj) = (b_EKESource(i,j,k-1,bi,bj) 
+     &        - b_EKESource(i,j,k,bi,bj))/drC(k)
+     &        *min(floor(abs(R_low(i,j,bi,bj))/abs(rC(k))),1)
           ENDDO
         ENDDO
       ENDDO
 
-C calculate for k = 1 and k = Nr
+C set dbdz = 0 at top (k = 1) and bottom (k + Nr+1)
+
       DO j=1,sNy
         DO i=1,sNx
-          dbdx_EKESource(i,j,1,bi,bj) = 
-     &      (b_EKESource(i+1,j,1,bi,bj) - 
-     &      b_EKESource(i-1,j,1,bi,bj))/(2*
-     &      dxC(i,j,bi,bj))
-          dbdx_EKESource(i,j,Nr,bi,bj) = 
-     &      (b_EKESource(i+1,j,Nr,bi,bj) - 
-     &      b_EKESource(i-1,j,Nr,bi,bj))/(2*
-     &      dxC(i,j,bi,bj))
+          dbdz_ZG(i,j,1,bi,bj) = 0.
+          dbdz_ZG(i,j,Nr+1,bi,bj) = 0.
+        ENDDO
+      ENDDO
 
-          dbdy_EKESource(i,j,1,bi,bj) = 
-     &      (b_EKESource(i,j+1,1,bi,bj) - 
-     &      b_EKESource(i,j-1,1,bi,bj))/(2*
-     &      dyC(i,j,bi,bj))
-          dbdy_EKESource(i,j,Nr,bi,bj) = 
-     &      (b_EKESource(i,j+1,Nr,bi,bj) - 
-     &      b_EKESource(i,j-1,Nr,bi,bj))/(2*
-     &      dyC(i,j,bi,bj))
+C interpolate dbdx, dbdy, dbdz to cell centres
 
-          dbdz_EKESource(i,j,1,bi,bj) = 
-     &      (b_EKESource(i,j,2,bi,bj) - 
-     &      b_EKESource(i,j,1,bi,bj))/(drC(1))
+      DO k=1,Nr
+        DO j=1,sNy
+          DO i=1,sNx
+            dbdx_YCXC(i,j,k,bi,bj) = (dbdx_YCXG(i,j,k,bi,bj) 
+     &        + dbdx_YCXG(i+1,j,k,bi,bj))/2
+        
+            dbdy_YCXC(i,j,k,bi,bj) = (dbdy_YGXC(i,j,k,bi,bj)
+     &        + dbdy_YGXC(i,j+1,k,bi,bj))/2
 
-          dbdz_EKESource(i,j,Nr,bi,bj) = 
-     &      (b_EKESource(i,j,Nr,bi,bj) - 
-     &      b_EKESource(i,j,Nr-1,bi,bj))/(drC(Nr))
+            dbdz_ZC(i,j,k,bi,bj) = (dbdz_ZG(i,j,k,bi,bj) 
+     &        + dbdz_ZG(i,j,k+1,bi,bj))/2
+          ENDDO
         ENDDO
       ENDDO
 
@@ -424,12 +429,12 @@ C calculate |grad b| and flux = bar(b'w')
         DO j=1,sNy
           DO i=1,sNx
             grad_b_EKESource(i,j,k,bi,bj) = 
-     &        (SQRT(dbdx_EKESource(i,j,k,bi,bj)**2
-     &        + dbdy_EKESource(i,j,k,bi,bj)**2))**2
+     &        SQRT(dbdx_YCXC(i,j,k,bi,bj)**2
+     &        + dbdy_YCXC(i,j,k,bi,bj)**2)
 
             flux_EKESource(i,j,k,bi,bj) = 
-     &      (kappa_GM*grad_b_EKESource(i,j,k,bi,bj))/
-     &        dbdz_EKESource(i,j,k,bi,bj)
+     &      (kappa_GM*grad_b_EKESource(i,j,k,bi,bj)**2)/
+     &        dbdz_ZC(i,j,k,bi,bj)
 
           ENDDO
         ENDDO

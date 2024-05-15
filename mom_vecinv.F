@@ -962,12 +962,18 @@ C       custom: parameterized EKE source term
 C     SOURCE TERM TESTING
 C       custom: parameterized buoyancy
         CALL DIAGNOSTICS_FILL(b_EKESource,'b',k,1,2,bi,bj,myThid)
-C       custom: parameterized dbdx
-        CALL DIAGNOSTICS_FILL(dbdx_EKESource,'dbdx',k,1,2,bi,bj,myThid)
-C       custom: parameterized dbdy
-        CALL DIAGNOSTICS_FILL(dbdy_EKESource,'dbdy',k,1,2,bi,bj,myThid)
-C       custom: parameterized dbdz
-        CALL DIAGNOSTICS_FILL(dbdz_EKESource,'dbdz',k,1,2,bi,bj,myThid)
+C       custom: parameterized dbdx_YCXG
+        CALL DIAGNOSTICS_FILL(dbdx_YCXG,'dbdx_YCXG',k,1,2,bi,bj,myThid)
+C       custom: parameterized dbdx_YCXC
+        CALL DIAGNOSTICS_FILL(dbdx_YCXG,'dbdx_YCXC',k,1,2,bi,bj,myThid)
+C       custom: parameterized dbdy_YGXC
+        CALL DIAGNOSTICS_FILL(dbdy_YGXC,'dbdy_YGXC',k,1,2,bi,bj,myThid)
+C       custom: parameterized dbdy_YCXC
+        CALL DIAGNOSTICS_FILL(dbdy_YCXC,'dbdy_YCXC',k,1,2,bi,bj,myThid)
+C       custom: parameterized dbdz_ZG
+        CALL DIAGNOSTICS_FILL(dbdz_ZG,'dbdz_ZG',k,1,2,bi,bj,myThid)
+C       custom: parameterized dbdz_ZC
+        CALL DIAGNOSTICS_FILL(dbdz_ZC,'dbdz_ZC',k,1,2,bi,bj,myThid)
 C       custom: parameterized grad_b
         CALL DIAGNOSTICS_FILL(grad_b_EKESource,
      &    'grad_b',k,1,2,bi,bj,myThid)
