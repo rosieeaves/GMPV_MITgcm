@@ -365,11 +365,23 @@ C Calculate b
       DO k=1,Nr
         DO j=1,sNy
           DO i=1,sNx
-            b_EKESource(i,j,k,bi,bj) = gravity*
-     &      (rhoInSitu(i,j,k,bi,bj) - rhoConst)/rhoConst
+            b_EKESource(i,j,k,bi,bj) = -gravity*
+     &      (rhoInSitu(i,j,k,bi,bj))/rhoConst
           ENDDO
         ENDDO
       ENDDO
+
+      WRITE(standardMessageUnit,*)
+     &      'gravity:  = ', gravity
+
+      WRITE(standardMessageUnit,*)
+     &      'rhoInSitu:  = ', rhoInSitu
+      
+      WRITE(standardMessageUnit,*)
+     &      'rhoConst:  = ', rhoConst
+
+      WRITE(standardMessageUnit,*)
+     &      'b:  = ', b_EKESource
      
 C calculate dbdx, dbdy, dbdz at cell faces
 C set to zero on boundaries
@@ -399,13 +411,42 @@ C !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       ENDDO
 
 C set dbdz = 0 at top (k = 1) and bottom (k + Nr+1)
+C calculate dbdx and dbdy at top and bottom
 
       DO j=1,sNy
         DO i=1,sNx
           dbdz_ZG(i,j,1,bi,bj) = 0.
           dbdz_ZG(i,j,Nr+1,bi,bj) = 0.
+
+          dbdx_YCXG(i,j,1,bi,bj) = (b_EKESource(i,j,1,bi,bj) 
+     &        - b_EKESource(i-1,j,1,bi,bj))/dxC(i,j,bi,bj)
+     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1)
+
+          dbdx_YCXG(i,j,Nr,bi,bj) = (b_EKESource(i,j,Nr,bi,bj) 
+     &        - b_EKESource(i-1,j,Nr,bi,bj))/dxC(i,j,bi,bj)
+     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1)
+
+          dbdy_YGXC(i,j,1,bi,bj) = (b_EKESource(i,j,1,bi,bj) 
+     &        - b_EKESource(i,j-1,1,bi,bj))/dyC(i,j,bi,bj)
+     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i,j-1,bi,bj))),1)
+
+          dbdy_YGXC(i,j,Nr,bi,bj) = (b_EKESource(i,j,Nr,bi,bj) 
+     &        - b_EKESource(i,j-1,Nr,bi,bj))/dyC(i,j,bi,bj)
+     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i,j-1,bi,bj))),1)
         ENDDO
       ENDDO
+
+      WRITE(standardMessageUnit,*)
+     &      'drC:  = ', drC
+
+      WRITE(standardMessageUnit,*)
+     &      'dbdx_YCXG:  = ', dbdx_YCXG
+
+      WRITE(standardMessageUnit,*)
+     &      'dbdy_YGXC:  = ', dbdy_YGXC
+
+      WRITE(standardMessageUnit,*)
+     &      'dbdz_ZG:  = ', dbdz_ZG
 
 C interpolate dbdx, dbdy, dbdz to cell centres
 
@@ -424,21 +465,37 @@ C interpolate dbdx, dbdy, dbdz to cell centres
         ENDDO
       ENDDO
 
+      WRITE(standardMessageUnit,*)
+     &      'dbdx_YCXC:  = ', dbdx_YCXC
+
+      WRITE(standardMessageUnit,*)
+     &      'dbdy_YCXC:  = ', dbdy_YCXC
+
+      WRITE(standardMessageUnit,*)
+     &      'dbdz_ZC:  = ', dbdz_ZC
+
 C calculate |grad b| and flux = bar(b'w')
       DO k=1,Nr
         DO j=1,sNy
           DO i=1,sNx
-            grad_b_EKESource(i,j,k,bi,bj) = 
-     &        SQRT(dbdx_YCXC(i,j,k,bi,bj)**2
-     &        + dbdy_YCXC(i,j,k,bi,bj)**2)
+            IF (dbdz_ZC(i,j,k,bi,bj).NE.0) THEN
+              grad_b_EKESource(i,j,k,bi,bj) = 
+     &          SQRT(dbdx_YCXC(i,j,k,bi,bj)**2
+     &          + dbdy_YCXC(i,j,k,bi,bj)**2)
 
-            flux_EKESource(i,j,k,bi,bj) = 
-     &      (kappa_GM*grad_b_EKESource(i,j,k,bi,bj)**2)/
-     &        dbdz_ZC(i,j,k,bi,bj)
-
+              flux_EKESource(i,j,k,bi,bj) = 
+     &          (kappa_GM*grad_b_EKESource(i,j,k,bi,bj)**2)/
+     &          dbdz_ZC(i,j,k,bi,bj)
+            END IF
           ENDDO
         ENDDO
       ENDDO
+
+      WRITE(standardMessageUnit,*)
+     &      'grad_b:  = ', grad_b_EKESource
+
+      WRITE(standardMessageUnit,*)
+     &      'flux:  = ', flux_EKESource
 
 C calculate depth integral of flux
       DO k=1,Nr
@@ -452,6 +509,9 @@ C calculate depth integral of flux
         ENDDO
       ENDDO
 
+      WRITE(standardMessageUnit,*)
+     &      'flux_zInt:  = ', flux_zInt_EKESource
+
 C calculate EKE source term = depth average of flux term
       DO j=1,sNy
         DO i=1,sNx
@@ -464,6 +524,9 @@ C calculate EKE source term = depth average of flux term
           END IF   
         ENDDO
       ENDDO
+
+      WRITE(standardMessageUnit,*)
+     &      'gEKESource:  = ', gEKESource
 
 C--------------------------------------------------------------
 C     CALCULATE TOTAL EKE AND LAMBDA TENDENCY  

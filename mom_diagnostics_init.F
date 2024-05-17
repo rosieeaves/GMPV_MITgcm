@@ -422,28 +422,28 @@ C --------------------------------------------------------------------
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'dbdx_YCXG'
+      diagName  = 'dbdxYCXG'
       diagTitle = 'dbdx_YCXG'
       diagCode  = 'SMR     MR      '
       diagUnits = 'm^2s^-3            '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'dbdx_YCXC'
+      diagName  = 'dbdxYCXC'
       diagTitle = 'dbdx_YCXC'
       diagCode  = 'SMR     MR      '
       diagUnits = 'm^2s^-3            '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'dbdy_YGXC'
+      diagName  = 'dbdyYGXC'
       diagTitle = 'dbdy_YGXC'
       diagCode  = 'SMR     MR      '
       diagUnits = 'm^2s^-3            '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'dbdy_YCXC'
+      diagName  = 'dbdyYCXC'
       diagTitle = 'dbdy_YCXC'
       diagCode  = 'SMR     MR      '
       diagUnits = 'm^2s^-3            '
@@ -478,7 +478,7 @@ C --------------------------------------------------------------------
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'flux_zInt'
+      diagName  = 'fluxzInt'
       diagTitle = 'flux_zInt'
       diagCode  = 'SMR     MR      '
       diagUnits = 'm^2s^-3            '

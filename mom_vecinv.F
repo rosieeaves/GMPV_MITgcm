@@ -963,13 +963,13 @@ C     SOURCE TERM TESTING
 C       custom: parameterized buoyancy
         CALL DIAGNOSTICS_FILL(b_EKESource,'b',k,1,2,bi,bj,myThid)
 C       custom: parameterized dbdx_YCXG
-        CALL DIAGNOSTICS_FILL(dbdx_YCXG,'dbdx_YCXG',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(dbdx_YCXG,'dbdxYCXG',k,1,2,bi,bj,myThid)
 C       custom: parameterized dbdx_YCXC
-        CALL DIAGNOSTICS_FILL(dbdx_YCXG,'dbdx_YCXC',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(dbdx_YCXG,'dbdxYCXC',k,1,2,bi,bj,myThid)
 C       custom: parameterized dbdy_YGXC
-        CALL DIAGNOSTICS_FILL(dbdy_YGXC,'dbdy_YGXC',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(dbdy_YGXC,'dbdyYGXC',k,1,2,bi,bj,myThid)
 C       custom: parameterized dbdy_YCXC
-        CALL DIAGNOSTICS_FILL(dbdy_YCXC,'dbdy_YCXC',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(dbdy_YCXC,'dbdyYCXC',k,1,2,bi,bj,myThid)
 C       custom: parameterized dbdz_ZG
         CALL DIAGNOSTICS_FILL(dbdz_ZG,'dbdz_ZG',k,1,2,bi,bj,myThid)
 C       custom: parameterized dbdz_ZC
@@ -981,7 +981,7 @@ C       custom: parameterized flux
         CALL DIAGNOSTICS_FILL(flux_EKESource,'flux',k,1,2,bi,bj,myThid)
 C       custom: parameterized dbdy
         CALL DIAGNOSTICS_FILL(flux_zInt_EKESource,
-     &    'flux_zInt',k,1,2,bi,bj,myThid)
+     &    'fluxzInt',k,1,2,bi,bj,myThid)
 
 
 C       custom: parameterized Lambda
