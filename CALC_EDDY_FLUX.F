@@ -36,6 +36,7 @@ C     == Global data ==
 #include "RESTART.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
+#include "GMREDI.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     iMin,iMax :: Working range of x-index for applying forcing.
