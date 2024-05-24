@@ -149,7 +149,7 @@ C    Initialize arrays with zero values
       ENDDO
 
 C Set kappa_GM value
-      kappa_GM = 1000.
+      kappa_GM = 600.
       kappa_DIA = 0.
 
 C--------------------------------------------------------------
@@ -370,18 +370,6 @@ C Calculate b
           ENDDO
         ENDDO
       ENDDO
-
-      WRITE(standardMessageUnit,*)
-     &      'gravity:  = ', gravity
-
-      WRITE(standardMessageUnit,*)
-     &      'rhoInSitu:  = ', rhoInSitu
-      
-      WRITE(standardMessageUnit,*)
-     &      'rhoConst:  = ', rhoConst
-
-      WRITE(standardMessageUnit,*)
-     &      'b:  = ', b_EKESource
      
 C calculate dbdx, dbdy, dbdz at cell faces
 C set to zero on boundaries
@@ -436,18 +424,6 @@ C calculate dbdx and dbdy at top and bottom
         ENDDO
       ENDDO
 
-      WRITE(standardMessageUnit,*)
-     &      'drC:  = ', drC
-
-      WRITE(standardMessageUnit,*)
-     &      'dbdx_YCXG:  = ', dbdx_YCXG
-
-      WRITE(standardMessageUnit,*)
-     &      'dbdy_YGXC:  = ', dbdy_YGXC
-
-      WRITE(standardMessageUnit,*)
-     &      'dbdz_ZG:  = ', dbdz_ZG
-
 C interpolate dbdx, dbdy, dbdz to cell centres
 
       DO k=1,Nr
@@ -464,15 +440,6 @@ C interpolate dbdx, dbdy, dbdz to cell centres
           ENDDO
         ENDDO
       ENDDO
-
-      WRITE(standardMessageUnit,*)
-     &      'dbdx_YCXC:  = ', dbdx_YCXC
-
-      WRITE(standardMessageUnit,*)
-     &      'dbdy_YCXC:  = ', dbdy_YCXC
-
-      WRITE(standardMessageUnit,*)
-     &      'dbdz_ZC:  = ', dbdz_ZC
 
 C calculate |grad b| and flux = bar(b'w')
       DO k=1,Nr
@@ -491,12 +458,6 @@ C calculate |grad b| and flux = bar(b'w')
         ENDDO
       ENDDO
 
-      WRITE(standardMessageUnit,*)
-     &      'grad_b:  = ', grad_b_EKESource
-
-      WRITE(standardMessageUnit,*)
-     &      'flux:  = ', flux_EKESource
-
 C calculate depth integral of flux
       DO k=1,Nr
         DO j=1,sNy
@@ -508,9 +469,6 @@ C calculate depth integral of flux
           ENDDO
         ENDDO
       ENDDO
-
-      WRITE(standardMessageUnit,*)
-     &      'flux_zInt:  = ', flux_zInt_EKESource
 
 C calculate EKE source term = depth average of flux term
       DO j=1,sNy
@@ -524,9 +482,6 @@ C calculate EKE source term = depth average of flux term
           END IF   
         ENDDO
       ENDDO
-
-      WRITE(standardMessageUnit,*)
-     &      'gEKESource:  = ', gEKESource
 
 C--------------------------------------------------------------
 C     CALCULATE TOTAL EKE AND LAMBDA TENDENCY  
