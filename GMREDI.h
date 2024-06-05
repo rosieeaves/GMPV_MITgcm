@@ -57,8 +57,6 @@ C     GEOM_vert_struc  :: allow for N2 structure function
       LOGICAL GM_useLeithQG
       LOGICAL GM_useGEOM
       LOGICAL GEOM_vert_struc
-      _RL taperX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL taperY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       COMMON /GM_PARAMS_L/
      &                   GM_AdvForm, GM_AdvSeparate,
      &                   GM_useBVP,  GM_useSubMeso,
@@ -69,9 +67,7 @@ C     GEOM_vert_struc  :: allow for N2 structure function
      &                   GM_Bates_ThickSheet, GM_Bates_surfK,
      &                   GM_Bates_constRedi,
      &                   GM_useLeithQG,
-     &                   GM_useGEOM, GEOM_vert_struc,
-C EDDY PARAMETERIZATION
-     &                   taperX, taperY
+     &                   GM_useGEOM, GEOM_vert_struc
 
 C--   GM/Redi Integer-type parameters
 C     GM_BVP_modeNumber :: vertical mode number used for speed "c" in BVP transport
@@ -202,6 +198,8 @@ C     GM_Bates_maxRenorm :: maximum value for the renormalisation factor
       _RL GM_Bates_vecFreq
       _RL GM_Bates_minRenorm
       _RL GM_Bates_maxRenorm
+      _RL taperX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL taperY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       COMMON /GM_PARAMS_RL/
      &                 GM_isopycK, GM_background_K,
      &                 GM_maxSlope,
@@ -226,7 +224,10 @@ C     GM_Bates_maxRenorm :: maximum value for the renormalisation factor
      &                 GM_Bates_Rmax, GM_Bates_Rmin,
      &                 GM_Bates_minCori, GM_Bates_minN2,
      &                 GM_Bates_surfMinDepth, GM_Bates_vecFreq,
-     &                 GM_Bates_minRenorm, GM_Bates_maxRenorm
+     &                 GM_Bates_minRenorm, GM_Bates_maxRenorm,
+C EDDY PARAMETERIZATION
+     &                 taperX, taperY
+
 
       COMMON /GM_PARAMS_RS/
      &                   subMeso_Lmax

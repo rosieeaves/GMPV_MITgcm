@@ -69,8 +69,8 @@ C      _RL  dbdz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 C      _RL  grad_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 C      _RL  flux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 C      _RL  flux_zInt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  kappa_GM
-      _RL  kappa_DIA
+      _RL  kappa_GM(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL  partition
 C      _RL  q_YCXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     YGXC
 C      _RL  EKE_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -129,6 +129,8 @@ C    Initialize arrays with zero values
           uVelInt(i,j,bi,bj) = 0. _d 0
           vVelInt(i,j,bi,bj) = 0. _d 0
 
+          kappa_GM = 0. _d 0
+
         ENDDO
       ENDDO 
 
@@ -149,11 +151,9 @@ C    Initialize arrays with zero values
         ENDDO
       ENDDO
 
-C Set kappa_GM value
-      kappa_GM = 600.
-      kappa_DIA = 0.
+      partition = 0.1
 
-C--------------------------------------------------------------
+C--------------------------------l------------------------------
 C     DEPTH INTEGRAL OF U AND V FOR ENERGY CONVERSION
 C     AND ADVECTION
 C--------------------------------------------------------------
@@ -442,6 +442,15 @@ C interpolate dbdx, dbdy, dbdz to cell centres
         ENDDO
       ENDDO
 
+C calculate tapered kappa_GM
+
+      DO k=1,Nr
+        DO j=1,sNy
+          kappa_GM(i,j) = (GM_background_K/4)*(taperX(i,j) + 
+     &      taperX(i+1,j) + taperY(i,j) + taperY(i,j+1))
+        ENDDO
+      ENDDO
+
 C calculate |grad b| and flux = bar(b'w')
       DO k=1,Nr
         DO j=1,sNy
@@ -452,7 +461,7 @@ C calculate |grad b| and flux = bar(b'w')
      &          + dbdy_YCXC(i,j,k,bi,bj)**2)
 
               flux_EKESource(i,j,k,bi,bj) = 
-     &          (kappa_GM*grad_b_EKESource(i,j,k,bi,bj)**2)/
+     &          (kappa_GM(i,j)*grad_b_EKESource(i,j,k,bi,bj)**2)/
      &          dbdz_ZC(i,j,k,bi,bj)
             END IF
           ENDDO
@@ -476,7 +485,7 @@ C calculate EKE source term = depth average of flux term
         DO i=1,sNx
           IF (abs(R_low(i,j,bi,bj)).NE.0) THEN
             gEKESource(i,j,bi,bj) = 
-     &        0.5*flux_zInt_EKESource(i,j,bi,bj)/
+     &        partition*flux_zInt_EKESource(i,j,bi,bj)/
      &        abs(R_low(i,j,bi,bj))
           ELSE
             gEKESource(i,j,bi,bj) = 0
