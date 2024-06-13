@@ -56,6 +56,9 @@ C     == Global variables ==
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 #endif
+#ifdef ALLOW_GMREDI
+#include "GMREDI.h"
+#endif
 
 C     == Routine arguments ==
 C     bi,bj   :: current tile indices
@@ -982,6 +985,12 @@ C       custom: parameterized flux
 C       custom: parameterized dbdy
         CALL DIAGNOSTICS_FILL(flux_zInt_EKESource,
      &    'fluxzInt',k,1,2,bi,bj,myThid)
+C       custom: GM taperX
+        CALL DIAGNOSTICS_FILL(taperX,
+     &    'taperX  ',k,1,2,bi,bj,myThid)
+C       custom: GM taperY
+        CALL DIAGNOSTICS_FILL(taperY,
+     &    'taperY  ',k,1,2,bi,bj,myThid)
 
 
 C       custom: parameterized Lambda

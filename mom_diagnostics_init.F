@@ -485,6 +485,20 @@ C --------------------------------------------------------------------
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+      diagName  = 'taperX  '
+      diagTitle = 'taperX'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'taperY  '
+      diagTitle = 'taperY'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
 C --------------------------------------------------------------------
 C TESTING
 C --------------------------------------------------------------------
