@@ -968,7 +968,7 @@ C       custom: parameterized buoyancy
 C       custom: parameterized dbdx_YCXG
         CALL DIAGNOSTICS_FILL(dbdx_YCXG,'dbdxYCXG',k,1,2,bi,bj,myThid)
 C       custom: parameterized dbdx_YCXC
-        CALL DIAGNOSTICS_FILL(dbdx_YCXG,'dbdxYCXC',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(dbdx_YCXC,'dbdxYCXC',k,1,2,bi,bj,myThid)
 C       custom: parameterized dbdy_YGXC
         CALL DIAGNOSTICS_FILL(dbdy_YGXC,'dbdyYGXC',k,1,2,bi,bj,myThid)
 C       custom: parameterized dbdy_YCXC
@@ -977,6 +977,8 @@ C       custom: parameterized dbdz_ZG
         CALL DIAGNOSTICS_FILL(dbdz_ZG,'dbdz_ZG',k,1,2,bi,bj,myThid)
 C       custom: parameterized dbdz_ZC
         CALL DIAGNOSTICS_FILL(dbdz_ZC,'dbdz_ZC',k,1,2,bi,bj,myThid)
+C       custom: parameterized kappa_GM
+        CALL DIAGNOSTICS_FILL(kappa_GM,'kappa_GM',k,1,2,bi,bj,myThid)
 C       custom: parameterized grad_b
         CALL DIAGNOSTICS_FILL(grad_b_EKESource,
      &    'grad_b',k,1,2,bi,bj,myThid)

@@ -327,12 +327,6 @@ C-      Danabasoglu and McWilliams, J. Clim. 1995
          ENDDO
         ENDDO
 
-        WRITE(standardMessageUnit,*)
-     &      'taperX:  = ', taperX
-
-        WRITE(standardMessageUnit,*)
-     &      'taperY:  = ', taperY
-
        ELSEIF (GM_taper_scheme.EQ.'ldd97') THEN
 
 C-      Large, Danabasoglu and Doney, JPO 1997

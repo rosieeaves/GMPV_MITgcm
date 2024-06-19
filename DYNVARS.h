@@ -59,7 +59,8 @@ C     gLambdaNm, gLambdaNm1   :: parameterixed eddy kinetic energy time tendenci
      &                   b_EKESource, dbdx_YCXG, dbdx_YCXC,
      &                   dbdy_YGXC, dbdy_YCXC, dbdz_ZG,
      &                   dbdz_ZC, grad_b_EKESource, 
-     &                   flux_EKESource, flux_zInt_EKESource
+     &                   flux_EKESource, flux_zInt_EKESource,
+     &                   kappa_GM
 #else /* ALLOW_ADAMSBASHFORTH_3 */
       COMMON /DYNVARS_R/
      &                   etaN,
@@ -82,7 +83,8 @@ C     gLambdaNm, gLambdaNm1   :: parameterixed eddy kinetic energy time tendenci
      &                   b_EKESource, dbdx_YCXG, dbdx_YCXC,
      &                   dbdy_YGXC, dbdy_YCXC, dbdz_ZG,
      &                   dbdz_ZC, grad_b_EKESource, 
-     &                   flux_EKESource, flux_zInt_EKESource
+     &                   flux_EKESource, flux_zInt_EKESource,
+     &                   kappa_GM
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
       _RL  etaN  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  uVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -150,6 +152,7 @@ C     SOURCE TESTING
       _RL  grad_b_EKESource(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  flux_EKESource(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  flux_zInt_EKESource(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  kappa_GM(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ALLOW_ADAMSBASHFORTH_3
       _RL  guNm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,2)
       _RL  gvNm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,2)
