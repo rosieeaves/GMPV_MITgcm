@@ -101,6 +101,7 @@ C    Initialize arrays with zero values
           gEKEConv(i,j,bi,bj) = 0. _d 0
           gEKEr(i,j,bi,bj) = 0. _d 0
           gEKEDiff(i,j,bi,bj) = 0. _d 0
+          gEKESource(i,j,bi,bj) = 0. _d 0
           gEKE_AB(i,j,bi,bj) = 0. _d 0
 
 
@@ -130,6 +131,7 @@ C    Initialize arrays with zero values
           vVelInt(i,j,bi,bj) = 0. _d 0
 
           kappa_GM(i,j) = 0. _d 0
+          flux_zInt(i,j,bi,bj) = 0. _d 0
 
         ENDDO
       ENDDO 
@@ -137,16 +139,15 @@ C    Initialize arrays with zero values
       DO k=1,Nr
         DO j=1,sNy
           DO i=1,sNx
-            b_EKESource(i,j,k,bi,bj) = 0. _d 0
+            b_ZC(i,j,k,bi,bj) = 0. _d 0
             dbdx_YCXG(i,j,k,bi,bj) = 0. _d 0
             dbdx_YCXC(i,j,k,bi,bj) = 0. _d 0
             dbdy_YGXC(i,j,k,bi,bj) = 0. _d 0
             dbdy_YCXC(i,j,k,bi,bj) = 0. _d 0
+            grad_b_ZC(i,j,k,bi,bj) = 0. _d 0
+            grad_b_ZG(i,j,k,bi,bj) = 0. _d 0
             dbdz_ZG(i,j,k,bi,bj) = 0. _d 0
-            dbdz_ZC(i,j,k,bi,bj) = 0. _d 0
-            grad_b_EKESource(i,j,k,bi,bj) = 0. _d 0
-            flux_EKESource(i,j,k,bi,bj) = 0. _d 0
-            flux_zInt_EKESource(i,j,bi,bj) = 0. _d 0
+            flux_ZG(i,j,k,bi,bj) = 0. _d 0
            ENDDO
         ENDDO
       ENDDO
@@ -366,75 +367,31 @@ C Calculate b
       DO k=1,Nr
         DO j=1,sNy
           DO i=1,sNx
-            b_EKESource(i,j,k,bi,bj) = -gravity*
-     &      (rhoInSitu(i,j,k,bi,bj))/rhoConst
+            b_ZC(i,j,k,bi,bj) = -maskC(i,j,k,bi,bj)*
+     &      gravity*(rhoInSitu(i,j,k,bi,bj))/rhoConst
           ENDDO
         ENDDO
       ENDDO
-
-      WRITE(standardMessageUnit,*)
-     &      'b_EKESource:  = ', b_EKESource
      
-C calculate dbdx, dbdy, dbdz at cell faces
+C calculate dbdx, dbdy at cell faces
 C set to zero on boundaries
 C run through extra value in x and y direction to get extra cell 
 C face after last b (YCXC) point
 
-      DO k=2,Nr
+      DO k=1,Nr
         DO j=1,sNy+1
           DO i=1,sNx+1
-            dbdx_YCXG(i,j,k,bi,bj) = (b_EKESource(i,j,k,bi,bj) 
-     &        - b_EKESource(i-1,j,k,bi,bj))/dxC(i,j,bi,bj)
+            dbdx_YCXG(i,j,k,bi,bj) = (b_ZC(i,j,k,bi,bj) 
+     &        - b_ZC(i-1,j,k,bi,bj))/dxC(i,j,bi,bj)
      &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1)
 
-            dbdy_YGXC(i,j,k,bi,bj) = (b_EKESource(i,j,k,bi,bj) 
-     &        - b_EKESource(i,j-1,k,bi,bj))/dyC(i,j,bi,bj)
+            dbdy_YGXC(i,j,k,bi,bj) = (b_ZC(i,j,k,bi,bj) 
+     &        - b_ZC(i,j-1,k,bi,bj))/dyC(i,j,bi,bj)
      &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i,j-1,bi,bj))),1)
 
-C !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-C     still need to figure out partial cells
-C !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-            dbdz_ZG(i,j,k,bi,bj) = (b_EKESource(i,j,k-1,bi,bj) 
-     &        - b_EKESource(i,j,k,bi,bj))/drC(k)
           ENDDO
         ENDDO
       ENDDO
-
-C set dbdz = 0 at top (k = 1) and bottom (k + Nr+1)
-C calculate dbdx and dbdy at top and bottom
-
-      DO j=1,sNy
-        DO i=1,sNx
-          dbdz_ZG(i,j,1,bi,bj) = 0.
-          dbdz_ZG(i,j,Nr+1,bi,bj) = 0.
-
-          dbdx_YCXG(i,j,1,bi,bj) = (b_EKESource(i,j,1,bi,bj) 
-     &        - b_EKESource(i-1,j,1,bi,bj))/dxC(i,j,bi,bj)
-     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1)
-
-          dbdx_YCXG(i,j,Nr,bi,bj) = (b_EKESource(i,j,Nr,bi,bj) 
-     &        - b_EKESource(i-1,j,Nr,bi,bj))/dxC(i,j,bi,bj)
-     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1)
-
-          dbdy_YGXC(i,j,1,bi,bj) = (b_EKESource(i,j,1,bi,bj) 
-     &        - b_EKESource(i,j-1,1,bi,bj))/dyC(i,j,bi,bj)
-     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i,j-1,bi,bj))),1)
-
-          dbdy_YGXC(i,j,Nr,bi,bj) = (b_EKESource(i,j,Nr,bi,bj) 
-     &        - b_EKESource(i,j-1,Nr,bi,bj))/dyC(i,j,bi,bj)
-     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i,j-1,bi,bj))),1)
-        ENDDO
-      ENDDO
-
-      WRITE(standardMessageUnit,*)
-     &      'dbdx_YCXG:  = ', dbdx_YCXG
-
-      WRITE(standardMessageUnit,*)
-     &      'dbdy_YGXC:  = ', dbdy_YGXC
-
-      WRITE(standardMessageUnit,*)
-     &      'dbdz_ZG:  = ', dbdz_ZG
 
 C interpolate dbdx, dbdy, dbdz to cell centres
 
@@ -446,21 +403,33 @@ C interpolate dbdx, dbdy, dbdz to cell centres
         
             dbdy_YCXC(i,j,k,bi,bj) = (dbdy_YGXC(i,j,k,bi,bj)
      &        + dbdy_YGXC(i,j+1,k,bi,bj))/2
-
-            dbdz_ZC(i,j,k,bi,bj) = (dbdz_ZG(i,j,k,bi,bj) 
-     &        + dbdz_ZG(i,j,k+1,bi,bj))/2
           ENDDO
         ENDDO
       ENDDO
 
-      WRITE(standardMessageUnit,*)
-     &      'dbdx_YCXC:  = ', dbdx_YCXC
+C calculate |grad b|^2 at vertical cell centres
+      DO k=1,Nr
+        DO j=1,sNy
+          DO i=1,sNx
+            grad_b_ZC(i,j,k,bi,bj) = 
+     &        (SQRT(dbdx_YCXC(i,j,k,bi,bj)**2
+     &        + dbdy_YCXC(i,j,k,bi,bj)**2))**2
+          ENDDO
+        ENDDO
+      ENDDO
 
-      WRITE(standardMessageUnit,*)
-     &      'dbdy_YCXC:  = ', dbdy_YCXC
-
-      WRITE(standardMessageUnit,*)
-     &      'dbdz_ZC:  = ', dbdz_ZC
+C interpolate |grad_b|^2 to vertical cell interfaces
+C don't calculate at top and bottom
+      DO k=2,Nr
+        DO j=1,sNy
+          DO i=1,sNx
+            grad_b_ZG(i,j,k,bi,bj) = 
+     &        grad_b_ZC(i,j,k-1,bi,bj) + 
+     &        (drF(k-1)/2)*((grad_b_ZC(i,j,k,bi,bj)
+     &        - grad_b_ZC(i,j,k-1,bi,bj))/drC(k))
+          ENDDO
+        ENDDO
+      ENDDO
 
 C calculate tapered kappa_GM
 
@@ -471,63 +440,75 @@ C calculate tapered kappa_GM
         ENDDO
       ENDDO
 
-      WRITE(standardMessageUnit,*)
-     &      'kappa_GM:  = ', kappa_GM
+C calculate dbdz at vertical cell interfaces
+C don't calculate at top and bottom
+C min(0.5,hFacC(k)) is for partial cells at bottom
+C floor(abc(hFacC(ii,j,k-1,bi,bj))) is for below seafloor
+C dbdz_DG will be zero below the seafloor
 
-C calculate |grad b| and flux = bar(b'w')
-      DO k=1,Nr
+      DO k=2,Nr
         DO j=1,sNy
           DO i=1,sNx
-            IF (dbdz_ZC(i,j,k,bi,bj).NE.0) THEN
-              grad_b_EKESource(i,j,k,bi,bj) = 
-     &          SQRT(dbdx_YCXC(i,j,k,bi,bj)**2
-     &          + dbdy_YCXC(i,j,k,bi,bj)**2)
+            dbdz_ZG(i,j,k,bi,bj) = 
+     &        floor(abs(hFacC(i,j,k-1,bi,bj)))*
+     &        (b_ZC(i,j,k-1,bi,bj) - b_ZC(i,j,k,bi,bj))
+     &        /(0.5*drC(k-1) + 
+     &        MIN(0.5,hFacC(i,j,k,bi,bj))*drC(k))
+          ENDDO
+        ENDDO
+      ENDDO
 
-              flux_EKESource(i,j,k,bi,bj) = 
-     &          ((kappa_GM(i,j)*grad_b_EKESource(i,j,k,bi,bj)**2)/
-     &          dbdz_ZC(i,j,k,bi,bj))
-     &          *floor(abs(hFacC(i,j,k,bi,bj)))
+C calculate bar(b'w') at vertical cell interfaces
+C floor(abs(hFacC(k-1))) makes sure flux = 0 below seafloor
+C don't calculate at top and bottom
+      DO k=2,Nr
+        DO j=1,sNy
+          DO i=1,sNx
+            IF (dbdz_ZG(i,j,k,bi,bj).NE.0) THEN
+              flux_ZG(i,j,k,bi,bj) = 
+     &          floor(abs(hFacC(i,j,k-1,bi,bj)))*
+     &          kappa_GM(i,j)*grad_b_ZG(i,j,k,bi,bj)
+     &          /dbdz_ZG(i,j,k,bi,bj)
+            ELSE 
+              flux_ZG(i,j,k,bi,bj) = 0.
             END IF
           ENDDO
         ENDDO
       ENDDO
 
-      WRITE(standardMessageUnit,*)
-     &      'grad_b_EKESource:  = ', grad_b_EKESource
+C set var(b'w') = 0 at top and bottom
 
-      WRITE(standardMessageUnit,*)
-     &      'flux_EKESource:  = ', flux_EKESource
+      DO j=1,sNy
+        DO i=1,sNx
+          flux_ZG(i,j,0,bi,bj) = 0.
+          flux_ZG(i,j,Nr+1,bi,bj) = 0.
+        ENDDO
+      ENDDO
 
 C calculate depth integral of flux
       DO k=1,Nr
         DO j=1,sNy
           DO i=1,sNx
-            flux_zInt_EKESource(i,j,bi,bj) = 
-     &        flux_zInt_EKESource(i,j,bi,bj) + 
-     &        flux_EKESource(i,j,k,bi,bj)*
-     &        drF(k)*hFacC(i,j,k,bi,bj)
+            flux_zInt(i,j,bi,bj) = 
+     &        flux_zInt(i,j,bi,bj) + 
+     &        flux_ZG(i,j,k,bi,bj)*(0.5*drC(k-1) + 
+     &        0.5*hFacC(i,j,k,bi,bj)*drC(k))
           ENDDO
         ENDDO
       ENDDO
-
-      WRITE(standardMessageUnit,*)
-     &      'flux_zInt_EKESource:  = ', flux_zInt_EKESource
 
 C calculate EKE source term = depth average of flux term
       DO j=1,sNy
         DO i=1,sNx
           IF (abs(R_low(i,j,bi,bj)).NE.0) THEN
-            gEKESource(i,j,bi,bj) = 
-     &        partition*flux_zInt_EKESource(i,j,bi,bj)/
-     &        abs(R_low(i,j,bi,bj))
-          ELSE
-            gEKESource(i,j,bi,bj) = 0
-          END IF   
+            gEKESource(i,j,bi,bj) = maskInC(i,j,bi,bj)*
+     &        partition*flux_zInt(i,j,bi,bj)/
+     &        abs(R_low(i,j,bi,bj))  
+          ELSE 
+            gEKESource(i,j,bi,bj) = 0.
+          END IF
         ENDDO
       ENDDO
-
-      WRITE(standardMessageUnit,*)
-     &      'gEKESource:  = ', gEKESource
 
 C--------------------------------------------------------------
 C     CALCULATE TOTAL EKE AND LAMBDA TENDENCY  

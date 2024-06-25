@@ -964,7 +964,7 @@ C       custom: parameterized EKE source term
 
 C     SOURCE TERM TESTING
 C       custom: parameterized buoyancy
-        CALL DIAGNOSTICS_FILL(b_EKESource,'b',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(b_ZC,'b',k,1,2,bi,bj,myThid)
 C       custom: parameterized dbdx_YCXG
         CALL DIAGNOSTICS_FILL(dbdx_YCXG,'dbdxYCXG',k,1,2,bi,bj,myThid)
 C       custom: parameterized dbdx_YCXC
@@ -975,24 +975,20 @@ C       custom: parameterized dbdy_YCXC
         CALL DIAGNOSTICS_FILL(dbdy_YCXC,'dbdyYCXC',k,1,2,bi,bj,myThid)
 C       custom: parameterized dbdz_ZG
         CALL DIAGNOSTICS_FILL(dbdz_ZG,'dbdz_ZG',k,1,2,bi,bj,myThid)
-C       custom: parameterized dbdz_ZC
-        CALL DIAGNOSTICS_FILL(dbdz_ZC,'dbdz_ZC',k,1,2,bi,bj,myThid)
 C       custom: parameterized kappa_GM
         CALL DIAGNOSTICS_FILL(kappa_GM,'kappa_GM',k,1,2,bi,bj,myThid)
-C       custom: parameterized grad_b
-        CALL DIAGNOSTICS_FILL(grad_b_EKESource,
-     &    'grad_b',k,1,2,bi,bj,myThid)
+C       custom: parameterized grad_b_ZC
+        CALL DIAGNOSTICS_FILL(grad_b_ZC,'grad_b_ZC',k,1,2,bi,bj,myThid)
+C       custom: parameterized grad_b_ZG
+        CALL DIAGNOSTICS_FILL(grad_b_ZG,'grad_b_ZG',k,1,2,bi,bj,myThid)
 C       custom: parameterized flux
-        CALL DIAGNOSTICS_FILL(flux_EKESource,'flux',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(flux_ZG,'flux_ZG',k,1,2,bi,bj,myThid)
 C       custom: parameterized dbdy
-        CALL DIAGNOSTICS_FILL(flux_zInt_EKESource,
-     &    'fluxzInt',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(flux_zInt,'fluxzInt',k,1,2,bi,bj,myThid)
 C       custom: GM taperX
-        CALL DIAGNOSTICS_FILL(taperX,
-     &    'taperX  ',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(taperX,'taperX  ',k,1,2,bi,bj,myThid)
 C       custom: GM taperY
-        CALL DIAGNOSTICS_FILL(taperY,
-     &    'taperY  ',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(taperY,'taperY  ',k,1,2,bi,bj,myThid)
 
 
 C       custom: parameterized Lambda

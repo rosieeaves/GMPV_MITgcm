@@ -457,13 +457,6 @@ C --------------------------------------------------------------------
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'dbdz_ZC'
-      diagTitle = 'dbdz_ZC'
-      diagCode  = 'SMR     MR      '
-      diagUnits = 'm^2s^-3            '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
       diagName  = 'kappa_GM'
       diagTitle = 'kappa_GM'
       diagCode  = 'SMR     MR      '
@@ -471,15 +464,22 @@ C --------------------------------------------------------------------
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'grad_b'
-      diagTitle = 'grad_b'
+      diagName  = 'grad_b_ZC'
+      diagTitle = 'grad_b_ZC'
       diagCode  = 'SMR     MR      '
       diagUnits = 'm^2s^-3            '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'flux'
-      diagTitle = 'flux'
+      diagName  = 'grad_b_ZG'
+      diagTitle = 'grad_b_ZG'
+      diagCode  = 'SMR     MR      '
+      diagUnits = 'm^2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'flux_ZG'
+      diagTitle = 'flux_ZG'
       diagCode  = 'SMR     MR      '
       diagUnits = 'm^2s^-3            '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,

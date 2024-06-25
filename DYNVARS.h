@@ -56,10 +56,10 @@ C     gLambdaNm, gLambdaNm1   :: parameterixed eddy kinetic energy time tendenci
      &                   dqdx_YGXC, dqdy_YCXG,
      &                   modGradq_YCXG, modGradq_YGXC,
      &                   uVelInt, vVelInt,
-     &                   b_EKESource, dbdx_YCXG, dbdx_YCXC,
+     &                   b_ZC, dbdx_YCXG, dbdx_YCXC,
      &                   dbdy_YGXC, dbdy_YCXC, dbdz_ZG,
-     &                   dbdz_ZC, grad_b_EKESource, 
-     &                   flux_EKESource, flux_zInt_EKESource,
+     &                   grad_b_ZC, grad_b_ZG,
+     &                   flux_ZG, flux_zInt,
      &                   kappa_GM
 #else /* ALLOW_ADAMSBASHFORTH_3 */
       COMMON /DYNVARS_R/
@@ -80,10 +80,10 @@ C     gLambdaNm, gLambdaNm1   :: parameterixed eddy kinetic energy time tendenci
      &                   dqdx_YGXC, dqdy_YCXG,
      &                   modGradq_YCXG, modGradq_YGXC,
      &                   uVelInt, vVelInt,
-     &                   b_EKESource, dbdx_YCXG, dbdx_YCXC,
+     &                   b_ZC, dbdx_YCXG, dbdx_YCXC,
      &                   dbdy_YGXC, dbdy_YCXC, dbdz_ZG,
-     &                   dbdz_ZC, grad_b_EKESource, 
-     &                   flux_EKESource, flux_zInt_EKESource,
+     &                   grad_b_ZC, grad_b_ZG,
+     &                   flux_ZG, flux_zInt,
      &                   kappa_GM
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
       _RL  etaN  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -142,17 +142,18 @@ C     YCXG
 C     SOURCE TERM 
       _RL  gEKESource(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     SOURCE TESTING
-      _RL  b_EKESource(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  b_ZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  dbdx_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  dbdx_YCXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  dbdy_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  dbdy_YCXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  dbdz_ZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  dbdz_ZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  grad_b_EKESource(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  flux_EKESource(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  flux_zInt_EKESource(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  grad_b_ZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  grad_b_ZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
       _RL  kappa_GM(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL  dbdz_ZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
+      _RL  flux_ZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
+      _RL  flux_zInt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      
 #ifdef ALLOW_ADAMSBASHFORTH_3
       _RL  guNm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,2)
       _RL  gvNm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,2)
