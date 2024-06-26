@@ -198,8 +198,8 @@ C     GM_Bates_maxRenorm :: maximum value for the renormalisation factor
       _RL GM_Bates_vecFreq
       _RL GM_Bates_minRenorm
       _RL GM_Bates_maxRenorm
-      _RL taperX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL taperY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL taperX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
+      _RL taperY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
       COMMON /GM_PARAMS_RL/
      &                 GM_isopycK, GM_background_K,
      &                 GM_maxSlope,

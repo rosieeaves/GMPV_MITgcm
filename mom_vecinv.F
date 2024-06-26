@@ -978,9 +978,9 @@ C       custom: parameterized dbdz_ZG
 C       custom: parameterized kappa_GM
         CALL DIAGNOSTICS_FILL(kappa_GM,'kappa_GM',k,1,2,bi,bj,myThid)
 C       custom: parameterized grad_b_ZC
-        CALL DIAGNOSTICS_FILL(grad_b_ZC,'grad_b_ZC',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(grad_b_ZC,'gradb_ZC',k,1,2,bi,bj,myThid)
 C       custom: parameterized grad_b_ZG
-        CALL DIAGNOSTICS_FILL(grad_b_ZG,'grad_b_ZG',k,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(grad_b_ZG,'gradb_ZG',k,1,2,bi,bj,myThid)
 C       custom: parameterized flux
         CALL DIAGNOSTICS_FILL(flux_ZG,'flux_ZG',k,1,2,bi,bj,myThid)
 C       custom: parameterized dbdy

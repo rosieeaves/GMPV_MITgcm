@@ -147,7 +147,7 @@ C   Note: since SlopeX,Y have been masked, no needs to mask again GM_PsiX,Y
      &         *(GM_bolFac1d(km1)+GM_bolFac1d(k))*op25
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
-          GM_PsiX(i,j,k,bi,bj) = SlopeX(i,j)*taperX(i,j)
+          GM_PsiX(i,j,k,bi,bj) = SlopeX(i,j)*taperX(i,j,k,bi,bj)
 #ifdef GM_READ_K3D_GM
      &     *( op25
      &        *( GM_inpK3dGM(i-1,j,km1,bi,bj)+GM_inpK3dGM(i,j,km1,bi,bj)
@@ -177,7 +177,7 @@ c    &       *maskW(i,j,km1,bi,bj)*maskW(i,j,k,bi,bj)
         ENDDO
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          GM_PsiY(i,j,k,bi,bj) = SlopeY(i,j)*taperY(i,j)
+          GM_PsiY(i,j,k,bi,bj) = SlopeY(i,j)*taperY(i,j,k,bi,bj)
 #ifdef GM_READ_K3D_GM
      &     *( op25
      &        *( GM_inpK3dGM(i,j-1,km1,bi,bj)+GM_inpK3dGM(i,j,km1,bi,bj)

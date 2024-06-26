@@ -137,7 +137,7 @@ CADJ STORE dSigmaDrW(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
           SlopeX(i,j) = SlopeX(i,j)/dSigmaDrW(i,j)
-          taperX(i,j) = 1. _d 0
+          taperX(i,j,k,bi,bj) = 1. _d 0
          ENDDO
         ENDDO
 
@@ -172,7 +172,7 @@ CADJ STORE dSigmaDrS(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx,sNx+OLx
           SlopeY(i,j) = SlopeY(i,j)/dSigmaDrS(i,j)
-          taperY(i,j) = 1. _d 0
+          taperY(i,j,k,bi,bj) = 1. _d 0
          ENDDO
         ENDDO
 
@@ -209,7 +209,7 @@ CADJ STORE dsigmaDrW(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
           SlopeX(i,j) = SlopeX(i,j)/dSigmaDrW(i,j)
-          taperX(i,j) = 1. _d 0
+          taperX(i,j,k,bi,bj) = 1. _d 0
          ENDDO
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -220,7 +220,7 @@ CADJ STORE slopeX(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
           DO i=1-OLx+1,sNx+OLx
            IF ( ABS(SlopeX(i,j)) .GE. slopeCutoff ) THEN
              SlopeX(i,j) = SIGN(slopeCutoff,SlopeX(i,j))
-             taperX(i,j) = 0. _d 0
+             taperX(i,j,k,bi,bj) = 0. _d 0
            ENDIF
           ENDDO
          ENDDO
@@ -243,7 +243,7 @@ CADJ STORE dsigmaDrS(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx,sNx+OLx
           SlopeY(i,j) = SlopeY(i,j)/dSigmaDrS(i,j)
-          taperY(i,j) = 1. _d 0
+          taperY(i,j,k,bi,bj) = 1. _d 0
          ENDDO
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -254,7 +254,7 @@ CADJ STORE slopeY(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
           DO i=1-OLx,sNx+OLx
            IF ( ABS(SlopeY(i,j)) .GE. slopeCutoff ) THEN
              SlopeY(i,j) = SIGN(slopeCutoff,SlopeY(i,j))
-             taperY(i,j) = 0. _d 0
+             taperY(i,j,k,bi,bj) = 0. _d 0
            ENDIF
           ENDDO
          ENDDO
@@ -275,7 +275,7 @@ C-      Simplest adiabatic tapering = Smax/Slope (linear)
           Smod = ABS(SlopeX(i,j))
           IF ( Smod .GT. loc_maxSlope .AND.
      &         Smod .LT. slopeCutoff )
-     &      taperX(i,j) = loc_maxSlope/(Smod+GM_Small_Number)
+     &      taperX(i,j,k,bi,bj) = loc_maxSlope/(Smod+GM_Small_Number)
          ENDDO
         ENDDO
         DO j=1-OLy+1,sNy+OLy
@@ -283,7 +283,7 @@ C-      Simplest adiabatic tapering = Smax/Slope (linear)
           Smod = ABS(SlopeY(i,j))
           IF ( Smod .GT. loc_maxSlope .AND.
      &         Smod .LT. slopeCutoff )
-     &      taperY(i,j) = loc_maxSlope/(Smod+GM_Small_Number)
+     &      taperY(i,j,k,bi,bj) = loc_maxSlope/(Smod+GM_Small_Number)
          ENDDO
         ENDDO
 
@@ -297,7 +297,7 @@ C-      Gerdes, Koberle and Willebrand, Clim. Dyn. 1991
           Smod = ABS(SlopeX(i,j))
           IF ( Smod .GT. loc_maxSlope .AND.
      &         Smod .LT. slopeCutoff )
-     &      taperX(i,j) = maxSlopeSqr/
+     &      taperX(i,j,k,bi,bj) = maxSlopeSqr/
      &           ( SlopeX(i,j)*SlopeX(i,j) + GM_Small_Number )
          ENDDO
         ENDDO
@@ -306,7 +306,7 @@ C-      Gerdes, Koberle and Willebrand, Clim. Dyn. 1991
           Smod = ABS(SlopeY(i,j))
           IF ( Smod .GT. loc_maxSlope .AND.
      &         Smod .LT. slopeCutoff )
-     &      taperY(i,j) = maxSlopeSqr/
+     &      taperY(i,j,k,bi,bj) = maxSlopeSqr/
      &           ( SlopeY(i,j)*SlopeY(i,j) + GM_Small_Number )
          ENDDO
         ENDDO
@@ -317,13 +317,13 @@ C-      Danabasoglu and McWilliams, J. Clim. 1995
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
           Smod = ABS(SlopeX(i,j))*rVel2wUnit(k)
-          taperX(i,j) = op5*( oneRL + TANH( (GM_Scrit-Smod)/GM_Sd ))
+          taperX(i,j,k,bi,bj) = op5*(oneRL+TANH((GM_Scrit-Smod)/GM_Sd))
          ENDDO
         ENDDO
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx,sNx+OLx
           Smod = ABS(SlopeY(i,j))*rVel2wUnit(k)
-          taperY(i,j) = op5*( oneRL + TANH( (GM_Scrit-Smod)/GM_Sd ))
+          taperY(i,j,k,bi,bj) = op5*(oneRL+TANH((GM_Scrit-Smod)/GM_Sd))
          ENDDO
         ENDDO
 
@@ -347,7 +347,7 @@ C-      Large, Danabasoglu and Doney, JPO 1997
             ELSE
               f2 = op5*( oneRL + SIN( fpi*(Rnondim-op5) ))
             ENDIF
-            taperX(i,j) = f1*f2
+            taperX(i,j,k,bi,bj) = f1*f2
           ENDIF
          ENDDO
         ENDDO
@@ -368,7 +368,7 @@ C-      Large, Danabasoglu and Doney, JPO 1997
             ELSE
               f2 = op5*( oneRL + SIN( fpi*(Rnondim-op5) ))
             ENDIF
-            taperY(i,j) = f1*f2
+            taperY(i,j,k,bi,bj) = f1*f2
           ENDIF
          ENDDO
         ENDDO
@@ -398,7 +398,7 @@ CADJ STORE slopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
           ELSE
            SlopeX(i,j) = 5.*SlopeX(i,j)
           ENDIF
-          taperX(i,j) = 1.
+          taperX(i,j,k,bi,bj) = 1.
          ENDDO
         ENDDO
         DO j=1-OLy+1,sNy+OLy
@@ -409,7 +409,7 @@ CADJ STORE slopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
           ELSE
            SlopeY(i,j) = 5.*SlopeY(i,j)
           ENDIF
-          taperY(i,j) = 1.
+          taperY(i,j,k,bi,bj) = 1.
          ENDDO
         ENDDO
 #endif /* GMREDI_WITH_STABLE_ADJOINT */

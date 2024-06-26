@@ -130,7 +130,6 @@ C    Initialize arrays with zero values
           uVelInt(i,j,bi,bj) = 0. _d 0
           vVelInt(i,j,bi,bj) = 0. _d 0
 
-          kappa_GM(i,j) = 0. _d 0
           flux_zInt(i,j,bi,bj) = 0. _d 0
 
         ENDDO
@@ -148,6 +147,8 @@ C    Initialize arrays with zero values
             grad_b_ZG(i,j,k,bi,bj) = 0. _d 0
             dbdz_ZG(i,j,k,bi,bj) = 0. _d 0
             flux_ZG(i,j,k,bi,bj) = 0. _d 0
+
+            kappa_GM(i,j,k,bi,bj) = 0. _d 0
            ENDDO
         ENDDO
       ENDDO
@@ -372,6 +373,9 @@ C Calculate b
           ENDDO
         ENDDO
       ENDDO
+
+      WRITE(standardMessageUnit,*)
+     &      'b_ZC:  = ', b_ZC
      
 C calculate dbdx, dbdy at cell faces
 C set to zero on boundaries
@@ -393,6 +397,12 @@ C face after last b (YCXC) point
         ENDDO
       ENDDO
 
+      WRITE(standardMessageUnit,*)
+     &      'dbdx_YCXG:  = ', dbdx_YCXG
+
+      WRITE(standardMessageUnit,*)
+     &      'dbdy_YGXC:  = ', dbdy_YGXC
+
 C interpolate dbdx, dbdy, dbdz to cell centres
 
       DO k=1,Nr
@@ -407,6 +417,12 @@ C interpolate dbdx, dbdy, dbdz to cell centres
         ENDDO
       ENDDO
 
+      WRITE(standardMessageUnit,*)
+     &      'dbdx_YCXC:  = ', dbdx_YCXC
+
+      WRITE(standardMessageUnit,*)
+     &      'dbdy_YCXC:  = ', dbdy_YCXC
+
 C calculate |grad b|^2 at vertical cell centres
       DO k=1,Nr
         DO j=1,sNy
@@ -418,8 +434,12 @@ C calculate |grad b|^2 at vertical cell centres
         ENDDO
       ENDDO
 
+      WRITE(standardMessageUnit,*)
+     &      'grad_b_ZC:  = ', grad_b_ZC
+
 C interpolate |grad_b|^2 to vertical cell interfaces
 C don't calculate at top and bottom
+C calculate tapered kappa_GM
       DO k=2,Nr
         DO j=1,sNy
           DO i=1,sNx
@@ -427,18 +447,25 @@ C don't calculate at top and bottom
      &        grad_b_ZC(i,j,k-1,bi,bj) + 
      &        (drF(k-1)/2)*((grad_b_ZC(i,j,k,bi,bj)
      &        - grad_b_ZC(i,j,k-1,bi,bj))/drC(k))
+
+            kappa_GM(i,j,k,bi,bj) = (GM_background_K/4)*(
+     &        taperX(i,j,k,bi,bj) + taperX(i+1,j,k,bi,bj) + 
+     &        taperY(i,j,k,bi,bj) + taperY(i,j+1,k,bi,bj))
           ENDDO
         ENDDO
       ENDDO
 
-C calculate tapered kappa_GM
+      WRITE(standardMessageUnit,*)
+     &      'grad_b_ZG:  = ', grad_b_ZG
 
-      DO j=1,sNy
-        DO i=1,sNx
-          kappa_GM(i,j) = (GM_background_K/4)*(taperX(i,j) + 
-     &      taperX(i+1,j) + taperY(i,j) + taperY(i,j+1))
-        ENDDO
-      ENDDO
+      WRITE(standardMessageUnit,*)
+     &      'taperX:  = ', taperX
+
+      WRITE(standardMessageUnit,*)
+     &      'taperY:  = ', taperY
+
+      WRITE(standardMessageUnit,*)
+     &      'kappa_GM:  = ', kappa_GM
 
 C calculate dbdz at vertical cell interfaces
 C don't calculate at top and bottom
@@ -458,16 +485,19 @@ C dbdz_DG will be zero below the seafloor
         ENDDO
       ENDDO
 
+      WRITE(standardMessageUnit,*)
+     &      'dbdz_ZG:  = ', dbdz_ZG
+
 C calculate bar(b'w') at vertical cell interfaces
 C floor(abs(hFacC(k-1))) makes sure flux = 0 below seafloor
 C don't calculate at top and bottom
       DO k=2,Nr
         DO j=1,sNy
           DO i=1,sNx
-            IF (dbdz_ZG(i,j,k,bi,bj).NE.0) THEN
+            IF (dbdz_ZG(i,j,k,bi,bj).GT.0) THEN
               flux_ZG(i,j,k,bi,bj) = 
      &          floor(abs(hFacC(i,j,k-1,bi,bj)))*
-     &          kappa_GM(i,j)*grad_b_ZG(i,j,k,bi,bj)
+     &          kappa_GM(i,j,k,bi,bj)*grad_b_ZG(i,j,k,bi,bj)
      &          /dbdz_ZG(i,j,k,bi,bj)
             ELSE 
               flux_ZG(i,j,k,bi,bj) = 0.
@@ -475,6 +505,9 @@ C don't calculate at top and bottom
           ENDDO
         ENDDO
       ENDDO
+
+      WRITE(standardMessageUnit,*)
+     &      'flux_ZG:  = ', flux_ZG
 
 C set var(b'w') = 0 at top and bottom
 
@@ -497,11 +530,14 @@ C calculate depth integral of flux
         ENDDO
       ENDDO
 
+      WRITE(standardMessageUnit,*)
+     &      'flux_zInt:  = ', flux_zInt
+
 C calculate EKE source term = depth average of flux term
       DO j=1,sNy
         DO i=1,sNx
           IF (abs(R_low(i,j,bi,bj)).NE.0) THEN
-            gEKESource(i,j,bi,bj) = maskInC(i,j,bi,bj)*
+            gEKESource(i,j,bi,bj) = 
      &        partition*flux_zInt(i,j,bi,bj)/
      &        abs(R_low(i,j,bi,bj))  
           ELSE 
@@ -509,6 +545,9 @@ C calculate EKE source term = depth average of flux term
           END IF
         ENDDO
       ENDDO
+
+      WRITE(standardMessageUnit,*)
+     &      'gEKESource:  = ', gEKESource
 
 C--------------------------------------------------------------
 C     CALCULATE TOTAL EKE AND LAMBDA TENDENCY  

@@ -464,14 +464,14 @@ C --------------------------------------------------------------------
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'grad_b_ZC'
+      diagName  = 'gradb_ZC'
       diagTitle = 'grad_b_ZC'
       diagCode  = 'SMR     MR      '
       diagUnits = 'm^2s^-3            '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'grad_b_ZG'
+      diagName  = 'gradb_ZG'
       diagTitle = 'grad_b_ZG'
       diagCode  = 'SMR     MR      '
       diagUnits = 'm^2s^-3            '
