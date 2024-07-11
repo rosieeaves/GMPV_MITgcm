@@ -154,6 +154,7 @@ C    Initialize arrays with zero values
       ENDDO
 
       partition = 0.1
+      NrPhys = Nr + 1
 
 C--------------------------------l------------------------------
 C     DEPTH INTEGRAL OF U AND V FOR ENERGY CONVERSION
@@ -373,9 +374,6 @@ C Calculate b
           ENDDO
         ENDDO
       ENDDO
-
-      WRITE(standardMessageUnit,*)
-     &      'b_ZC:  = ', b_ZC
      
 C calculate dbdx, dbdy at cell faces
 C set to zero on boundaries
@@ -397,12 +395,6 @@ C face after last b (YCXC) point
         ENDDO
       ENDDO
 
-      WRITE(standardMessageUnit,*)
-     &      'dbdx_YCXG:  = ', dbdx_YCXG
-
-      WRITE(standardMessageUnit,*)
-     &      'dbdy_YGXC:  = ', dbdy_YGXC
-
 C interpolate dbdx, dbdy, dbdz to cell centres
 
       DO k=1,Nr
@@ -417,12 +409,6 @@ C interpolate dbdx, dbdy, dbdz to cell centres
         ENDDO
       ENDDO
 
-      WRITE(standardMessageUnit,*)
-     &      'dbdx_YCXC:  = ', dbdx_YCXC
-
-      WRITE(standardMessageUnit,*)
-     &      'dbdy_YCXC:  = ', dbdy_YCXC
-
 C calculate |grad b|^2 at vertical cell centres
       DO k=1,Nr
         DO j=1,sNy
@@ -433,9 +419,6 @@ C calculate |grad b|^2 at vertical cell centres
           ENDDO
         ENDDO
       ENDDO
-
-      WRITE(standardMessageUnit,*)
-     &      'grad_b_ZC:  = ', grad_b_ZC
 
 C interpolate |grad_b|^2 to vertical cell interfaces
 C don't calculate at top and bottom
@@ -455,18 +438,6 @@ C calculate tapered kappa_GM
         ENDDO
       ENDDO
 
-      WRITE(standardMessageUnit,*)
-     &      'grad_b_ZG:  = ', grad_b_ZG
-
-      WRITE(standardMessageUnit,*)
-     &      'taperX:  = ', taperX
-
-      WRITE(standardMessageUnit,*)
-     &      'taperY:  = ', taperY
-
-      WRITE(standardMessageUnit,*)
-     &      'kappa_GM:  = ', kappa_GM
-
 C calculate dbdz at vertical cell interfaces
 C don't calculate at top and bottom
 C min(0.5,hFacC(k)) is for partial cells at bottom
@@ -485,9 +456,6 @@ C dbdz_DG will be zero below the seafloor
         ENDDO
       ENDDO
 
-      WRITE(standardMessageUnit,*)
-     &      'dbdz_ZG:  = ', dbdz_ZG
-
 C calculate bar(b'w') at vertical cell interfaces
 C floor(abs(hFacC(k-1))) makes sure flux = 0 below seafloor
 C don't calculate at top and bottom
@@ -505,9 +473,6 @@ C don't calculate at top and bottom
           ENDDO
         ENDDO
       ENDDO
-
-      WRITE(standardMessageUnit,*)
-     &      'flux_ZG:  = ', flux_ZG
 
 C set var(b'w') = 0 at top and bottom
 
@@ -530,9 +495,6 @@ C calculate depth integral of flux
         ENDDO
       ENDDO
 
-      WRITE(standardMessageUnit,*)
-     &      'flux_zInt:  = ', flux_zInt
-
 C calculate EKE source term = depth average of flux term
       DO j=1,sNy
         DO i=1,sNx
@@ -545,9 +507,6 @@ C calculate EKE source term = depth average of flux term
           END IF
         ENDDO
       ENDDO
-
-      WRITE(standardMessageUnit,*)
-     &      'gEKESource:  = ', gEKESource
 
 C--------------------------------------------------------------
 C     CALCULATE TOTAL EKE AND LAMBDA TENDENCY  
@@ -599,6 +558,92 @@ C--------------------------------------------------------------
      &     + deltaTMom*( gLambda(i,j,1,bi,bj) ),0.)
 
         ENDDO
+      ENDDO
+
+C--------------------------------------------------------------
+C     CALL DIAGNOSTICS
+C--------------------------------------------------------------
+
+C       custom: parameterized EKE
+      CALL DIAGNOSTICS_FILL(EKE,'EKE     ',1,1,2,bi,bj,myThid)
+C       custom: parameterized EKE tendency
+      CALL DIAGNOSTICS_FILL(gEKE,'gEKE    ',1,1,2,bi,bj,myThid)
+C      custom: parameterized EKE conversion
+      CALL DIAGNOSTICS_FILL(gEKEConv,'gEKEConv',1,1,2,bi,bj,myThid)
+C       custom: parameterized EKE advection
+      CALL DIAGNOSTICS_FILL(gEKEAdv,'gEKEAdv ',1,1,2,bi,bj,myThid)
+C       custom: parameterized EKE drag
+      CALL DIAGNOSTICS_FILL(gEKEr,'gEKEr   ',1,1,2,bi,bj,myThid)
+C       custom: parameterized EKE diffusion
+      CALL DIAGNOSTICS_FILL(gEKEDiff,'gEKEDiff',1,1,2,bi,bj,myThid)
+C     SOURCE TERM
+C       custom: parameterized EKE source term
+      CALL DIAGNOSTICS_FILL(gEKESource,'gEKESour',1,1,2,bi,bj,myThid)
+C       custom: parameterized dbdy
+      CALL DIAGNOSTICS_FILL(flux_zInt,'fluxzInt',1,1,2,bi,bj,myThid)
+C       custom: parameterized Lambda
+      CALL DIAGNOSTICS_FILL(Lambda,'Lambda  ',1,1,2,bi,bj,myThid)
+C       custom: parameterized Lambda tendency
+      CALL DIAGNOSTICS_FILL(gLambda,'gLambda ',1,1,2,bi,bj,myThid)
+C       custom: parameterized Lambda generation
+      CALL DIAGNOSTICS_FILL(gLambdaGen,'gLambdaGen',
+     &     1,1,2,bi,bj,myThid)
+C       custom: parameterized Lambda advection
+      CALL DIAGNOSTICS_FILL(gLambdaAdv,'gLambdaAdv',
+     &     1,1,2,bi,bj,myThid)
+C       custom: parameterized Lambda drag
+      CALL DIAGNOSTICS_FILL(gLambdar,'gLambdar',
+     &     1,1,2,bi,bj,myThid)
+C       custom: parameterized Lambda diffusion
+      CALL DIAGNOSTICS_FILL(gLambdaDiff,'gLambdaDiff',
+     &     1,1,2,bi,bj,myThid)
+C       custom: parameterized bar(q'u')
+      CALL DIAGNOSTICS_FILL(quEDDY_YGXC,'quEDDY  ',
+     &     1,1,2,bi,bj,myThid)
+
+C       custom: parameterized bar(q'v')
+      CALL DIAGNOSTICS_FILL(qvEDDY_YCXG,'qvEDDY  ',
+     &     1,1,2,bi,bj,myThid)
+
+C     SOURCE TERM TESTING
+      DO k = 1,Nr
+C       custom: parameterized buoyancy
+        CALL DIAGNOSTICS_FILL(b_ZC(:,:,k,:,:),'b       ',
+     &     k,1,2,bi,bj,myThid)
+C       custom: parameterized dbdx_YCXG
+        CALL DIAGNOSTICS_FILL(dbdx_YCXG(:,:,k,:,:),'dbdxYCXG',
+     &     k,1,2,bi,bj,myThid)
+C       custom: parameterized dbdx_YCXC
+        CALL DIAGNOSTICS_FILL(dbdx_YCXC(:,:,k,:,:),'dbdxYCXC',
+     &     k,1,2,bi,bj,myThid)
+C       custom: parameterized dbdy_YGXC
+        CALL DIAGNOSTICS_FILL(dbdy_YGXC(:,:,k,:,:),'dbdyYGXC',
+     &     k,1,2,bi,bj,myThid)
+C       custom: parameterized dbdy_YCXC
+        CALL DIAGNOSTICS_FILL(dbdy_YCXC(:,:,k,:,:),'dbdyYCXC',
+     &     k,1,2,bi,bj,myThid)
+C       custom: parameterized grad_b_ZC
+        CALL DIAGNOSTICS_FILL(grad_b_ZC(:,:,k,:,:),'gradb_ZC',
+     &     k,1,2,bi,bj,myThid)
+
+C       custom: parameterized dbdz_ZG
+        CALL DIAGNOSTICS_FILL(dbdz_ZG(:,:,k+1,:,:),'dbdz_ZG ',
+     &     k,1,2,bi,bj,myThid)
+C       custom: parameterized kappa_GM
+        CALL DIAGNOSTICS_FILL(kappa_GM(:,:,k+1,:,:),'kappa_GM',
+     &     k,1,2,bi,bj,myThid)
+C       custom: parameterized grad_b_ZG
+        CALL DIAGNOSTICS_FILL(grad_b_ZG(:,:,k+1,:,:),'gradb_ZG',
+     &     k,1,2,bi,bj,myThid)
+C       custom: parameterized flux
+        CALL DIAGNOSTICS_FILL(flux_ZG(:,:,k+1,:,:),'flux_ZG ',
+     &     k,1,2,bi,bj,myThid)
+C       custom: GM taperX
+        CALL DIAGNOSTICS_FILL(taperX(:,:,k+1,:,:),'taperX  ',
+     &     k,1,2,bi,bj,myThid)
+C       custom: GM taperY
+        CALL DIAGNOSTICS_FILL(taperY(:,:,k+1,:,:),'taperY  ',
+     &     k,1,2,bi,bj,myThid)
       ENDDO
 
 

@@ -43,9 +43,9 @@ CEOP
       INTEGER Nr
       PARAMETER (
      &           sNx =  76,
-     &           sNy =  75,
-     &           OLx =   3,
-     &           OLy =   3,
+     &           sNy =  90,
+     &           OLx =   2,
+     &           OLy =   2,
      &           nSx =   1,
      &           nSy =   1,
      &           nPx =   1,
