@@ -130,8 +130,6 @@ C    Initialize arrays with zero values
           uVelInt(i,j,bi,bj) = 0. _d 0
           vVelInt(i,j,bi,bj) = 0. _d 0
 
-          flux_zInt(i,j,bi,bj) = 0. _d 0
-
         ENDDO
       ENDDO 
 
@@ -139,22 +137,41 @@ C    Initialize arrays with zero values
         DO j=1,sNy
           DO i=1,sNx
             b_ZC(i,j,k,bi,bj) = 0. _d 0
-            dbdx_YCXG(i,j,k,bi,bj) = 0. _d 0
-            dbdx_YCXC(i,j,k,bi,bj) = 0. _d 0
-            dbdy_YGXC(i,j,k,bi,bj) = 0. _d 0
-            dbdy_YCXC(i,j,k,bi,bj) = 0. _d 0
-            grad_b_ZC(i,j,k,bi,bj) = 0. _d 0
-            grad_b_ZG(i,j,k,bi,bj) = 0. _d 0
-            dbdz_ZG(i,j,k,bi,bj) = 0. _d 0
-            flux_ZG(i,j,k,bi,bj) = 0. _d 0
-
-            kappa_GM(i,j,k,bi,bj) = 0. _d 0
+            dbdx_YCXGZC(i,j,k,bi,bj) = 0. _d 0
+            dbdy_YGXCZC(i,j,k,bi,bj) = 0. _d 0
+            kGM_x_YCXGZC(i,j,k,bi,bj) = 0. _d 0
+            kGM_y_YGXCZC(i,j,k,bi,bj) = 0. _d 0
+            dbdx_YCXGZG(i,j,k,bi,bj) = 0. _d 0
+            dbdy_YGXCZG(i,j,k,bi,bj) = 0. _d 0
+            kGM_x_YCXGZG(i,j,k,bi,bj) = 0. _d 0
+            kGM_y_YGXCZG(i,j,k,bi,bj) = 0. _d 0
+            dbdz_YCXCZG(i,j,k,bi,bj) = 0. _d 0
+            dbdz_YCXGZG(i,j,k,bi,bj) = 0. _d 0
+            dbdz_YGXCZG(i,j,k,bi,bj) = 0. _d 0
+            flux_YCXGZG(i,j,k,bi,bj) = 0. _d 0
+            flux_YGXCZG(i,j,k,bi,bj) = 0. _d 0
            ENDDO
         ENDDO
       ENDDO
 
-      partition = 0.1
-      NrPhys = Nr + 1
+      DO j=1,sNy
+        DO i=1,sNx
+          dbdx_YCXGZG(i,j,Nr+1,bi,bj) = 0. _d 0
+          dbdy_YGXCZG(i,j,Nr+1,bi,bj) = 0. _d 0
+          kGM_x_YCXGZG(i,j,Nr+1,bi,bj) = 0. _d 0
+          kGM_y_YGXCZG(i,j,Nr+1,bi,bj) = 0. _d 0
+          dbdz_YCXCZG(i,j,Nr+1,bi,bj) = 0. _d 0
+          dbdz_YCXGZG(i,j,Nr+1,bi,bj) = 0. _d 0
+          dbdz_YGXCZG(i,j,Nr+1,bi,bj) = 0. _d 0
+          flux_YCXGZG(i,j,Nr+1,bi,bj) = 0. _d 0
+          flux_YGXCZG(i,j,Nr+1,bi,bj) = 0. _d 0
+          fluxInt_YCXG(i,j,bi,bj) = 0. _d 0
+          fluxInt_YGXC(i,j,bi,bj) = 0. _d 0
+          fluxInt_YCXC(i,j,bi,bj) = 0. _d 0
+        ENDDO
+      ENDDO
+
+      partition = 0.3
 
 C--------------------------------l------------------------------
 C     DEPTH INTEGRAL OF U AND V FOR ENERGY CONVERSION
@@ -369,71 +386,75 @@ C Calculate b
       DO k=1,Nr
         DO j=1,sNy
           DO i=1,sNx
-            b_ZC(i,j,k,bi,bj) = -maskC(i,j,k,bi,bj)*
-     &      gravity*(rhoInSitu(i,j,k,bi,bj))/rhoConst
+            b_ZC(i,j,k,bi,bj) = -gravity*
+     &        (rhoInSitu(i,j,k,bi,bj))/rhoConst
           ENDDO
         ENDDO
       ENDDO
      
-C calculate dbdx, dbdy at cell faces
-C set to zero on boundaries
-C run through extra value in x and y direction to get extra cell 
-C face after last b (YCXC) point
+C calculate dbdx, dbdy at cell faces at ZC
+C set to zero at partial cells
 
       DO k=1,Nr
         DO j=1,sNy+1
           DO i=1,sNx+1
-            dbdx_YCXG(i,j,k,bi,bj) = (b_ZC(i,j,k,bi,bj) 
-     &        - b_ZC(i-1,j,k,bi,bj))/dxC(i,j,bi,bj)
-     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1)
+            IF (hFacC(i,j,k,bi,bj) .GE. 0.5) THEN
+              IF (hFacC(i-1,j,k,bi,bj).GE. 0.5) THEN
+                dbdx_YCXGZC(i,j,k,bi,bj) = ((b_ZC(i,j,k,bi,bj) 
+     &            - b_ZC(i-1,j,k,bi,bj))/dxC(i,j,bi,bj))
+     &            *floor(abs(hFacC(i,j,k,bi,bj)))
+     &            *floor(abs(hFacC(i-1,j,k,bi,bj)))
+              ENDIF
 
-            dbdy_YGXC(i,j,k,bi,bj) = (b_ZC(i,j,k,bi,bj) 
-     &        - b_ZC(i,j-1,k,bi,bj))/dyC(i,j,bi,bj)
-     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i,j-1,bi,bj))),1)
-
+              IF (hFacC(i,j-1,k,bi,bj) .GE. 0.5) THEN
+                dbdy_YGXCZC(i,j,k,bi,bj) = ((b_ZC(i,j,k,bi,bj) 
+     &            - b_ZC(i,j-1,k,bi,bj))/dyC(i,j,bi,bj))
+     &            *floor(abs(hFacC(i,j,k,bi,bj)))
+     &            *floor(abs(hFacC(i,j-1,k,bi,bj)))
+              ENDIF
+            ENDIF
           ENDDO
         ENDDO
       ENDDO
 
-C interpolate dbdx, dbdy, dbdz to cell centres
-
-      DO k=1,Nr
-        DO j=1,sNy
-          DO i=1,sNx
-            dbdx_YCXC(i,j,k,bi,bj) = (dbdx_YCXG(i,j,k,bi,bj) 
-     &        + dbdx_YCXG(i+1,j,k,bi,bj))/2
-        
-            dbdy_YCXC(i,j,k,bi,bj) = (dbdy_YGXC(i,j,k,bi,bj)
-     &        + dbdy_YGXC(i,j+1,k,bi,bj))/2
-          ENDDO
-        ENDDO
-      ENDDO
-
-C calculate |grad b|^2 at vertical cell centres
-      DO k=1,Nr
-        DO j=1,sNy
-          DO i=1,sNx
-            grad_b_ZC(i,j,k,bi,bj) = 
-     &        (SQRT(dbdx_YCXC(i,j,k,bi,bj)**2
-     &        + dbdy_YCXC(i,j,k,bi,bj)**2))**2
-          ENDDO
-        ENDDO
-      ENDDO
-
-C interpolate |grad_b|^2 to vertical cell interfaces
+C calculate kGM_x_ZC and kGM_y_ZC
 C don't calculate at top and bottom
-C calculate tapered kappa_GM
-      DO k=2,Nr
-        DO j=1,sNy
-          DO i=1,sNx
-            grad_b_ZG(i,j,k,bi,bj) = 
-     &        grad_b_ZC(i,j,k-1,bi,bj) + 
-     &        (drF(k-1)/2)*((grad_b_ZC(i,j,k,bi,bj)
-     &        - grad_b_ZC(i,j,k-1,bi,bj))/drC(k))
+C they should be zero at top and bottom
 
-            kappa_GM(i,j,k,bi,bj) = (GM_background_K/4)*(
-     &        taperX(i,j,k,bi,bj) + taperX(i+1,j,k,bi,bj) + 
-     &        taperY(i,j,k,bi,bj) + taperY(i,j+1,k,bi,bj))
+      DO k=1,Nr
+        DO j=1,sNy+1
+          DO i=1,sNx+1
+            kGM_x_YCXGZC(i,j,k,bi,bj) = GM_background_K
+     &       *taperX(i,j,k,bi,bj)
+
+            kGM_y_YGXCZC(i,j,k,bi,bj) = GM_background_K
+     &       *taperY(i,j,k,bi,bj)
+          ENDDO
+        ENDDO
+      ENDDO
+
+C interpolat dbdx, dbdy, kGM_x and kGM_y
+C to ZG points 
+
+      DO k=2,Nr
+        DO j=1,sNy+1
+          DO i=1,sNx+1
+            dbdx_YCXGZG(i,j,k,bi,bj) = dbdx_YCXGZC(i,j,k-1,bi,bj) + 
+     &        0.5*drF(k-1)*((dbdx_YCXGZC(i,j,k-1,bi,bj) 
+     &        - dbdx_YCXGZC(i,j,k,bi,bj))/drC(k))
+
+            dbdy_YGXCZG(i,j,k,bi,bj) = dbdy_YGXCZC(i,j,k-1,bi,bj) + 
+     &        0.5*drF(k-1)*((dbdy_YGXCZC(i,j,k-1,bi,bj) 
+     &        - dbdy_YGXCZC(i,j,k,bi,bj))/drC(k))
+
+            kGM_x_YCXGZG(i,j,k,bi,bj) = kGM_x_YCXGZC(i,j,k-1,bi,bj) + 
+     &        0.5*drF(k-1)*((kGM_x_YCXGZC(i,j,k-1,bi,bj) 
+     &        - kGM_x_YCXGZC(i,j,k,bi,bj))/drC(k))
+
+            kGM_y_YGXCZG(i,j,k,bi,bj) = kGM_y_YGXCZC(i,j,k-1,bi,bj) + 
+     &        0.5*drF(k-1)*((kGM_y_YGXCZC(i,j,k-1,bi,bj) 
+     &        - kGM_y_YGXCZC(i,j,k,bi,bj))/drC(k))
+            
           ENDDO
         ENDDO
       ENDDO
@@ -441,66 +462,90 @@ C calculate tapered kappa_GM
 C calculate dbdz at vertical cell interfaces
 C don't calculate at top and bottom
 C min(0.5,hFacC(k)) is for partial cells at bottom
-C floor(abc(hFacC(ii,j,k-1,bi,bj))) is for below seafloor
+C floor(abc(hFacC(i,j,k-1,bi,bj))) is for below seafloor
 C dbdz_DG will be zero below the seafloor
 
       DO k=2,Nr
-        DO j=1,sNy
-          DO i=1,sNx
-            dbdz_ZG(i,j,k,bi,bj) = 
+        DO j=1,sNy+1
+          DO i=1,sNx+1
+            dbdz_YCXCZG(i,j,k,bi,bj) = max(
      &        floor(abs(hFacC(i,j,k-1,bi,bj)))*
      &        (b_ZC(i,j,k-1,bi,bj) - b_ZC(i,j,k,bi,bj))
      &        /(0.5*drC(k-1) + 
-     &        MIN(0.5,hFacC(i,j,k,bi,bj))*drC(k))
+     &        0.5*hFacC(i,j,k,bi,bj)*drC(k)),
+     &        1.E-6)
           ENDDO
         ENDDO
       ENDDO
 
-C calculate bar(b'w') at vertical cell interfaces
-C floor(abs(hFacC(k-1))) makes sure flux = 0 below seafloor
-C don't calculate at top and bottom
+C interpolate dbdz to YGXC and YCXG
+
       DO k=2,Nr
-        DO j=1,sNy
-          DO i=1,sNx
-            IF (dbdz_ZG(i,j,k,bi,bj).GT.0) THEN
-              flux_ZG(i,j,k,bi,bj) = 
-     &          floor(abs(hFacC(i,j,k-1,bi,bj)))*
-     &          kappa_GM(i,j,k,bi,bj)*grad_b_ZG(i,j,k,bi,bj)
-     &          /dbdz_ZG(i,j,k,bi,bj)
-            ELSE 
-              flux_ZG(i,j,k,bi,bj) = 0.
-            END IF
+        DO j=1,sNy+1
+          DO i=1,sNx+1
+            dbdz_YCXGZG(i,j,k,bi,bj) = (dbdz_YCXCZG(i,j,k,bi,bj)
+     &        + dbdz_YCXCZG(i-1,j,k,bi,bj))/2
+
+            dbdz_YGXCZG(i,j,k,bi,bj) = (dbdz_YCXCZG(i,j,k,bi,bj)
+     &        + dbdz_YCXCZG(i,j-1,k,bi,bj))/2
           ENDDO
         ENDDO
       ENDDO
 
-C set var(b'w') = 0 at top and bottom
+C calculate x and y componenets of flux
 
-      DO j=1,sNy
-        DO i=1,sNx
-          flux_ZG(i,j,0,bi,bj) = 0.
-          flux_ZG(i,j,Nr+1,bi,bj) = 0.
+      DO k=2,Nr
+        DO j=1,sNy+1
+          DO i=1,sNx+1
+C           x-component 
+            flux_YCXGZG(i,j,k,bi,bj) = (kGM_x_YCXGZG(i,j,k,bi,bj)*
+     &        (dbdx_YCXGZG(i,j,k,bi,bj)**2)/dbdz_YCXGZG(i,j,k,bi,bj))*
+     &        floor(abs(hFacC(i-1,j,k+1,bi,bj)))*
+     &        floor(abs(hFacC(i,j,k+1,bi,bj)))
+
+C           y-component
+            flux_YGXCZG(i,j,k,bi,bj) = (kGM_y_YGXCZG(i,j,k,bi,bj)*
+     &        (dbdy_YGXCZG(i,j,k,bi,bj)**2)/dbdz_YGXCZG(i,j,k,bi,bj))*
+     &        floor(abs(hFacC(i,j-1,k+1,bi,bj)))*
+     &        floor(abs(hFacC(i,j,k+1,bi,bj)))
+            
+          ENDDO
         ENDDO
       ENDDO
 
-C calculate depth integral of flux
+C calculate depth integral of x and y components of flux
       DO k=1,Nr
-        DO j=1,sNy
-          DO i=1,sNx
-            flux_zInt(i,j,bi,bj) = 
-     &        flux_zInt(i,j,bi,bj) + 
-     &        flux_ZG(i,j,k,bi,bj)*(0.5*drC(k-1) + 
-     &        0.5*hFacC(i,j,k,bi,bj)*drC(k))
+        DO j=1,sNy+1
+          DO i=1,sNx+1
+            fluxInt_YCXG(i,j,bi,bj) = 
+     &        fluxInt_YCXG(i,j,bi,bj) + 
+     &        flux_YCXGZG(i,j,k,bi,bj)*drC(k)
+
+             fluxInt_YGXC(i,j,bi,bj) = 
+     &        fluxInt_YGXC(i,j,bi,bj) + 
+     &        flux_YGXCZG(i,j,k,bi,bj)*drC(k)
           ENDDO
         ENDDO
       ENDDO
 
+C interpolate flux to YCXC
+cd
+      DO j=1,sNy
+          DO i=1,sNx
+            fluxInt_YCXC(i,j,bi,bj) = (
+     &        fluxInt_YCXG(i,j,bi,bj) + 
+     &        fluxInt_YCXG(i+1,j,bi,bj) +
+     &        fluxInt_YGXC(i,j,bi,bj) + 
+     &        fluxInt_YGXC(i,j+1,bi,bj))/4
+          ENDDO
+        ENDDO
+        
 C calculate EKE source term = depth average of flux term
       DO j=1,sNy
         DO i=1,sNx
           IF (abs(R_low(i,j,bi,bj)).NE.0) THEN
             gEKESource(i,j,bi,bj) = 
-     &        partition*flux_zInt(i,j,bi,bj)/
+     &        partition*fluxInt_YCXC(i,j,bi,bj)/
      &        abs(R_low(i,j,bi,bj))  
           ELSE 
             gEKESource(i,j,bi,bj) = 0.
@@ -579,8 +624,6 @@ C       custom: parameterized EKE diffusion
 C     SOURCE TERM
 C       custom: parameterized EKE source term
       CALL DIAGNOSTICS_FILL(gEKESource,'gEKESour',1,1,2,bi,bj,myThid)
-C       custom: parameterized dbdy
-      CALL DIAGNOSTICS_FILL(flux_zInt,'fluxzInt',1,1,2,bi,bj,myThid)
 C       custom: parameterized Lambda
       CALL DIAGNOSTICS_FILL(Lambda,'Lambda  ',1,1,2,bi,bj,myThid)
 C       custom: parameterized Lambda tendency
@@ -604,46 +647,67 @@ C       custom: parameterized bar(q'u')
 C       custom: parameterized bar(q'v')
       CALL DIAGNOSTICS_FILL(qvEDDY_YCXG,'qvEDDY  ',
      &     1,1,2,bi,bj,myThid)
+C       custom: fluxInt_YCXG
+        CALL DIAGNOSTICS_FILL(fluxInt_YCXG,'fluxXInt',
+     &     1,1,2,bi,bj,myThid)
+C       custom: fluxInt_YGXC
+        CALL DIAGNOSTICS_FILL(fluxInt_YGXC,'fluxYInt',
+     &     1,1,2,bi,bj,myThid)
+C       custom: fluxInt_YCXC
+        CALL DIAGNOSTICS_FILL(fluxInt_YCXC,'fluxInt ',
+     &     1,1,2,bi,bj,myThid)
 
 C     SOURCE TERM TESTING
       DO k = 1,Nr
 C       custom: parameterized buoyancy
         CALL DIAGNOSTICS_FILL(b_ZC(:,:,k,:,:),'b       ',
      &     k,1,2,bi,bj,myThid)
-C       custom: parameterized dbdx_YCXG
-        CALL DIAGNOSTICS_FILL(dbdx_YCXG(:,:,k,:,:),'dbdxYCXG',
+C       custom: dbdx_YCXGZC
+        CALL DIAGNOSTICS_FILL(dbdx_YCXGZC(:,:,k,:,:),'dbdxZC  ',
      &     k,1,2,bi,bj,myThid)
-C       custom: parameterized dbdx_YCXC
-        CALL DIAGNOSTICS_FILL(dbdx_YCXC(:,:,k,:,:),'dbdxYCXC',
+C       custom: dbdy_YGXCZC
+        CALL DIAGNOSTICS_FILL(dbdy_YGXCZC(:,:,k,:,:),'dbdyZC  ',
      &     k,1,2,bi,bj,myThid)
-C       custom: parameterized dbdy_YGXC
-        CALL DIAGNOSTICS_FILL(dbdy_YGXC(:,:,k,:,:),'dbdyYGXC',
+C       custom: kGM_x_YCXGZC
+        CALL DIAGNOSTICS_FILL(kGM_x_YCXGZC(:,:,k,:,:),'kGMxZC  ',
      &     k,1,2,bi,bj,myThid)
-C       custom: parameterized dbdy_YCXC
-        CALL DIAGNOSTICS_FILL(dbdy_YCXC(:,:,k,:,:),'dbdyYCXC',
+C       custom: kGM_y_YGXCZC
+        CALL DIAGNOSTICS_FILL(kGM_y_YGXCZC(:,:,k,:,:),'kGMyZC  ',
      &     k,1,2,bi,bj,myThid)
-C       custom: parameterized grad_b_ZC
-        CALL DIAGNOSTICS_FILL(grad_b_ZC(:,:,k,:,:),'gradb_ZC',
+C       custom: dbdx_YCXGZG
+        CALL DIAGNOSTICS_FILL(dbdx_YCXGZG(:,:,k,:,:),'dbdxZG  ',
      &     k,1,2,bi,bj,myThid)
-
-C       custom: parameterized dbdz_ZG
-        CALL DIAGNOSTICS_FILL(dbdz_ZG(:,:,k+1,:,:),'dbdz_ZG ',
+C       custom: dbdy_YGXCZG
+        CALL DIAGNOSTICS_FILL(dbdy_YGXCZG(:,:,k,:,:),'dbdyZG  ',
      &     k,1,2,bi,bj,myThid)
-C       custom: parameterized kappa_GM
-        CALL DIAGNOSTICS_FILL(kappa_GM(:,:,k+1,:,:),'kappa_GM',
+C       custom: kGM_x_YCXGZG
+        CALL DIAGNOSTICS_FILL(kGM_x_YCXGZG(:,:,k,:,:),'kGMxZG  ',
      &     k,1,2,bi,bj,myThid)
-C       custom: parameterized grad_b_ZG
-        CALL DIAGNOSTICS_FILL(grad_b_ZG(:,:,k+1,:,:),'gradb_ZG',
+C       custom: kGM_y_YGXCZG
+        CALL DIAGNOSTICS_FILL(kGM_y_YGXCZG(:,:,k,:,:),'kGMyZG  ',
      &     k,1,2,bi,bj,myThid)
-C       custom: parameterized flux
-        CALL DIAGNOSTICS_FILL(flux_ZG(:,:,k+1,:,:),'flux_ZG ',
+C       custom: dbdz_YCXCZG
+        CALL DIAGNOSTICS_FILL(dbdz_YCXCZG(:,:,k,:,:),'dbdzYCXC',
+     &     k,1,2,bi,bj,myThid)
+C       custom: dbdz_YCXGZG
+        CALL DIAGNOSTICS_FILL(dbdz_YCXGZG(:,:,k,:,:),'dbdzYCXG',
+     &     k,1,2,bi,bj,myThid)
+C       custom: dbdz_YGXCZG
+        CALL DIAGNOSTICS_FILL(dbdz_YGXCZG(:,:,k,:,:),'dbdzYGXC',
+     &     k,1,2,bi,bj,myThid)
+C       custom: flux_YCXGZG
+        CALL DIAGNOSTICS_FILL(flux_YCXGZG(:,:,k,:,:),'fluxX   ',
+     &     k,1,2,bi,bj,myThid)
+C       custom: flux_YGXCZG
+        CALL DIAGNOSTICS_FILL(flux_YGXCZG(:,:,k,:,:),'fluxY   ',
      &     k,1,2,bi,bj,myThid)
 C       custom: GM taperX
-        CALL DIAGNOSTICS_FILL(taperX(:,:,k+1,:,:),'taperX  ',
+        CALL DIAGNOSTICS_FILL(taperX(:,:,k,:,:),'taperX  ',
      &     k,1,2,bi,bj,myThid)
 C       custom: GM taperY
-        CALL DIAGNOSTICS_FILL(taperY(:,:,k+1,:,:),'taperY  ',
+        CALL DIAGNOSTICS_FILL(taperY(:,:,k,:,:),'taperY  ',
      &     k,1,2,bi,bj,myThid)
+
       ENDDO
 
 

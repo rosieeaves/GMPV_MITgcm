@@ -422,71 +422,113 @@ C --------------------------------------------------------------------
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'dbdxYCXG'
-      diagTitle = 'dbdx_YCXG'
-      diagCode  = 'SU      MR      '
+      diagName  = 'dbdxZC  '
+      diagTitle = 'dbdx_YCXGZC'
+      diagCode  = 'UU      MR      '
       diagUnits = 'm^2s^-3            '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'dbdxYCXC'
-      diagTitle = 'dbdx_YCXC'
-      diagCode  = 'SM      MR      '
+      diagName  = 'dbdyZC  '
+      diagTitle = 'dbdy_YGXCZC'
+      diagCode  = 'VV      MR      '
       diagUnits = 'm^2s^-3            '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'dbdyYGXC'
-      diagTitle = 'dbdy_YGXC'
-      diagCode  = 'SV      MR      '
+      diagName  = 'kGMxZC  '
+      diagTitle = 'kGM_x_YCXGZC'
+      diagCode  = 'UU      MR      '
       diagUnits = 'm^2s^-3            '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'dbdyYCXC'
-      diagTitle = 'dbdy_YCXC'
-      diagCode  = 'SM      MR      '
+      diagName  = 'kGMyZC  '
+      diagTitle = 'kGM_y_YGXCZC'
+      diagCode  = 'VV      MR      '
       diagUnits = 'm^2s^-3            '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'dbdz_ZG '
-      diagTitle = 'dbdz_ZG'
+      diagName  = 'dbdxZG  '
+      diagTitle = 'dbdx_YCXGZG'
+      diagCode  = 'UU      LR      '
+      diagUnits = 'm^2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'dbdyZG  '
+      diagTitle = 'dbdy_YGXCZG'
+      diagCode  = 'VV      LR      '
+      diagUnits = 'm^2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'kGMxZG  '
+      diagTitle = 'kGM_x_YCXGZG'
+      diagCode  = 'UU      LR      '
+      diagUnits = 'm^2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'kGMyZG  '
+      diagTitle = 'kGM_y_YGXCZG'
+      diagCode  = 'VV      LR      '
+      diagUnits = 'm^2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'dbdzYCXC'
+      diagTitle = 'dbdz_YCXCZG'
       diagCode  = 'SM      LR      '
       diagUnits = 'm^2s^-3            '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'kappa_GM'
-      diagTitle = 'kappa_GM'
-      diagCode  = 'SM      LR      '
+      diagName  = 'dbdzYCXG'
+      diagTitle = 'dbdz_YCXGZG'
+      diagCode  = 'SU      LR      '
       diagUnits = 'm^2s^-3            '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'gradb_ZC'
-      diagTitle = 'grad_b_ZC'
-      diagCode  = 'SM      MR      '
+      diagName  = 'dbdzYGXC'
+      diagTitle = 'dbdz_YGXCZG'
+      diagCode  = 'SV      LR      '
       diagUnits = 'm^2s^-3            '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'gradb_ZG'
-      diagTitle = 'grad_b_ZG'
-      diagCode  = 'SM      LR      '
+      diagName  = 'fluxX   '
+      diagTitle = 'fluxX_YCXGZG'
+      diagCode  = 'UU P    LR      '
       diagUnits = 'm^2s^-3            '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'flux_ZG '
-      diagTitle = 'flux_ZG'
-      diagCode  = 'SM P    LR      '
+      diagName  = 'fluxY   '
+      diagTitle = 'fluxY_YGXCZG'
+      diagCode  = 'VV P    LR      '
       diagUnits = 'm^2s^-3            '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'fluxzInt'
-      diagTitle = 'flux_zInt'
+      diagName  = 'fluxXInt'
+      diagTitle = 'fluxXInt_YCXG'
+      diagCode  = 'UU P    M1      '
+      diagUnits = 'm^2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'fluxYInt'
+      diagTitle = 'fluxYInt_YGXC'
+      diagCode  = 'VV P    M1      '
+      diagUnits = 'm^2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'fluxInt '
+      diagTitle = 'fluxInt_YCXC'
       diagCode  = 'SM P    M1      '
       diagUnits = 'm^2s^-3            '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -494,14 +536,14 @@ C --------------------------------------------------------------------
 
       diagName  = 'taperX  '
       diagTitle = 'taperX'
-      diagCode  = 'SU      LR      '
+      diagCode  = 'UU      LR      '
       diagUnits = 'm^2s^-3            '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'taperY  '
       diagTitle = 'taperY'
-      diagCode  = 'SV      LR      '
+      diagCode  = 'VV      LR      '
       diagUnits = 'm^2s^-3            '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )

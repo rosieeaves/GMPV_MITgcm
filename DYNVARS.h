@@ -56,11 +56,14 @@ C     gLambdaNm, gLambdaNm1   :: parameterixed eddy kinetic energy time tendenci
      &                   dqdx_YGXC, dqdy_YCXG,
      &                   modGradq_YCXG, modGradq_YGXC,
      &                   uVelInt, vVelInt,
-     &                   b_ZC, dbdx_YCXG, dbdx_YCXC,
-     &                   dbdy_YGXC, dbdy_YCXC, dbdz_ZG,
-     &                   grad_b_ZC, grad_b_ZG,
-     &                   flux_ZG, flux_zInt,
-     &                   , NrPhys
+     &                   b_ZC, dbdx_YCXGZC, dbdy_YGXCZC,
+     &                   kGM_x_YCXGZC, kGM_y_YGXCZC,
+     &                   dbdx_YCXGZG, dbdy_YGXCZG,
+     &                   kGM_x_YCXGZG, kGM_y_YGXCZG,
+     &                   dbdz_YCXCZG, dbdz_YCXGZG, 
+     &                   dbdz_YGXCZG, flux_YCXGZG, 
+     &                   flux_YGXCZG, fluxInt_YCXG, 
+     &                   fluxInt_YGXC, fluxInt_YCXC
 #else /* ALLOW_ADAMSBASHFORTH_3 */
       COMMON /DYNVARS_R/
      &                   etaN,
@@ -80,11 +83,14 @@ C     gLambdaNm, gLambdaNm1   :: parameterixed eddy kinetic energy time tendenci
      &                   dqdx_YGXC, dqdy_YCXG,
      &                   modGradq_YCXG, modGradq_YGXC,
      &                   uVelInt, vVelInt,
-     &                   b_ZC, dbdx_YCXG, dbdx_YCXC,
-     &                   dbdy_YGXC, dbdy_YCXC, dbdz_ZG,
-     &                   grad_b_ZC, grad_b_ZG,
-     &                   flux_ZG, flux_zInt,
-     &                   kappa_GM, NrPhys
+     &                   b_ZC, dbdx_YCXGZC, dbdy_YGXCZC,
+     &                   kGM_x_YCXGZC, kGM_y_YGXCZC,
+     &                   dbdx_YCXGZG, dbdy_YGXCZG,
+     &                   kGM_x_YCXGZG, kGM_y_YGXCZG,
+     &                   dbdz_YCXCZG, dbdz_YCXGZG, 
+     &                   dbdz_YGXCZG, flux_YCXGZG, 
+     &                   flux_YGXCZG, fluxInt_YCXG, 
+     &                   fluxInt_YGXC, fluxInt_YCXC
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
       _RL  etaN  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  uVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -144,16 +150,22 @@ C     SOURCE TERM
       INTEGER  NrPhys
 C     SOURCE TESTING
       _RL  b_ZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  dbdx_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  dbdx_YCXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  dbdy_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  dbdy_YCXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  grad_b_ZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  grad_b_ZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
-      _RL  kappa_GM(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
-      _RL  dbdz_ZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
-      _RL  flux_ZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
-      _RL  flux_zInt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  dbdx_YCXGZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  dbdy_YGXCZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  kGM_x_YCXGZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  kGM_y_YGXCZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  dbdx_YCXGZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
+      _RL  dbdy_YGXCZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
+      _RL  kGM_x_YCXGZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
+      _RL  kGM_y_YGXCZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
+      _RL  dbdz_YCXCZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
+      _RL  dbdz_YCXGZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
+      _RL  dbdz_YGXCZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
+      _RL  flux_YCXGZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
+      _RL  flux_YGXCZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
+      _RL  fluxInt_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  fluxInt_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  fluxInt_YCXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       
 #ifdef ALLOW_ADAMSBASHFORTH_3
       _RL  guNm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,2)
