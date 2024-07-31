@@ -58,8 +58,8 @@ C     gLambdaNm, gLambdaNm1   :: parameterixed eddy kinetic energy time tendenci
      &                   uVelInt, vVelInt,
      &                   b_ZC, dbdx_YCXGZC, dbdy_YGXCZC,
      &                   kGM_x_YCXGZC, kGM_y_YGXCZC,
-     &                   dbdx_YCXGZG, dbdy_YGXCZG,
-     &                   kGM_x_YCXGZG, kGM_y_YGXCZG,
+     &                   numx_YCXGZC, numy_YGXCZC,
+     &                   numx_YCXGZG, numy_YGXCZG,
      &                   dbdz_YCXCZG, dbdz_YCXGZG, 
      &                   dbdz_YGXCZG, flux_YCXGZG, 
      &                   flux_YGXCZG, fluxInt_YCXG, 
@@ -85,8 +85,8 @@ C     gLambdaNm, gLambdaNm1   :: parameterixed eddy kinetic energy time tendenci
      &                   uVelInt, vVelInt,
      &                   b_ZC, dbdx_YCXGZC, dbdy_YGXCZC,
      &                   kGM_x_YCXGZC, kGM_y_YGXCZC,
-     &                   dbdx_YCXGZG, dbdy_YGXCZG,
-     &                   kGM_x_YCXGZG, kGM_y_YGXCZG,
+     &                   numx_YCXGZC, numy_YGXCZC,
+     &                   numx_YCXGZG, numy_YGXCZG,
      &                   dbdz_YCXCZG, dbdz_YCXGZG, 
      &                   dbdz_YGXCZG, flux_YCXGZG, 
      &                   flux_YGXCZG, fluxInt_YCXG, 
@@ -154,10 +154,10 @@ C     SOURCE TESTING
       _RL  dbdy_YGXCZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  kGM_x_YCXGZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  kGM_y_YGXCZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  dbdx_YCXGZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
-      _RL  dbdy_YGXCZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
-      _RL  kGM_x_YCXGZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
-      _RL  kGM_y_YGXCZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
+      _RL  numx_YCXGZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  numy_YGXCZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  numx_YCXGZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
+      _RL  numy_YGXCZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
       _RL  dbdz_YCXCZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
       _RL  dbdz_YCXGZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
       _RL  dbdz_YGXCZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)

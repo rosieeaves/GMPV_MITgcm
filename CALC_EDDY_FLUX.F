@@ -141,10 +141,10 @@ C    Initialize arrays with zero values
             dbdy_YGXCZC(i,j,k,bi,bj) = 0. _d 0
             kGM_x_YCXGZC(i,j,k,bi,bj) = 0. _d 0
             kGM_y_YGXCZC(i,j,k,bi,bj) = 0. _d 0
-            dbdx_YCXGZG(i,j,k,bi,bj) = 0. _d 0
-            dbdy_YGXCZG(i,j,k,bi,bj) = 0. _d 0
-            kGM_x_YCXGZG(i,j,k,bi,bj) = 0. _d 0
-            kGM_y_YGXCZG(i,j,k,bi,bj) = 0. _d 0
+            numx_YCXGZC(i,j,k,bi,bj) = 0. _d 0
+            numy_YGXCZC(i,j,k,bi,bj) = 0. _d 0
+            numx_YCXGZG(i,j,k,bi,bj) = 0. _d 0
+            numy_YGXCZG(i,j,k,bi,bj) = 0. _d 0
             dbdz_YCXCZG(i,j,k,bi,bj) = 0. _d 0
             dbdz_YCXGZG(i,j,k,bi,bj) = 0. _d 0
             dbdz_YGXCZG(i,j,k,bi,bj) = 0. _d 0
@@ -156,10 +156,8 @@ C    Initialize arrays with zero values
 
       DO j=1,sNy
         DO i=1,sNx
-          dbdx_YCXGZG(i,j,Nr+1,bi,bj) = 0. _d 0
-          dbdy_YGXCZG(i,j,Nr+1,bi,bj) = 0. _d 0
-          kGM_x_YCXGZG(i,j,Nr+1,bi,bj) = 0. _d 0
-          kGM_y_YGXCZG(i,j,Nr+1,bi,bj) = 0. _d 0
+          numx_YCXGZG(i,j,Nr+1,bi,bj) = 0. _d 0
+          numy_YGXCZG(i,j,Nr+1,bi,bj) = 0. _d 0
           dbdz_YCXCZG(i,j,Nr+1,bi,bj) = 0. _d 0
           dbdz_YCXGZG(i,j,Nr+1,bi,bj) = 0. _d 0
           dbdz_YGXCZG(i,j,Nr+1,bi,bj) = 0. _d 0
@@ -171,7 +169,7 @@ C    Initialize arrays with zero values
         ENDDO
       ENDDO
 
-      partition = 0.3
+      partition = 1.
 
 C--------------------------------l------------------------------
 C     DEPTH INTEGRAL OF U AND V FOR ENERGY CONVERSION
@@ -363,9 +361,6 @@ C     and BAR(Q'V')*DQDY (ENSTROPHY GENERATION)AT YCXG
       ENDDO
 
 C     ENERGY CONVERSION AND ENSTROPHY GENERATION AT YCXC
-C !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-C     need to check what happens at land boundaries
-C !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       DO j=1,sNy
         DO i=1,sNx
           gEKEConv(i,j,bi,bj) = (energyConv_YGXC(i,j,bi,bj) 
@@ -391,70 +386,64 @@ C Calculate b
           ENDDO
         ENDDO
       ENDDO
-     
+
+      DO k=1,Nr
+        DO j=1,sNy+1
+          DO i=1,sNx+1
 C calculate dbdx, dbdy at cell faces at ZC
 C set to zero at partial cells
+            dbdx_YCXGZC(i,j,k,bi,bj) = ((b_ZC(i,j,k,bi,bj) 
+     &        - b_ZC(i-1,j,k,bi,bj))/dxC(i,j,bi,bj))
+     &        *floor(abs(hFacC(i,j,k,bi,bj)))
+     &        *floor(abs(hFacC(i-1,j,k,bi,bj)))
 
-      DO k=1,Nr
-        DO j=1,sNy+1
-          DO i=1,sNx+1
-            IF (hFacC(i,j,k,bi,bj) .GE. 0.5) THEN
-              IF (hFacC(i-1,j,k,bi,bj).GE. 0.5) THEN
-                dbdx_YCXGZC(i,j,k,bi,bj) = ((b_ZC(i,j,k,bi,bj) 
-     &            - b_ZC(i-1,j,k,bi,bj))/dxC(i,j,bi,bj))
-     &            *floor(abs(hFacC(i,j,k,bi,bj)))
-     &            *floor(abs(hFacC(i-1,j,k,bi,bj)))
-              ENDIF
-
-              IF (hFacC(i,j-1,k,bi,bj) .GE. 0.5) THEN
-                dbdy_YGXCZC(i,j,k,bi,bj) = ((b_ZC(i,j,k,bi,bj) 
-     &            - b_ZC(i,j-1,k,bi,bj))/dyC(i,j,bi,bj))
-     &            *floor(abs(hFacC(i,j,k,bi,bj)))
-     &            *floor(abs(hFacC(i,j-1,k,bi,bj)))
-              ENDIF
-            ENDIF
-          ENDDO
-        ENDDO
-      ENDDO
+            dbdy_YGXCZC(i,j,k,bi,bj) = ((b_ZC(i,j,k,bi,bj) 
+     &        - b_ZC(i,j-1,k,bi,bj))/dyC(i,j,bi,bj))
+     &        *floor(abs(hFacC(i,j,k,bi,bj)))
+     &        *floor(abs(hFacC(i,j-1,k,bi,bj)))
 
 C calculate kGM_x_ZC and kGM_y_ZC
-C don't calculate at top and bottom
-C they should be zero at top and bottom
-
-      DO k=1,Nr
-        DO j=1,sNy+1
-          DO i=1,sNx+1
+C set to zero if either side is a partial cell
             kGM_x_YCXGZC(i,j,k,bi,bj) = GM_background_K
      &       *taperX(i,j,k,bi,bj)
+     &       *floor(abs(hFacC(i,j,k,bi,bj)))
+     &       *floor(abs(hFacC(i-1,j,k,bi,bj)))
 
             kGM_y_YGXCZC(i,j,k,bi,bj) = GM_background_K
      &       *taperY(i,j,k,bi,bj)
+     &       *floor(abs(hFacC(i,j,k,bi,bj)))
+     &       *floor(abs(hFacC(i,j-1,k,bi,bj)))
           ENDDO
         ENDDO
       ENDDO
 
-C interpolat dbdx, dbdy, kGM_x and kGM_y
-C to ZG points 
+C caluclate numerator of flux terms:
+C multiply kGM with dbdx^2 and dbdy^2
+      DO k=1,Nr
+        DO j=1,sNy+1
+          DO i=1,sNx+1
+            numx_YCXGZC(i,j,k,bi,bj) = kGM_x_YCXGZC(i,j,k,bi,bj)*
+     &        (dbdx_YCXGZC(i,j,k,bi,bj)**2)
+
+            numy_YGXCZC(i,j,k,bi,bj) = kGM_y_YGXCZC(i,j,k,bi,bj)*
+     &        (dbdy_YGXCZC(i,j,k,bi,bj)**2)
+          ENDDO
+        ENDDO
+      ENDDO
+
+C interpolate numerator of flux terms to ZG points
+C don't calculate at top and bottom (should be ero there) 
 
       DO k=2,Nr
         DO j=1,sNy+1
           DO i=1,sNx+1
-            dbdx_YCXGZG(i,j,k,bi,bj) = dbdx_YCXGZC(i,j,k-1,bi,bj) + 
-     &        0.5*drF(k-1)*((dbdx_YCXGZC(i,j,k-1,bi,bj) 
-     &        - dbdx_YCXGZC(i,j,k,bi,bj))/drC(k))
+            numx_YCXGZG(i,j,k,bi,bj) = numx_YCXGZC(i,j,k-1,bi,bj) + 
+     &        0.5*drF(k-1)*((numx_YCXGZC(i,j,k-1,bi,bj) 
+     &        - numx_YCXGZC(i,j,k,bi,bj))/drC(k))
 
-            dbdy_YGXCZG(i,j,k,bi,bj) = dbdy_YGXCZC(i,j,k-1,bi,bj) + 
-     &        0.5*drF(k-1)*((dbdy_YGXCZC(i,j,k-1,bi,bj) 
-     &        - dbdy_YGXCZC(i,j,k,bi,bj))/drC(k))
-
-            kGM_x_YCXGZG(i,j,k,bi,bj) = kGM_x_YCXGZC(i,j,k-1,bi,bj) + 
-     &        0.5*drF(k-1)*((kGM_x_YCXGZC(i,j,k-1,bi,bj) 
-     &        - kGM_x_YCXGZC(i,j,k,bi,bj))/drC(k))
-
-            kGM_y_YGXCZG(i,j,k,bi,bj) = kGM_y_YGXCZC(i,j,k-1,bi,bj) + 
-     &        0.5*drF(k-1)*((kGM_y_YGXCZC(i,j,k-1,bi,bj) 
-     &        - kGM_y_YGXCZC(i,j,k,bi,bj))/drC(k))
-            
+            numy_YGXCZG(i,j,k,bi,bj) = numy_YGXCZC(i,j,k-1,bi,bj) + 
+     &        0.5*drF(k-1)*((numy_YGXCZC(i,j,k-1,bi,bj) 
+     &        - numy_YGXCZC(i,j,k,bi,bj))/drC(k))
           ENDDO
         ENDDO
       ENDDO
@@ -463,7 +452,7 @@ C calculate dbdz at vertical cell interfaces
 C don't calculate at top and bottom
 C min(0.5,hFacC(k)) is for partial cells at bottom
 C floor(abc(hFacC(i,j,k-1,bi,bj))) is for below seafloor
-C dbdz_DG will be zero below the seafloor
+C dbdz_ZG will be zero below the seafloor
 
       DO k=2,Nr
         DO j=1,sNy+1
@@ -471,14 +460,16 @@ C dbdz_DG will be zero below the seafloor
             dbdz_YCXCZG(i,j,k,bi,bj) = max(
      &        floor(abs(hFacC(i,j,k-1,bi,bj)))*
      &        (b_ZC(i,j,k-1,bi,bj) - b_ZC(i,j,k,bi,bj))
-     &        /(0.5*drC(k-1) + 
-     &        0.5*hFacC(i,j,k,bi,bj)*drC(k)),
-     &        1.E-6)
+     &        /(0.5*drF(k-1) + 
+     &        0.5*hFacC(i,j,k,bi,bj)*drF(k)),
+     &        1.E-7)
           ENDDO
         ENDDO
       ENDDO
 
 C interpolate dbdz to YGXC and YCXG
+C don't need to set to zero at lateral boundaries
+C because dbdx and dbdy values will be zero there
 
       DO k=2,Nr
         DO j=1,sNy+1
@@ -498,16 +489,12 @@ C calculate x and y componenets of flux
         DO j=1,sNy+1
           DO i=1,sNx+1
 C           x-component 
-            flux_YCXGZG(i,j,k,bi,bj) = (kGM_x_YCXGZG(i,j,k,bi,bj)*
-     &        (dbdx_YCXGZG(i,j,k,bi,bj)**2)/dbdz_YCXGZG(i,j,k,bi,bj))*
-     &        floor(abs(hFacC(i-1,j,k+1,bi,bj)))*
-     &        floor(abs(hFacC(i,j,k+1,bi,bj)))
+            flux_YCXGZG(i,j,k,bi,bj) = numx_YCXGZG(i,j,k,bi,bj)/
+     &        dbdz_YCXGZG(i,j,k,bi,bj)
 
 C           y-component
-            flux_YGXCZG(i,j,k,bi,bj) = (kGM_y_YGXCZG(i,j,k,bi,bj)*
-     &        (dbdy_YGXCZG(i,j,k,bi,bj)**2)/dbdz_YGXCZG(i,j,k,bi,bj))*
-     &        floor(abs(hFacC(i,j-1,k+1,bi,bj)))*
-     &        floor(abs(hFacC(i,j,k+1,bi,bj)))
+            flux_YGXCZG(i,j,k,bi,bj) = numy_YGXCZG(i,j,k,bi,bj)/
+     &        dbdz_YGXCZG(i,j,k,bi,bj)
             
           ENDDO
         ENDDO
@@ -529,7 +516,7 @@ C calculate depth integral of x and y components of flux
       ENDDO
 
 C interpolate flux to YCXC
-cd
+
       DO j=1,sNy
           DO i=1,sNx
             fluxInt_YCXC(i,j,bi,bj) = (
@@ -657,6 +644,27 @@ C       custom: fluxInt_YCXC
         CALL DIAGNOSTICS_FILL(fluxInt_YCXC,'fluxInt ',
      &     1,1,2,bi,bj,myThid)
 
+
+
+C       custom: qYCXC
+      CALL DIAGNOSTICS_FILL(q_YCXC,'qYCXC   ',1,1,2,bi,bj,myThid)
+C       custom: dqdxYCXG
+      CALL DIAGNOSTICS_FILL(dqdx_YCXG,'dqdxYCXG',1,1,2,bi,bj,myThid)
+C       custom: dqdyYGXC
+      CALL DIAGNOSTICS_FILL(dqdy_YGXC,'dqdyYGXC',1,1,2,bi,bj,myThid)
+C       custom: dqdxYGXC
+      CALL DIAGNOSTICS_FILL(dqdx_YGXC,'dqdxYGXC',1,1,2,bi,bj,myThid)
+C       custom: dqdyYCXG
+      CALL DIAGNOSTICS_FILL(dqdy_YCXG,'dqdyYCXG',1,1,2,bi,bj,myThid)
+C       custom: modGradq_YCXG
+      CALL DIAGNOSTICS_FILL(modGradq_YCXG,'modqYCXG',1,1,2,bi,bj,myThid)
+C       custom: modGradq_YGXC
+      CALL DIAGNOSTICS_FILL(modGradq_YGXC,'modqYGXC',1,1,2,bi,bj,myThid)
+
+
+
+      
+
 C     SOURCE TERM TESTING
       DO k = 1,Nr
 C       custom: parameterized buoyancy
@@ -674,17 +682,17 @@ C       custom: kGM_x_YCXGZC
 C       custom: kGM_y_YGXCZC
         CALL DIAGNOSTICS_FILL(kGM_y_YGXCZC(:,:,k,:,:),'kGMyZC  ',
      &     k,1,2,bi,bj,myThid)
-C       custom: dbdx_YCXGZG
-        CALL DIAGNOSTICS_FILL(dbdx_YCXGZG(:,:,k,:,:),'dbdxZG  ',
+C       custom: num_YCXGZC
+        CALL DIAGNOSTICS_FILL(numx_YCXGZC(:,:,k,:,:),'numxZC  ',
      &     k,1,2,bi,bj,myThid)
-C       custom: dbdy_YGXCZG
-        CALL DIAGNOSTICS_FILL(dbdy_YGXCZG(:,:,k,:,:),'dbdyZG  ',
+C       custom: num_YGXCZC
+        CALL DIAGNOSTICS_FILL(numy_YGXCZC(:,:,k,:,:),'numyZC  ',
      &     k,1,2,bi,bj,myThid)
-C       custom: kGM_x_YCXGZG
-        CALL DIAGNOSTICS_FILL(kGM_x_YCXGZG(:,:,k,:,:),'kGMxZG  ',
+C       custom: num_YCXGZG
+        CALL DIAGNOSTICS_FILL(numx_YCXGZG(:,:,k,:,:),'numxZG  ',
      &     k,1,2,bi,bj,myThid)
-C       custom: kGM_y_YGXCZG
-        CALL DIAGNOSTICS_FILL(kGM_y_YGXCZG(:,:,k,:,:),'kGMyZG  ',
+C       custom: num_YGXCZG
+        CALL DIAGNOSTICS_FILL(numy_YGXCZG(:,:,k,:,:),'numyZG  ',
      &     k,1,2,bi,bj,myThid)
 C       custom: dbdz_YCXCZG
         CALL DIAGNOSTICS_FILL(dbdz_YCXCZG(:,:,k,:,:),'dbdzYCXC',
