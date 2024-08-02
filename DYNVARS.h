@@ -63,7 +63,9 @@ C     gLambdaNm, gLambdaNm1   :: parameterixed eddy kinetic energy time tendenci
      &                   dbdz_YCXCZG, dbdz_YCXGZG, 
      &                   dbdz_YGXCZG, flux_YCXGZG, 
      &                   flux_YGXCZG, fluxInt_YCXG, 
-     &                   fluxInt_YGXC, fluxInt_YCXC
+     &                   fluxInt_YGXC, fluxInt_YCXC,
+     &                   BT_isoRho, BT_dsigmadx, BT_dsigmady,
+     &                   BT_dsigmadzS, BT_dsigmadzW
 #else /* ALLOW_ADAMSBASHFORTH_3 */
       COMMON /DYNVARS_R/
      &                   etaN,
@@ -90,7 +92,9 @@ C     gLambdaNm, gLambdaNm1   :: parameterixed eddy kinetic energy time tendenci
      &                   dbdz_YCXCZG, dbdz_YCXGZG, 
      &                   dbdz_YGXCZG, flux_YCXGZG, 
      &                   flux_YGXCZG, fluxInt_YCXG, 
-     &                   fluxInt_YGXC, fluxInt_YCXC
+     &                   fluxInt_YGXC, fluxInt_YCXC,
+     &                   BT_isoRho, BT_dsigmadx, BT_dsigmady,
+     &                   BT_dsigmadzS, BT_dsigmadzW
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
       _RL  etaN  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  uVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -147,7 +151,11 @@ C     YCXG
       _RL  enstrophyGen_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     SOURCE TERM 
       _RL  gEKESource(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      INTEGER  NrPhys
+      _RL  BT_isoRho(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  BT_dsigmadx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
+      _RL  BT_dsigmady(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
+      _RL  BT_dsigmadzW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
+      _RL  BT_dsigmadzS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
 C     SOURCE TESTING
       _RL  b_ZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  dbdx_YCXGZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)

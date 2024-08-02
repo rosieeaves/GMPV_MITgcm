@@ -611,6 +611,13 @@ C --------------------------------------------------------------------
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+      diagName  = 'isoRho  '
+      diagTitle = 'isoRho'
+      diagCode  = 'SM      MR      '
+      diagUnits = 'm^2s^-3            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
 C --------------------------------------------------------------------
 C TESTING
 C --------------------------------------------------------------------
