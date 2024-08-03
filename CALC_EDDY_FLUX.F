@@ -169,7 +169,7 @@ C    Initialize arrays with zero values
         ENDDO
       ENDDO
 
-      partition = 1.
+      partition = 0.3
 
 C--------------------------------l------------------------------
 C     DEPTH INTEGRAL OF U AND V FOR ENERGY CONVERSION
@@ -197,7 +197,7 @@ C     CALCULATE EKE & Lambda ADVECTION TERM
 C--------------------------------------------------------------
 C   H = abs(R_low)
 
-            gEKEAdv(i,j,bi,bj) = (1/(4*abs(R_low(i,j,bi,bj))
+            gEKEAdv(i,j,bi,bj) = (1./(4*abs(R_low(i,j,bi,bj))
      &        *rA(i,j,bi,bj)))
 
      &        *((EKE(i,j,1,bi,bj) + EKE(i,j+1,1,bi,bj))
@@ -216,7 +216,7 @@ C   H = abs(R_low)
      &        *uVelInt(i,j,bi,bj)*dyG(i,j,bi,bj)
      &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1))
 
-            gLambdaAdv(i,j,bi,bj) = (1/(4*abs(R_low(i,j,bi,bj))
+            gLambdaAdv(i,j,bi,bj) = (1./(4*abs(R_low(i,j,bi,bj))
      &        *rA(i,j,bi,bj)))
 
      &        *((Lambda(i,j,1,bi,bj) + Lambda(i,j+1,1,bi,bj))
@@ -438,12 +438,12 @@ C don't calculate at top and bottom (should be ero there)
         DO j=1,sNy+1
           DO i=1,sNx+1
             numx_YCXGZG(i,j,k,bi,bj) = numx_YCXGZC(i,j,k-1,bi,bj) + 
-     &        0.5*drF(k-1)*((numx_YCXGZC(i,j,k-1,bi,bj) 
-     &        - numx_YCXGZC(i,j,k,bi,bj))/drC(k))
+     &        0.5*drF(k-1)*((numx_YCXGZC(i,j,k,bi,bj) 
+     &        - numx_YCXGZC(i,j,k-1,bi,bj))/drC(k))
 
             numy_YGXCZG(i,j,k,bi,bj) = numy_YGXCZC(i,j,k-1,bi,bj) + 
-     &        0.5*drF(k-1)*((numy_YGXCZC(i,j,k-1,bi,bj) 
-     &        - numy_YGXCZC(i,j,k,bi,bj))/drC(k))
+     &        0.5*drF(k-1)*((numy_YGXCZC(i,j,k,bi,bj) 
+     &        - numy_YGXCZC(i,j,k-1,bi,bj))/drC(k))
           ENDDO
         ENDDO
       ENDDO
