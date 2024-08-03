@@ -39,15 +39,28 @@ C
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1-Oly,sNy+Oly
+         WRITE(standardMessageUnit,*)
+     &      'ini_EKE j:  = ', j
          DO i=1-Olx,sNx+Olx
           IF (R_low(i,j,bi,bj).NE.0) THEN
             EKE(i,j,1,bi,bj)=1.E-4
           ELSE 
             EKE(i,j,1,bi,bj)=0.
           END IF
-          gamma_q(i,j,bi,bj)=1.
-          r_EKE(i,j,bi,bj)=0.
+
+          gamma_q(i,j,bi,bj)=0.1
+          r_EKE(i,j,bi,bj)=1.E-7
           mu(i,j,bi,bj)=500.
+
+C create mask array to turn off param in sponge region
+          IF (j.LE.15) THEN
+            BT_mask(i,j,bi,bj) = 0.
+          ELSE IF (j.GE.28) THEN
+            BT_mask(i,j,bi,bj) = 1.
+          ELSE 
+            BT_mask(i,j,bi,bj) = (1./(28.-15.))*(j-15.)
+          END IF
+
          ENDDO
         ENDDO
        ENDDO

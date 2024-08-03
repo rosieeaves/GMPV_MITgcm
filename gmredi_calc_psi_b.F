@@ -96,10 +96,10 @@ C set variables to zero
        DO k = 1,Nr+1
          DO j=1-OLy,sNy+OLy
            DO i=1-OLx+1,sNx+OLx
-             BT_dsigmadx(i,j,k,bi,bj) = 0. _d 0
-             BT_dsigmadzW(i,j,k,bi,bj) = 0. _d 0
-             BT_dsigmady(i,j,k,bi,bj) = 0. _d 0
-             BT_dsigmadzS(i,j,k,bi,bj) = 0. _d 0
+             BT_dsigmadx_ZC(i,j,k,bi,bj) = 0. _d 0
+             BT_dsigmadzW_ZG(i,j,k,bi,bj) = 0. _d 0
+             BT_dsigmady_ZC(i,j,k,bi,bj) = 0. _d 0
+             BT_dsigmadzS_ZG(i,j,k,bi,bj) = 0. _d 0
            ENDDO
          ENDDO
        ENDDO
@@ -147,14 +147,14 @@ C save data in common block variables
 
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
-           BT_dsigmadx(i,j,k,bi,bj) = SlopeX(i,j)
+           BT_dsigmadx_ZC(i,j,k,bi,bj) = sigmaX(i,j,k)
      &        *floor(abs(hFacC(i,j,k,bi,bj)))
      &        *floor(abs(hFacC(i-1,j,k,bi,bj)))
-           BT_dsigmadzW(i,j,k,bi,bj) = max(dSigmaDrW(i,j),1.E-7)
-           BT_dsigmady(i,j,k,bi,bj) = SlopeY(i,j)
+           BT_dsigmadzW_ZG(i,j,k,bi,bj) = max(dSigmaDrW(i,j),1.E-7)
+           BT_dsigmady_ZC(i,j,k,bi,bj) = sigmaY(i,j,k)
      &        *floor(abs(hFacC(i,j,k,bi,bj)))
      &        *floor(abs(hFacC(i,j-1,k,bi,bj)))
-           BT_dsigmadzS(i,j,k,bi,bj) = max(dSigmaDrS(i,j),1.E-7)
+           BT_dsigmadzS_ZG(i,j,k,bi,bj) = max(dSigmaDrS(i,j),1.E-7)
          ENDDO
         ENDDO
 

@@ -93,16 +93,6 @@ C      _RL  kappa_q_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C      _RL  energyConv_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C      _RL  enstrophyGen_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-C SECOND EKE SOURCE METHOD
-       _RL  kGM_x_YCXGZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
-       _RL  kGM_y_YGXCZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
-       _RL  fluxX2_YCXGZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
-       _RL  fluxY2_YGXCZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
-       _RL  fluxXInt2_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-       _RL  fluxYInt2_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-       _RL  fluxInt2_YCXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-       _RL  gEKESource2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
 
 C    Initialize arrays with zero values
       DO j=1-OLy,sNy+OLy
@@ -140,56 +130,51 @@ C    Initialize arrays with zero values
           uVelInt(i,j,bi,bj) = 0. _d 0
           vVelInt(i,j,bi,bj) = 0. _d 0
 
-          fluxXInt2_YCXG(i,j,bi,bj) = 0. _d 0
-          fluxYInt2_YGXC(i,j,bi,bj) = 0. _d 0
-          fluxInt2_YCXC(i,j,bi,bj) = 0. _d 0
-          gEKEsource2(i,j,bi,bj) = 0. _d 0
-
         ENDDO
       ENDDO 
 
       DO k=1,Nr
         DO j=1,sNy
           DO i=1,sNx
-            b_ZC(i,j,k,bi,bj) = 0. _d 0
-            dbdx_YCXGZC(i,j,k,bi,bj) = 0. _d 0
-            dbdy_YGXCZC(i,j,k,bi,bj) = 0. _d 0
             kGM_x_YCXGZC(i,j,k,bi,bj) = 0. _d 0
             kGM_y_YGXCZC(i,j,k,bi,bj) = 0. _d 0
-            numx_YCXGZC(i,j,k,bi,bj) = 0. _d 0
-            numy_YGXCZC(i,j,k,bi,bj) = 0. _d 0
-            numx_YCXGZG(i,j,k,bi,bj) = 0. _d 0
-            numy_YGXCZG(i,j,k,bi,bj) = 0. _d 0
-            dbdz_YCXCZG(i,j,k,bi,bj) = 0. _d 0
-            dbdz_YCXGZG(i,j,k,bi,bj) = 0. _d 0
-            dbdz_YGXCZG(i,j,k,bi,bj) = 0. _d 0
-            flux_YCXGZG(i,j,k,bi,bj) = 0. _d 0
-            flux_YGXCZG(i,j,k,bi,bj) = 0. _d 0
-
-            kGM_x_YCXGZG(i,j,k,bi,bj) = 0. _d 0
-            kGM_y_YGXCZG(i,j,k,bi,bj) = 0. _d 0
-            fluxX2_YCXGZG(i,j,k,bi,bj) = 0. _d 0
-            fluxY2_YGXCZG(i,j,k,bi,bj) = 0. _d 0
+            numX_YCXGZC(i,j,k,bi,bj) = 0. _d 0
+            numY_YGXCZC(i,j,k,bi,bj) = 0. _d 0
+            numX_YCXGZG(i,j,k,bi,bj) = 0. _d 0
+            numY_YGXCZG(i,j,k,bi,bj) = 0. _d 0
+            fluxX_YCXGZG(i,j,k,bi,bj) = 0. _d 0
+            fluxY_YGXCZG(i,j,k,bi,bj) = 0. _d 0
            ENDDO
         ENDDO
       ENDDO
 
       DO j=1,sNy
         DO i=1,sNx
-          numx_YCXGZG(i,j,Nr+1,bi,bj) = 0. _d 0
-          numy_YGXCZG(i,j,Nr+1,bi,bj) = 0. _d 0
-          dbdz_YCXCZG(i,j,Nr+1,bi,bj) = 0. _d 0
-          dbdz_YCXGZG(i,j,Nr+1,bi,bj) = 0. _d 0
-          dbdz_YGXCZG(i,j,Nr+1,bi,bj) = 0. _d 0
-          flux_YCXGZG(i,j,Nr+1,bi,bj) = 0. _d 0
-          flux_YGXCZG(i,j,Nr+1,bi,bj) = 0. _d 0
-          fluxInt_YCXG(i,j,bi,bj) = 0. _d 0
-          fluxInt_YGXC(i,j,bi,bj) = 0. _d 0
+          numX_YCXGZG(i,j,Nr+1,bi,bj) = 0. _d 0
+          numY_YGXCZG(i,j,Nr+1,bi,bj) = 0. _d 0
+          fluxX_YCXGZG(i,j,Nr+1,bi,bj) = 0. _d 0
+          fluxY_YGXCZG(i,j,Nr+1,bi,bj) = 0. _d 0
+          fluxXInt_YCXG(i,j,bi,bj) = 0. _d 0
+          fluxYInt_YGXC(i,j,bi,bj) = 0. _d 0
           fluxInt_YCXC(i,j,bi,bj) = 0. _d 0
         ENDDO
       ENDDO
 
-      partition = 1.
+      partition = 0.3
+
+C--------------------------------l------------------------------
+C     MULTIPLY EKE AND LAMBDA BY BT_MASK TO SET TO ZERO IN 
+C     SPONGE REGIONS
+C--------------------------------------------------------------
+      DO j=1,sNy
+        DO i=1,sNx
+            EKE(i,j,1,bi,bj) = BT_mask(i,j,bi,bj)*
+     &        EKE(i,j,1,bi,bj)
+            Lambda(i,j,1,bi,bj) = BT_mask(i,j,bi,bj)*
+     &        Lambda(i,j,1,bi,bj)
+        ENDDO
+      ENDDO
+
 
 C--------------------------------l------------------------------
 C     DEPTH INTEGRAL OF U AND V FOR ENERGY CONVERSION
@@ -255,6 +240,8 @@ C   H = abs(R_low)
      &        *uVelInt(i,j,bi,bj)*dyG(i,j,bi,bj)
      &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1))
 
+     &        *BT_mask(i,j,bi,bj)
+
 
 
 C--------------------------------------------------------------
@@ -263,9 +250,11 @@ C--------------------------------------------------------------
 
             gEKEr(i,j,bi,bj) = r_EKE(i,j,bi,bj)
      &        *EKE(i,j,1,bi,bj)
+     &        *BT_mask(i,j,bi,bj)
 
             gLambdar(i,j,bi,bj) = r_Lambda(i,j,bi,bj)
      &        *Lambda(i,j,1,bi,bj)
+     &        *BT_mask(i,j,bi,bj)
 
 C--------------------------------------------------------------
 C     CALCULATE K AND LAMBDA DIFFUSION    
@@ -289,6 +278,7 @@ C min => get zero when one or both of R_low is zero and one when neither is zero
      &        -(EKE(i,j,1,bi,bj)*abs(R_low(i,j,bi,bj))
      &        - EKE(i-1,j,1,bi,bj)*abs(R_low(i-1,j,bi,bj)))
      &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1))
+     &        *BT_mask(i,j,bi,bj)
 
             gLambdaDiff(i,j,bi,bj) = (mu(i,j,bi,bj)/(rA(i,j,bi,bj)
      &        *abs(R_low(i,j,bi,bj))))
@@ -304,6 +294,7 @@ C min => get zero when one or both of R_low is zero and one when neither is zero
      &        -(Lambda(i,j,1,bi,bj)*abs(R_low(i,j,bi,bj))
      &        - Lambda(i-1,j,1,bi,bj)*abs(R_low(i-1,j,bi,bj)))
      &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1))
+     &        *BT_mask(i,j,bi,bj)
 
           ELSE
             gEKEAdv(i,j,bi,bj)=0. 
@@ -383,11 +374,13 @@ C     and BAR(Q'V')*DQDY (ENSTROPHY GENERATION)AT YCXG
 C     ENERGY CONVERSION AND ENSTROPHY GENERATION AT YCXC
       DO j=1,sNy
         DO i=1,sNx
-          gEKEConv(i,j,bi,bj) = (energyConv_YGXC(i,j,bi,bj) 
+          gEKEConv(i,j,bi,bj) = BT_mask(i,j,bi,bj)*
+     &      (energyConv_YGXC(i,j,bi,bj) 
      &      + energyConv_YGXC(i,j+1,bi,bj) 
      &      + energyConv_YCXG(i,j,bi,bj) 
      &      + energyConv_YCXG(i+1,j,bi,bj))/2
-          gLambdaGen(i,j,bi,bj) = (enstrophyGen_YGXC(i,j,bi,bj) 
+          gLambdaGen(i,j,bi,bj) = BT_mask(i,j,bi,bj)*
+     &      (enstrophyGen_YGXC(i,j,bi,bj) 
      &      + enstrophyGen_YGXC(i,j+1,bi,bj) 
      &      + enstrophyGen_YCXG(i,j,bi,bj) 
      &      + enstrophyGen_YCXG(i+1,j,bi,bj))/2
@@ -398,30 +391,9 @@ C--------------------------------------------------------------
 C     CALCULATE EKE SOURCE TERM 
 C--------------------------------------------------------------
 
-C Calculate b
-      DO k=1,Nr
-        DO j=1,sNy
-          DO i=1,sNx
-            b_ZC(i,j,k,bi,bj) = -gravity*
-     &        (rhoInSitu(i,j,k,bi,bj))/rhoConst
-          ENDDO
-        ENDDO
-      ENDDO
-
       DO k=1,Nr
         DO j=1,sNy+1
           DO i=1,sNx+1
-C calculate dbdx, dbdy at cell faces at ZC
-C set to zero at partial cells
-            dbdx_YCXGZC(i,j,k,bi,bj) = ((b_ZC(i,j,k,bi,bj) 
-     &        - b_ZC(i-1,j,k,bi,bj))/dxC(i,j,bi,bj))
-     &        *floor(abs(hFacC(i,j,k,bi,bj)))
-     &        *floor(abs(hFacC(i-1,j,k,bi,bj)))
-
-            dbdy_YGXCZC(i,j,k,bi,bj) = ((b_ZC(i,j,k,bi,bj) 
-     &        - b_ZC(i,j-1,k,bi,bj))/dyC(i,j,bi,bj))
-     &        *floor(abs(hFacC(i,j,k,bi,bj)))
-     &        *floor(abs(hFacC(i,j-1,k,bi,bj)))
 
 C calculate kGM_x_ZC and kGM_y_ZC
 C set to zero if either side is a partial cell
@@ -438,117 +410,50 @@ C set to zero if either side is a partial cell
         ENDDO
       ENDDO
 
-      WRITE(standardMessageUnit,*)
-     &      'dbdx_ZC:  = ', dbdx_YCXGZC
-      WRITE(standardMessageUnit,*)
-     &      'dbdy_ZC:  = ', dbdy_YGXCZC
+C x and y components of flux numerator at ZC
 
-      WRITE(standardMessageUnit,*)
-     &      'dsigmadx:  = ', BT_dsigmadx
-
-      WRITE(standardMessageUnit,*)
-     &      'dsigmady:  = ', BT_dsigmady
-
-      WRITE(standardMessageUnit,*)
-     &      'kGM_x_YCXGZC:  = ', kGM_x_YCXGZC
-      WRITE(standardMessageUnit,*)
-     &      'kGM_y_YGXCZC:  = ', kGM_y_YGXCZC
-
-
-C caluclate numerator of flux terms:
-C multiply kGM with dbdx^2 and dbdy^2
       DO k=1,Nr
         DO j=1,sNy+1
           DO i=1,sNx+1
-            numx_YCXGZC(i,j,k,bi,bj) = kGM_x_YCXGZC(i,j,k,bi,bj)*
-     &        (dbdx_YCXGZC(i,j,k,bi,bj)**2)
+C            x-component 
+            numX_YCXGZC(i,j,k,bi,bj) = kGM_x_YCXGZC(i,j,k,bi,bj)*
+     &        (BT_dsigmadx_ZC(i,j,k,bi,bj)**2)
 
-            numy_YGXCZC(i,j,k,bi,bj) = kGM_y_YGXCZC(i,j,k,bi,bj)*
-     &        (dbdy_YGXCZC(i,j,k,bi,bj)**2)
+C            y-component 
+            numY_YGXCZC(i,j,k,bi,bj) = kGM_y_YGXCZC(i,j,k,bi,bj)*
+     &        (BT_dsigmady_ZC(i,j,k,bi,bj)**2)
+          ENDDO
+        ENDDO
+      ENDDO
+        
+
+C interpolate numerators to ZG
+      DO k=2,Nr
+        DO j=1,sNy+1
+          DO i=1,sNx+1
+            numX_YCXGZG(i,j,k,bi,bj) = numX_YCXGZC(i,j,k-1,bi,bj) + 
+     &        0.5*drF(k-1)*((numX_YCXGZC(i,j,k,bi,bj) 
+     &        - numX_YCXGZC(i,j,k-1,bi,bj))/drC(k))
+
+            numY_YGXCZG(i,j,k,bi,bj) = numY_YGXCZC(i,j,k-1,bi,bj) + 
+     &        0.5*drF(k-1)*((numY_YGXCZC(i,j,k,bi,bj) 
+     &        - numY_YGXCZC(i,j,k-1,bi,bj))/drC(k))
           ENDDO
         ENDDO
       ENDDO
 
-
-C interpolate numerator of flux terms to ZG points
-C don't calculate at top and bottom (should be ero there) 
+C calculate x and y components of flux
 
       DO k=2,Nr
         DO j=1,sNy+1
           DO i=1,sNx+1
-            numx_YCXGZG(i,j,k,bi,bj) = numx_YCXGZC(i,j,k-1,bi,bj) + 
-     &        0.5*drF(k-1)*((numx_YCXGZC(i,j,k,bi,bj) 
-     &        - numx_YCXGZC(i,j,k-1,bi,bj))/drC(k))
-
-            numy_YGXCZG(i,j,k,bi,bj) = numy_YGXCZC(i,j,k-1,bi,bj) + 
-     &        0.5*drF(k-1)*((numy_YGXCZC(i,j,k,bi,bj) 
-     &        - numy_YGXCZC(i,j,k-1,bi,bj))/drC(k))
-          ENDDO
-        ENDDO
-      ENDDO
-
-C calculate dbdz at vertical cell interfaces
-C don't calculate at top and bottom
-C min(0.5,hFacC(k)) is for partial cells at bottom
-C floor(abc(hFacC(i,j,k-1,bi,bj))) is for below seafloor
-C dbdz_ZG will be zero below the seafloor
-
-      DO k=2,Nr
-        DO j=1,sNy+1
-          DO i=1,sNx+1
-            dbdz_YCXCZG(i,j,k,bi,bj) = max(
-     &        floor(abs(hFacC(i,j,k-1,bi,bj)))*
-     &        (b_ZC(i,j,k-1,bi,bj) - b_ZC(i,j,k,bi,bj))
-     &        /(0.5*drF(k-1) + 
-     &        0.5*hFacC(i,j,k,bi,bj)*drF(k)),
-     &        1.E-7)
-          ENDDO
-        ENDDO
-      ENDDO
-
-      WRITE(standardMessageUnit,*)
-     &      'dbdz_YCXC:  = ', dbdz_YCXCZG
-
-C interpolate dbdz to YGXC and YCXG
-C don't need to set to zero at lateral boundaries
-C because dbdx and dbdy values will be zero there
-
-      DO k=2,Nr
-        DO j=1,sNy+1
-          DO i=1,sNx+1
-            dbdz_YCXGZG(i,j,k,bi,bj) = (dbdz_YCXCZG(i,j,k,bi,bj)
-     &        + dbdz_YCXCZG(i-1,j,k,bi,bj))/2
-
-            dbdz_YGXCZG(i,j,k,bi,bj) = (dbdz_YCXCZG(i,j,k,bi,bj)
-     &        + dbdz_YCXCZG(i,j-1,k,bi,bj))/2
-          ENDDO
-        ENDDO
-      ENDDO
-
-      WRITE(standardMessageUnit,*)
-     &      'dbdz_YCXG  = ', dbdz_YCXGZG
-     
-      WRITE(standardMessageUnit,*)
-     &      'dsigmadzW:  = ', BT_dsigmadzW
-
-      WRITE(standardMessageUnit,*)
-     &      'dbdz_YGXC  = ', dbdz_YGXCZG
-
-      WRITE(standardMessageUnit,*)
-     &      'dsigmadzS:  = ', BT_dsigmadzS
-C calculate x and y componenets of flux
-
-      DO k=2,Nr
-        DO j=1,sNy+1
-          DO i=1,sNx+1
-C           x-component 
-            flux_YCXGZG(i,j,k,bi,bj) = numx_YCXGZG(i,j,k,bi,bj)/
-     &        dbdz_YCXGZG(i,j,k,bi,bj)
+C            x-component 
+            fluxX_YCXGZG(i,j,k,bi,bj) = numX_YCXGZG(i,j,k,bi,bj)/
+     &        BT_dsigmadzW_ZG(i,j,k,bi,bj)
 
 C           y-component
-            flux_YGXCZG(i,j,k,bi,bj) = numy_YGXCZG(i,j,k,bi,bj)/
-     &        dbdz_YGXCZG(i,j,k,bi,bj)
-            
+            fluxY_YGXCZG(i,j,k,bi,bj) = numY_YGXCZG(i,j,k,bi,bj)/
+     &        BT_dsigmadzS_ZG(i,j,k,bi,bj)
           ENDDO
         ENDDO
       ENDDO
@@ -557,13 +462,13 @@ C calculate depth integral of x and y components of flux
       DO k=1,Nr+1
         DO j=1,sNy+1
           DO i=1,sNx+1
-            fluxInt_YCXG(i,j,bi,bj) = 
-     &        fluxInt_YCXG(i,j,bi,bj) + 
-     &        flux_YCXGZG(i,j,k,bi,bj)*drC(k)
+            fluxXInt_YCXG(i,j,bi,bj) = 
+     &        fluxXInt_YCXG(i,j,bi,bj) + 
+     &        fluxX_YCXGZG(i,j,k,bi,bj)*drC(k)
 
-             fluxInt_YGXC(i,j,bi,bj) = 
-     &        fluxInt_YGXC(i,j,bi,bj) + 
-     &        flux_YGXCZG(i,j,k,bi,bj)*drC(k)
+             fluxYInt_YGXC(i,j,bi,bj) = 
+     &        fluxYInt_YGXC(i,j,bi,bj) + 
+     &        fluxY_YGXCZG(i,j,k,bi,bj)*drC(k)
           ENDDO
         ENDDO
       ENDDO
@@ -571,20 +476,20 @@ C calculate depth integral of x and y components of flux
 C interpolate flux to YCXC
 
       DO j=1,sNy
-          DO i=1,sNx
-            fluxInt_YCXC(i,j,bi,bj) = (
-     &        fluxInt_YCXG(i,j,bi,bj) + 
-     &        fluxInt_YCXG(i+1,j,bi,bj) +
-     &        fluxInt_YGXC(i,j,bi,bj) + 
-     &        fluxInt_YGXC(i,j+1,bi,bj))/4
-          ENDDO
+        DO i=1,sNx
+          fluxInt_YCXC(i,j,bi,bj) = (
+     &      fluxXInt_YCXG(i,j,bi,bj) + 
+     &      fluxXInt_YCXG(i+1,j,bi,bj) +
+     &      fluxYInt_YGXC(i,j,bi,bj) + 
+     &      fluxYInt_YGXC(i,j+1,bi,bj))/4
         ENDDO
-        
+      ENDDO
+
 C calculate EKE source term = depth average of flux term
       DO j=1,sNy
         DO i=1,sNx
           IF (abs(R_low(i,j,bi,bj)).NE.0) THEN
-            gEKESource(i,j,bi,bj) = 
+            gEKESource(i,j,bi,bj) = BT_mask(i,j,bi,bj)*
      &        partition*fluxInt_YCXC(i,j,bi,bj)/
      &        abs(R_low(i,j,bi,bj))  
           ELSE 
@@ -592,121 +497,6 @@ C calculate EKE source term = depth average of flux term
           END IF
         ENDDO
       ENDDO
-
-C-------------------------------------
-C SECOND METHOD
-C-------------------------------------
-
-C interpolate kappa_GM to ZG
-      DO k=2,Nr
-        DO j=1,sNy+1
-          DO i=1,sNx+1
-            kGM_x_YCXGZG(i,j,k,bi,bj) = kGM_x_YCXGZC(i,j,k-1,bi,bj) + 
-     &        0.5*drF(k-1)*((kGM_x_YCXGZC(i,j,k,bi,bj) 
-     &        - kGM_x_YCXGZC(i,j,k-1,bi,bj))/drC(k))
-
-            kGM_y_YGXCZG(i,j,k,bi,bj) = kGM_y_YGXCZC(i,j,k-1,bi,bj) + 
-     &        0.5*drF(k-1)*((kGM_y_YGXCZC(i,j,k,bi,bj) 
-     &        - kGM_y_YGXCZC(i,j,k-1,bi,bj))/drC(k))
-          ENDDO
-        ENDDO
-      ENDDO
-
-      WRITE(standardMessageUnit,*)
-     &      'kGM_x_YCXGZG:  = ', kGM_x_YCXGZG
-
-      WRITE(standardMessageUnit,*)
-     &      'kGM_y_YGXCZG:  = ', kGM_y_YGXCZG
-
-      DO k=2,Nr
-        DO j=1,sNy+1
-          DO i=1,sNx+1
-C            x-component 
-            fluxX2_YCXGZG(i,j,k,bi,bj) = kGM_x_YCXGZG(i,j,k,bi,bj)*
-     &        (BT_dsigmadx(i,j,k,bi,bj)**2)/BT_dsigmadzW(i,j,k,bi,bj)
-
-C           y-component
-            fluxY2_YGXCZG(i,j,k,bi,bj) = kGM_y_YGXCZG(i,j,k,bi,bj)*
-     &        (BT_dsigmady(i,j,k,bi,bj)**2)/BT_dsigmadzS(i,j,k,bi,bj)
-          ENDDO
-        ENDDO
-      ENDDO
-
-      WRITE(standardMessageUnit,*)
-     &      'fluxX_YCXGZG:  = ', flux_YCXGZG
-     
-      WRITE(standardMessageUnit,*)
-     &      'fluxY_YGXCZG:  = ', flux_YGXCZG
-
-      WRITE(standardMessageUnit,*)
-     &      'fluxX2_YCXGZG:  = ', fluxX2_YCXGZG
-     
-      WRITE(standardMessageUnit,*)
-     &      'fluxY2_YGXCZG:  = ', fluxY2_YGXCZG
-
-C calculate depth integral of x and y components of flux
-      DO k=1,Nr+1
-        DO j=1,sNy+1
-          DO i=1,sNx+1
-            fluxXInt2_YCXG(i,j,bi,bj) = 
-     &        fluxXInt2_YCXG(i,j,bi,bj) + 
-     &        fluxX2_YCXGZG(i,j,k,bi,bj)*drC(k)
-
-             fluxYInt2_YGXC(i,j,bi,bj) = 
-     &        fluxYInt2_YGXC(i,j,bi,bj) + 
-     &        fluxY2_YGXCZG(i,j,k,bi,bj)*drC(k)
-          ENDDO
-        ENDDO
-      ENDDO
-
-      WRITE(standardMessageUnit,*)
-     &      'fluxXInt_YCXG:  = ', fluxInt_YCXG
-     
-      WRITE(standardMessageUnit,*)
-     &      'fluxYInt_YGXC:  = ', fluxInt_YGXC
-
-      WRITE(standardMessageUnit,*)
-     &      'fluxXInt2_YCXG:  = ', fluxXInt2_YCXG
-     
-      WRITE(standardMessageUnit,*)
-     &      'fluxYInt2_YGXC:  = ', fluxYInt2_YGXC
-
-C interpolate flux to YCXC
-
-      DO j=1,sNy
-        DO i=1,sNx
-          fluxInt2_YCXC(i,j,bi,bj) = (
-     &      fluxXInt2_YCXG(i,j,bi,bj) + 
-     &      fluxXInt2_YCXG(i+1,j,bi,bj) +
-     &      fluxYInt2_YGXC(i,j,bi,bj) + 
-     &      fluxYInt2_YGXC(i,j+1,bi,bj))/4
-        ENDDO
-      ENDDO
-
-      WRITE(standardMessageUnit,*)
-     &      'fluxInt_YCXC:  = ', fluxInt_YCXC
-     
-      WRITE(standardMessageUnit,*)
-     &      'fluxInt2_YCXC:  = ', fluxInt2_YCXC
-
-C calculate EKE source term = depth average of flux term
-      DO j=1,sNy
-        DO i=1,sNx
-          IF (abs(R_low(i,j,bi,bj)).NE.0) THEN
-            gEKESource2(i,j,bi,bj) = 
-     &        partition*fluxInt2_YCXC(i,j,bi,bj)/
-     &        abs(R_low(i,j,bi,bj))  
-          ELSE 
-            gEKESource2(i,j,bi,bj) = 0.
-          END IF
-        ENDDO
-      ENDDO
-
-      WRITE(standardMessageUnit,*)
-     &      'gEKEcSource:  = ', gEKEsource
-
-      WRITE(standardMessageUnit,*)
-     &      'gEKESource2:  = ', gEKEsource2
 
 C-------------------------------------
 C SECOND METHOD
@@ -765,6 +555,19 @@ C--------------------------------------------------------------
       ENDDO
 
 C--------------------------------------------------------------
+C     MULTIPLY EKE AND LAMBDA BY BT_MASK TO SET TO ZERO IN 
+C     SPONGE REGIONS
+C--------------------------------------------------------------
+      DO j=1,sNy
+        DO i=1,sNx
+            EKE(i,j,1,bi,bj) = BT_mask(i,j,bi,bj)*
+     &        EKE(i,j,1,bi,bj)
+            Lambda(i,j,1,bi,bj) = BT_mask(i,j,bi,bj)*
+     &        Lambda(i,j,1,bi,bj)
+        ENDDO
+      ENDDO
+
+C--------------------------------------------------------------
 C     CALL DIAGNOSTICS
 C--------------------------------------------------------------
 
@@ -806,15 +609,20 @@ C       custom: parameterized bar(q'u')
 C       custom: parameterized bar(q'v')
       CALL DIAGNOSTICS_FILL(qvEDDY_YCXG,'qvEDDY  ',
      &     1,1,2,bi,bj,myThid)
-C       custom: fluxInt_YCXG
-        CALL DIAGNOSTICS_FILL(fluxInt_YCXG,'fluxXInt',
+
+C       custom: fluxXInt_YCXG
+        CALL DIAGNOSTICS_FILL(fluxXInt_YCXG,'fluxXInt',
      &     1,1,2,bi,bj,myThid)
-C       custom: fluxInt_YGXC
-        CALL DIAGNOSTICS_FILL(fluxInt_YGXC,'fluxYInt',
+C       custom: fluxYInt_YGXC
+        CALL DIAGNOSTICS_FILL(fluxYInt_YGXC,'fluxYInt',
      &     1,1,2,bi,bj,myThid)
 C       custom: fluxInt_YCXC
         CALL DIAGNOSTICS_FILL(fluxInt_YCXC,'fluxInt ',
      &     1,1,2,bi,bj,myThid)
+C       custom: BT_mask
+        CALL DIAGNOSTICS_FILL(BT_mask,'BT_mask ',
+     &     1,1,2,bi,bj,myThid)
+
 
 
 
@@ -839,47 +647,29 @@ C       custom: modGradq_YGXC
 
 C     SOURCE TERM TESTING
       DO k = 1,Nr
-C       custom: parameterized buoyancy
-        CALL DIAGNOSTICS_FILL(b_ZC(:,:,k,:,:),'b       ',
-     &     k,1,2,bi,bj,myThid)
-C       custom: dbdx_YCXGZC
-        CALL DIAGNOSTICS_FILL(dbdx_YCXGZC(:,:,k,:,:),'dbdxZC  ',
-     &     k,1,2,bi,bj,myThid)
-C       custom: dbdy_YGXCZC
-        CALL DIAGNOSTICS_FILL(dbdy_YGXCZC(:,:,k,:,:),'dbdyZC  ',
-     &     k,1,2,bi,bj,myThid)
 C       custom: kGM_x_YCXGZC
         CALL DIAGNOSTICS_FILL(kGM_x_YCXGZC(:,:,k,:,:),'kGMxZC  ',
      &     k,1,2,bi,bj,myThid)
 C       custom: kGM_y_YGXCZC
         CALL DIAGNOSTICS_FILL(kGM_y_YGXCZC(:,:,k,:,:),'kGMyZC  ',
      &     k,1,2,bi,bj,myThid)
-C       custom: num_YCXGZC
-        CALL DIAGNOSTICS_FILL(numx_YCXGZC(:,:,k,:,:),'numxZC  ',
+C       custom: numX_YCXGZC
+        CALL DIAGNOSTICS_FILL(numX_YCXGZC(:,:,k,:,:),'numxZC  ',
      &     k,1,2,bi,bj,myThid)
-C       custom: num_YGXCZC
-        CALL DIAGNOSTICS_FILL(numy_YGXCZC(:,:,k,:,:),'numyZC  ',
+C       custom: numY_YGXCZC
+        CALL DIAGNOSTICS_FILL(numY_YGXCZC(:,:,k,:,:),'numyZC  ',
      &     k,1,2,bi,bj,myThid)
-C       custom: num_YCXGZG
-        CALL DIAGNOSTICS_FILL(numx_YCXGZG(:,:,k,:,:),'numxZG  ',
+C       custom: numX_YCXGZG
+        CALL DIAGNOSTICS_FILL(numX_YCXGZG(:,:,k,:,:),'numxZG  ',
      &     k,1,2,bi,bj,myThid)
-C       custom: num_YGXCZG
-        CALL DIAGNOSTICS_FILL(numy_YGXCZG(:,:,k,:,:),'numyZG  ',
-     &     k,1,2,bi,bj,myThid)
-C       custom: dbdz_YCXCZG
-        CALL DIAGNOSTICS_FILL(dbdz_YCXCZG(:,:,k,:,:),'dbdzYCXC',
-     &     k,1,2,bi,bj,myThid)
-C       custom: dbdz_YCXGZG
-        CALL DIAGNOSTICS_FILL(dbdz_YCXGZG(:,:,k,:,:),'dbdzYCXG',
-     &     k,1,2,bi,bj,myThid)
-C       custom: dbdz_YGXCZG
-        CALL DIAGNOSTICS_FILL(dbdz_YGXCZG(:,:,k,:,:),'dbdzYGXC',
+C       custom: numY_YGXCZG
+        CALL DIAGNOSTICS_FILL(numY_YGXCZG(:,:,k,:,:),'numyZG  ',
      &     k,1,2,bi,bj,myThid)
 C       custom: flux_YCXGZG
-        CALL DIAGNOSTICS_FILL(flux_YCXGZG(:,:,k,:,:),'fluxX   ',
+        CALL DIAGNOSTICS_FILL(fluxX_YCXGZG(:,:,k,:,:),'fluxX   ',
      &     k,1,2,bi,bj,myThid)
 C       custom: flux_YGXCZG
-        CALL DIAGNOSTICS_FILL(flux_YGXCZG(:,:,k,:,:),'fluxY   ',
+        CALL DIAGNOSTICS_FILL(fluxY_YGXCZG(:,:,k,:,:),'fluxY   ',
      &     k,1,2,bi,bj,myThid)
 C       custom: GM taperX
         CALL DIAGNOSTICS_FILL(taperX(:,:,k,:,:),'taperX  ',
@@ -889,6 +679,18 @@ C       custom: GM taperY
      &     k,1,2,bi,bj,myThid)
 C       custom: isoneutral density
         CALL DIAGNOSTICS_FILL(BT_isoRho(:,:,k,:,:),'isoRho  ',
+     &     k,1,2,bi,bj,myThid)
+C       custom: dsigmadx
+        CALL DIAGNOSTICS_FILL(BT_dsigmadx_ZC(:,:,k,:,:),'dsigmadx',
+     &     k,1,2,bi,bj,myThid)
+C       custom: dsigmady
+        CALL DIAGNOSTICS_FILL(BT_dsigmady_ZC(:,:,k,:,:),'dsigmady',
+     &     k,1,2,bi,bj,myThid)
+C       custom: dsigmadzW
+        CALL DIAGNOSTICS_FILL(BT_dsigmadzW_ZG(:,:,k,:,:),'sigmadzW',
+     &     k,1,2,bi,bj,myThid)
+C       custom: dsigmadzS
+        CALL DIAGNOSTICS_FILL(BT_dsigmadzS_ZG(:,:,k,:,:),'sigmadzS',
      &     k,1,2,bi,bj,myThid)
 
       ENDDO
