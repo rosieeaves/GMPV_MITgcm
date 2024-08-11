@@ -53,12 +53,12 @@ C
           mu(i,j,bi,bj)=500.
 
 C create mask array to turn off param in sponge region
-          IF (j.LE.15) THEN
+          IF (j.LE.28) THEN
             BT_mask(i,j,bi,bj) = 0.
-          ELSE IF (j.GE.28) THEN
+          ELSE IF (j.GE.35) THEN
             BT_mask(i,j,bi,bj) = 1.
           ELSE 
-            BT_mask(i,j,bi,bj) = (1./(28.-15.))*(j-15.)
+            BT_mask(i,j,bi,bj) = (1./(35.-28.))*(j-28.)
           END IF
 
          ENDDO

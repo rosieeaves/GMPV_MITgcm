@@ -150,11 +150,11 @@ C save data in common block variables
            BT_dsigmadx_ZC(i,j,k,bi,bj) = sigmaX(i,j,k)
      &        *floor(abs(hFacC(i,j,k,bi,bj)))
      &        *floor(abs(hFacC(i-1,j,k,bi,bj)))
-           BT_dsigmadzW_ZG(i,j,k,bi,bj) = max(dSigmaDrW(i,j),1.E-7)
+           BT_dsigmadzW_ZG(i,j,k,bi,bj) = max(dSigmaDrW(i,j),1.E-5)
            BT_dsigmady_ZC(i,j,k,bi,bj) = sigmaY(i,j,k)
      &        *floor(abs(hFacC(i,j,k,bi,bj)))
      &        *floor(abs(hFacC(i,j-1,k,bi,bj)))
-           BT_dsigmadzS_ZG(i,j,k,bi,bj) = max(dSigmaDrS(i,j),1.E-7)
+           BT_dsigmadzS_ZG(i,j,k,bi,bj) = max(dSigmaDrS(i,j),1.E-5)
          ENDDO
         ENDDO
 

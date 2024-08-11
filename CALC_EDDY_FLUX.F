@@ -202,7 +202,7 @@ C     CALCULATE EKE & Lambda ADVECTION TERM
 C--------------------------------------------------------------
 C   H = abs(R_low)
 
-            gEKEAdv(i,j,bi,bj) = (1/(4*abs(R_low(i,j,bi,bj))
+            gEKEAdv(i,j,bi,bj) = (1./(4*abs(R_low(i,j,bi,bj))
      &        *rA(i,j,bi,bj)))
 
      &        *((EKE(i,j,1,bi,bj) + EKE(i,j+1,1,bi,bj))
@@ -221,7 +221,7 @@ C   H = abs(R_low)
      &        *uVelInt(i,j,bi,bj)*dyG(i,j,bi,bj)
      &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1))
 
-            gLambdaAdv(i,j,bi,bj) = (1/(4*abs(R_low(i,j,bi,bj))
+            gLambdaAdv(i,j,bi,bj) = (1./(4*abs(R_low(i,j,bi,bj))
      &        *rA(i,j,bi,bj)))
 
      &        *((Lambda(i,j,1,bi,bj) + Lambda(i,j+1,1,bi,bj))
@@ -419,7 +419,7 @@ C            x-component
             numX_YCXGZC(i,j,k,bi,bj) = kGM_x_YCXGZC(i,j,k,bi,bj)*
      &        (BT_dsigmadx_ZC(i,j,k,bi,bj)**2)
 
-C            y-component 
+C            y-component
             numY_YGXCZC(i,j,k,bi,bj) = kGM_y_YGXCZC(i,j,k,bi,bj)*
      &        (BT_dsigmady_ZC(i,j,k,bi,bj)**2)
           ENDDO
