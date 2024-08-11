@@ -169,7 +169,7 @@ C    Initialize arrays with zero values
         ENDDO
       ENDDO
 
-      partition = 0.3
+      partition = 1.
 
 C--------------------------------l------------------------------
 C     DEPTH INTEGRAL OF U AND V FOR ENERGY CONVERSION
