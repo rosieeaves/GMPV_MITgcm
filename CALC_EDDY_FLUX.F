@@ -490,8 +490,8 @@ C calculate EKE source term = depth average of flux term
         DO i=1,sNx
           IF (abs(R_low(i,j,bi,bj)).NE.0) THEN
             gEKESource(i,j,bi,bj) = BT_mask(i,j,bi,bj)*
-     &        partition*fluxInt_YCXC(i,j,bi,bj)/
-     &        abs(R_low(i,j,bi,bj))  
+     &        partition*(gravity/rhoConst)*
+     &        fluxInt_YCXC(i,j,bi,bj)/abs(R_low(i,j,bi,bj))  
           ELSE 
             gEKESource(i,j,bi,bj) = 0.
           END IF
