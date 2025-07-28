@@ -43,7 +43,9 @@ C
      &      'ini_EKE j:  = ', j
          DO i=1-Olx,sNx+Olx
           IF (R_low(i,j,bi,bj).NE.0) THEN
+
             EKE(i,j,1,bi,bj)=1.E-6
+
           ELSE 
             EKE(i,j,1,bi,bj)=0.
           END IF

@@ -415,6 +415,7 @@ C x and y components of flux numerator at ZC
       DO k=1,Nr
         DO j=1,sNy+1
           DO i=1,sNx+1
+
 C            x-component 
             numX_YCXGZC(i,j,k,bi,bj) = kGM_x_YCXGZC(i,j,k,bi,bj)*
      &        (BT_dsigmadx_ZC(i,j,k,bi,bj)**2)
@@ -422,6 +423,7 @@ C            x-component
 C            y-component
             numY_YGXCZC(i,j,k,bi,bj) = kGM_y_YGXCZC(i,j,k,bi,bj)*
      &        (BT_dsigmady_ZC(i,j,k,bi,bj)**2)
+
           ENDDO
         ENDDO
       ENDDO
