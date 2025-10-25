@@ -459,6 +459,13 @@ C     4 POINT AVERAGE OF DQDX_YCXG TO YGXC AND DQDY_YGXC TO YCXG
      &      'tml dqdx_YCXG:  = ', dqdx_YCXG
       WRITE(standardMessageUnit,*)
      &      'tml dqdy_YCXG:  = ', dqdy_YCXG
+      WRITE(standardMessageUnit,*)
+     &      'tml modqYCXG:  = ', modGradq_YCXG
+      WRITE(standardMessageUnit,*)
+     &      'tml modqYGXC:  = ', modGradq_YGXC
+
+      WRITE(standardMessageUnit,*)
+     &      'drC:  = ', drC
 
 C -----------------------------------------------------------------
 C EDDY PARAMETERIZATION

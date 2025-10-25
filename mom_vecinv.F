@@ -56,6 +56,9 @@ C     == Global variables ==
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 #endif
+#ifdef ALLOW_GMREDI
+#include "GMREDI.h"
+#endif
 
 C     == Routine arguments ==
 C     bi,bj   :: current tile indices
@@ -943,110 +946,8 @@ C--   Set du/dt & dv/dt on boundaries to zero
         CALL DIAGNOSTICS_FILL(vort3BC,'momVort3',k,1,2,bi,bj,myThid)
 C       custom: relative vorticity squared
         CALL DIAGNOSTICS_FILL(vort3BC2,'VORTSQ  ',k,1,2,bi,bj,myThid)
-C       custom: parameterized EKE
-        CALL DIAGNOSTICS_FILL(EKE,'EKE     ',k,1,2,bi,bj,myThid)
-C       custom: parameterized EKE tendency
-        CALL DIAGNOSTICS_FILL(gEKE,'gEKE    ',k,1,2,bi,bj,myThid)
-C       custom: parameterized EKE conversion
-        CALL DIAGNOSTICS_FILL(gEKEConv,'gEKEConv',k,1,2,bi,bj,myThid)
-C       custom: parameterized EKE advection
-        CALL DIAGNOSTICS_FILL(gEKEAdv,'gEKEAdv ',k,1,2,bi,bj,myThid)
-C       custom: parameterized EKE drag
-        CALL DIAGNOSTICS_FILL(gEKEr,'gEKEr   ',k,1,2,bi,bj,myThid)
-C       custom: parameterized EKE diffusion
-        CALL DIAGNOSTICS_FILL(gEKEDiff,'gEKEDiff',k,1,2,bi,bj,myThid)
 
 
-C       custom: parameterized Lambda
-        CALL DIAGNOSTICS_FILL(Lambda,'Lambda  ',k,1,2,bi,bj,myThid)
-C       custom: parameterized Lambda tendency
-        CALL DIAGNOSTICS_FILL(gLambda,'gLambda ',k,1,2,bi,bj,myThid)
-C       custom: parameterized Lambda generation
-        CALL DIAGNOSTICS_FILL(gLambdaGen,'gLambdaGen',
-     &     k,1,2,bi,bj,myThid)
-C       custom: parameterized Lambda advection
-        CALL DIAGNOSTICS_FILL(gLambdaAdv,'gLambdaAdv',
-     &     k,1,2,bi,bj,myThid)
-C       custom: parameterized Lambda drag
-        CALL DIAGNOSTICS_FILL(gLambdar,'gLambdar',
-     &     k,1,2,bi,bj,myThid)
-C       custom: parameterized Lambda diffusion
-        CALL DIAGNOSTICS_FILL(gLambdaDiff,'gLambdaDiff',
-     &     k,1,2,bi,bj,myThid)
-
-C       custom: parameterized bar(q'u')
-        CALL DIAGNOSTICS_FILL(quEDDY_YGXC,'quEDDY  ',
-     &     k,1,2,bi,bj,myThid)
-
-C       custom: parameterized bar(q'v')
-        CALL DIAGNOSTICS_FILL(qvEDDY_YCXG,'qvEDDY  ',
-     &     k,1,2,bi,bj,myThid)
-
-C --------------------------------------------------------------------
-C TESTING
-C --------------------------------------------------------------------
-
-        CALL DIAGNOSTICS_FILL(EKE_YGXC,'EKE_YGXC',
-     &     k,1,2,bi,bj,myThid)
-
-        CALL DIAGNOSTICS_FILL(Lambda_YGXC,'L_YGXC  ',
-     &     k,1,2,bi,bj,myThid)
-
-        CALL DIAGNOSTICS_FILL(dqdx_YGXC,'dqdxYGXC',
-     &     k,1,2,bi,bj,myThid)
-
-        CALL DIAGNOSTICS_FILL(dqdy_YGXC,'dqdyYGXC',
-     &     k,1,2,bi,bj,myThid)
-
-        CALL DIAGNOSTICS_FILL(dpsidx_YGXC,'dpsidx  ',
-     &     k,1,2,bi,bj,myThid)
-
-        CALL DIAGNOSTICS_FILL(modGradq_YGXC,'modqYGXC',
-     &     k,1,2,bi,bj,myThid)
-
-        CALL DIAGNOSTICS_FILL(kappa_q_YGXC,'kqYGXC  ',
-     &     k,1,2,bi,bj,myThid)
-
-        CALL DIAGNOSTICS_FILL(energyConv_YGXC,'ECYGXC  ',
-     &     k,1,2,bi,bj,myThid)
-
-        CALL DIAGNOSTICS_FILL(enstrophyGen_YGXC,'EGYGXC  ',
-     &     k,1,2,bi,bj,myThid)
-
-        CALL DIAGNOSTICS_FILL(EKE_YCXG,'EKE_YCXG',
-     &     k,1,2,bi,bj,myThid)
-
-        CALL DIAGNOSTICS_FILL(Lambda_YCXG,'L_YCXG  ',
-     &     k,1,2,bi,bj,myThid)
-
-        CALL DIAGNOSTICS_FILL(dqdx_YCXG,'dqdxYCXG',
-     &     k,1,2,bi,bj,myThid)
-
-        CALL DIAGNOSTICS_FILL(dqdy_YCXG,'dqdyYCXG',
-     &     k,1,2,bi,bj,myThid)
-
-        CALL DIAGNOSTICS_FILL(dpsidy_YCXG,'dpsidy  ',
-     &     k,1,2,bi,bj,myThid)
-
-        CALL DIAGNOSTICS_FILL(modGradq_YCXG,'modqYCXG',
-     &     k,1,2,bi,bj,myThid)
-
-        CALL DIAGNOSTICS_FILL(kappa_q_YCXG,'kqYCXG  ',
-     &     k,1,2,bi,bj,myThid)
-
-        CALL DIAGNOSTICS_FILL(energyConv_YCXG,'ECYCXG  ',
-     &     k,1,2,bi,bj,myThid)
-
-        CALL DIAGNOSTICS_FILL(enstrophyGen_YCXG,'EGYCXG  ',
-     &     k,1,2,bi,bj,myThid)
-
-        CALL DIAGNOSTICS_FILL(q_YCXC,'q_YCXC  ',
-     &     k,1,2,bi,bj,myThid)
-
-
-C --------------------------------------------------------------------
-C TESTING
-C --------------------------------------------------------------------
         CALL DIAGNOSTICS_FILL(KE,     'momKE   ',k,1,2,bi,bj,myThid)
        IF (momViscosity) THEN
         CALL DIAGNOSTICS_FILL(hDiv,   'momHDiv ',k,1,2,bi,bj,myThid)

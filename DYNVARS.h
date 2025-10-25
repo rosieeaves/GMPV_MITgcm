@@ -47,6 +47,7 @@ C     gLambdaNm, gLambdaNm1   :: parameterixed eddy kinetic energy time tendenci
      &                   gU,   gV, gEKE, gLambda,
      &                   gEKEConv, gEKEAdv, 
      &                   gEKEDiff, gEKEr,
+     &                   gEKESource,
      &                   gLambdaGen, gLambdaAdv,
      &                   gLambdaDiff, gLambdar,
      &                   guNm, gvNm, gtNm, gsNm, 
@@ -54,7 +55,16 @@ C     gLambdaNm, gLambdaNm1   :: parameterixed eddy kinetic energy time tendenci
      &                   q_YCXC, dqdx_YCXG, dqdy_YGXC,
      &                   dqdx_YGXC, dqdy_YCXG,
      &                   modGradq_YCXG, modGradq_YGXC,
-     &                   uVelInt, vVelInt
+     &                   uVelInt, vVelInt,
+     &                   kGM_x_YCXGZC, kGM_y_YGXCZC,
+     &                   numX_YCXGZC, numY_YGXCZC,
+     &                   numX_YCXGZG, numY_YGXCZG,
+     &                   fluxX_YCXGZG, fluxY_YGXCZG,
+     &                   fluxXInt_YCXG, fluxYInt_YGXC,
+     &                   fluxInt_YCXC, BT_isoRho,
+     &                   BT_dsigmadx_ZC, BT_dsigmady_ZC,
+     &                   BT_dsigmadzS_ZG, BT_dsigmadzW_ZG,
+     &                   BT_mask
 #else /* ALLOW_ADAMSBASHFORTH_3 */
       COMMON /DYNVARS_R/
      &                   etaN,
@@ -65,6 +75,7 @@ C     gLambdaNm, gLambdaNm1   :: parameterixed eddy kinetic energy time tendenci
      &                   gU,   gV, gEKE, gLambda,
      &                   gEKEConv, gEKEAdv, 
      &                   gEKEDiff, gEKEr,
+     &                   gEKESource,
      &                   gLambdaGen, gLambdaAdv,
      &                   gLambdaDiff, gLambdar,
      &                   guNm1,gvNm1,gtNm1,gsNm1,
@@ -72,7 +83,16 @@ C     gLambdaNm, gLambdaNm1   :: parameterixed eddy kinetic energy time tendenci
      &                   q_YCXC, dqdx_YCXG, dqdy_YGXC,
      &                   dqdx_YGXC, dqdy_YCXG,
      &                   modGradq_YCXG, modGradq_YGXC,
-     &                   uVelInt, vVelInt
+     &                   uVelInt, vVelInt,
+     &                   kGM_x_YCXGZC, kGM_y_YGXCZC,
+     &                   numX_YCXGZC, numY_YGXCZC,
+     &                   numX_YCXGZG, numY_YGXCZG,
+     &                   fluxX_YCXGZG, fluxY_YGXCZG,
+     &                   fluxXInt_YCXG, fluxYInt_YGXC,
+     &                   fluxInt_YCXC, BT_isoRho,
+     &                   BT_dsigmadx_ZC, BT_dsigmady_ZC,
+     &                   BT_dsigmadzS_ZG, BT_dsigmadzW_ZG,
+     &                   BT_mask
 #endif /* ALLOW_ADAMSBASHFORTH_3 */
       _RL  etaN  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  uVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -127,6 +147,29 @@ C     YCXG
       _RL  kappa_q_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  energyConv_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  enstrophyGen_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     SOURCE TERM 
+      _RL  gEKESource(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  BT_isoRho(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  BT_dsigmadx_ZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  BT_dsigmady_ZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  BT_dsigmadx_ZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
+      _RL  BT_dsigmady_ZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
+      _RL  BT_dsigmadzW_ZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
+      _RL  BT_dsigmadzS_ZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
+      _RL  BT_mask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     SOURCE TESTING
+      _RL  kGM_x_YCXGZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  kGM_y_YGXCZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  numX_YCXGZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  numY_YGXCZC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  numX_YCXGZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
+      _RL  numY_YGXCZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
+      _RL  fluxX_YCXGZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
+      _RL  fluxY_YGXCZG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1,nSx,nSy)
+      _RL  fluxXInt_YCXG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  fluxYInt_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  fluxInt_YCXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      
 #ifdef ALLOW_ADAMSBASHFORTH_3
       _RL  guNm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,2)
       _RL  gvNm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,2)

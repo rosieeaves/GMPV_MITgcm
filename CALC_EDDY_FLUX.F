@@ -36,6 +36,7 @@ C     == Global data ==
 #include "RESTART.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
+#include "GMREDI.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     iMin,iMax :: Working range of x-index for applying forcing.
@@ -60,6 +61,16 @@ C     gEKEDiff    :: EKE tendency from diffusion
 C     YCXC
       _RL  gEKE_AB(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  gLambda_AB(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C    VARIABLES FOR SOURCE TERM
+C      _RL  b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+C      _RL  dbdx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+C      _RL  dbdy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+C      _RL  dbdz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+C      _RL  grad_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+C      _RL  flux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+C      _RL  flux_zInt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C      _RL  kappa_GM(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL  partition
 C      _RL  q_YCXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     YGXC
 C      _RL  EKE_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -90,6 +101,7 @@ C    Initialize arrays with zero values
           gEKEConv(i,j,bi,bj) = 0. _d 0
           gEKEr(i,j,bi,bj) = 0. _d 0
           gEKEDiff(i,j,bi,bj) = 0. _d 0
+          gEKESource(i,j,bi,bj) = 0. _d 0
           gEKE_AB(i,j,bi,bj) = 0. _d 0
 
 
@@ -121,13 +133,56 @@ C    Initialize arrays with zero values
         ENDDO
       ENDDO 
 
-C--------------------------------------------------------------
-C     DEPTH INTEGRAL OF U AND V FOR ENERGY CONVERSION
-C     AND ADVECTION
+      DO k=1,Nr
+        DO j=1,sNy
+          DO i=1,sNx
+            kGM_x_YCXGZC(i,j,k,bi,bj) = 0. _d 0
+            kGM_y_YGXCZC(i,j,k,bi,bj) = 0. _d 0
+            numX_YCXGZC(i,j,k,bi,bj) = 0. _d 0
+            numY_YGXCZC(i,j,k,bi,bj) = 0. _d 0
+            numX_YCXGZG(i,j,k,bi,bj) = 0. _d 0
+            numY_YGXCZG(i,j,k,bi,bj) = 0. _d 0
+            fluxX_YCXGZG(i,j,k,bi,bj) = 0. _d 0
+            fluxY_YGXCZG(i,j,k,bi,bj) = 0. _d 0
+           ENDDO
+        ENDDO
+      ENDDO
+
+      DO j=1,sNy
+        DO i=1,sNx
+          numX_YCXGZG(i,j,Nr+1,bi,bj) = 0. _d 0
+          numY_YGXCZG(i,j,Nr+1,bi,bj) = 0. _d 0
+          fluxX_YCXGZG(i,j,Nr+1,bi,bj) = 0. _d 0
+          fluxY_YGXCZG(i,j,Nr+1,bi,bj) = 0. _d 0
+          fluxXInt_YCXG(i,j,bi,bj) = 0. _d 0
+          fluxYInt_YGXC(i,j,bi,bj) = 0. _d 0
+          fluxInt_YCXC(i,j,bi,bj) = 0. _d 0
+        ENDDO
+      ENDDO
+
+      partition = 0.3
+
+C--------------------------------l------------------------------
+C     MULTIPLY EKE AND LAMBDA BY BT_MASK TO SET TO ZERO IN 
+C     SPONGE REGIONS
 C--------------------------------------------------------------
       DO j=1,sNy
         DO i=1,sNx
-          DO k=1,Nr
+            EKE(i,j,1,bi,bj) = BT_mask(i,j,bi,bj)*
+     &        EKE(i,j,1,bi,bj)
+            Lambda(i,j,1,bi,bj) = BT_mask(i,j,bi,bj)*
+     &        Lambda(i,j,1,bi,bj)
+        ENDDO
+      ENDDO
+
+
+C--------------------------------l------------------------------
+C     DEPTH INTEGRAL OF U AND V FOR ENERGY CONVERSION
+C     AND ADVECTION
+C--------------------------------------------------------------
+      DO k=1,Nr
+        DO j=1,sNy
+          DO i=1,sNx
             uVelInt(i,j,bi,bj) = uVelInt(i,j,bi,bj) + 
      &          hFacW(i,j,k,bi,bj)*drF(k)*uVel(i,j,k,bi,bj)
 
@@ -147,7 +202,7 @@ C     CALCULATE EKE & Lambda ADVECTION TERM
 C--------------------------------------------------------------
 C   H = abs(R_low)
 
-            gEKEAdv(i,j,bi,bj) = (1/(4*abs(R_low(i,j,bi,bj))
+            gEKEAdv(i,j,bi,bj) = (1./(4*abs(R_low(i,j,bi,bj))
      &        *rA(i,j,bi,bj)))
 
      &        *((EKE(i,j,1,bi,bj) + EKE(i,j+1,1,bi,bj))
@@ -166,7 +221,7 @@ C   H = abs(R_low)
      &        *uVelInt(i,j,bi,bj)*dyG(i,j,bi,bj)
      &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1))
 
-            gLambdaAdv(i,j,bi,bj) = (1/(4*abs(R_low(i,j,bi,bj))
+            gLambdaAdv(i,j,bi,bj) = (1./(4*abs(R_low(i,j,bi,bj))
      &        *rA(i,j,bi,bj)))
 
      &        *((Lambda(i,j,1,bi,bj) + Lambda(i,j+1,1,bi,bj))
@@ -185,6 +240,8 @@ C   H = abs(R_low)
      &        *uVelInt(i,j,bi,bj)*dyG(i,j,bi,bj)
      &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1))
 
+     &        *BT_mask(i,j,bi,bj)
+
 
 
 C--------------------------------------------------------------
@@ -193,9 +250,11 @@ C--------------------------------------------------------------
 
             gEKEr(i,j,bi,bj) = r_EKE(i,j,bi,bj)
      &        *EKE(i,j,1,bi,bj)
+     &        *BT_mask(i,j,bi,bj)
 
             gLambdar(i,j,bi,bj) = r_Lambda(i,j,bi,bj)
      &        *Lambda(i,j,1,bi,bj)
+     &        *BT_mask(i,j,bi,bj)
 
 C--------------------------------------------------------------
 C     CALCULATE K AND LAMBDA DIFFUSION    
@@ -219,6 +278,7 @@ C min => get zero when one or both of R_low is zero and one when neither is zero
      &        -(EKE(i,j,1,bi,bj)*abs(R_low(i,j,bi,bj))
      &        - EKE(i-1,j,1,bi,bj)*abs(R_low(i-1,j,bi,bj)))
      &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1))
+     &        *BT_mask(i,j,bi,bj)
 
             gLambdaDiff(i,j,bi,bj) = (mu(i,j,bi,bj)/(rA(i,j,bi,bj)
      &        *abs(R_low(i,j,bi,bj))))
@@ -234,6 +294,7 @@ C min => get zero when one or both of R_low is zero and one when neither is zero
      &        -(Lambda(i,j,1,bi,bj)*abs(R_low(i,j,bi,bj))
      &        - Lambda(i-1,j,1,bi,bj)*abs(R_low(i-1,j,bi,bj)))
      &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1))
+     &        *BT_mask(i,j,bi,bj)
 
           ELSE
             gEKEAdv(i,j,bi,bj)=0. 
@@ -311,21 +372,137 @@ C     and BAR(Q'V')*DQDY (ENSTROPHY GENERATION)AT YCXG
       ENDDO
 
 C     ENERGY CONVERSION AND ENSTROPHY GENERATION AT YCXC
-C !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-C     need to check what happens at land boundaries
-C !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       DO j=1,sNy
         DO i=1,sNx
-          gEKEConv(i,j,bi,bj) = (energyConv_YGXC(i,j,bi,bj) 
+          gEKEConv(i,j,bi,bj) = BT_mask(i,j,bi,bj)*
+     &      (energyConv_YGXC(i,j,bi,bj) 
      &      + energyConv_YGXC(i,j+1,bi,bj) 
      &      + energyConv_YCXG(i,j,bi,bj) 
      &      + energyConv_YCXG(i+1,j,bi,bj))/2
-          gLambdaGen(i,j,bi,bj) = (enstrophyGen_YGXC(i,j,bi,bj) 
+          gLambdaGen(i,j,bi,bj) = BT_mask(i,j,bi,bj)*
+     &      (enstrophyGen_YGXC(i,j,bi,bj) 
      &      + enstrophyGen_YGXC(i,j+1,bi,bj) 
      &      + enstrophyGen_YCXG(i,j,bi,bj) 
      &      + enstrophyGen_YCXG(i+1,j,bi,bj))/2
         ENDDO
       ENDDO 
+
+C--------------------------------------------------------------
+C     CALCULATE EKE SOURCE TERM 
+C--------------------------------------------------------------
+
+      DO k=1,Nr
+        DO j=1,sNy+1
+          DO i=1,sNx+1
+
+C calculate kGM_x_ZC and kGM_y_ZC
+C set to zero if either side is a partial cell
+            kGM_x_YCXGZC(i,j,k,bi,bj) = GM_background_K
+     &       *taperX(i,j,k,bi,bj)
+     &       *floor(abs(hFacC(i,j,k,bi,bj)))
+     &       *floor(abs(hFacC(i-1,j,k,bi,bj)))
+
+            kGM_y_YGXCZC(i,j,k,bi,bj) = GM_background_K
+     &       *taperY(i,j,k,bi,bj)
+     &       *floor(abs(hFacC(i,j,k,bi,bj)))
+     &       *floor(abs(hFacC(i,j-1,k,bi,bj)))
+          ENDDO
+        ENDDO
+      ENDDO
+
+C x and y components of flux numerator at ZC
+
+      DO k=1,Nr
+        DO j=1,sNy+1
+          DO i=1,sNx+1
+
+C            x-component 
+            numX_YCXGZC(i,j,k,bi,bj) = kGM_x_YCXGZC(i,j,k,bi,bj)*
+     &        (BT_dsigmadx_ZC(i,j,k,bi,bj)**2)
+
+C            y-component
+            numY_YGXCZC(i,j,k,bi,bj) = kGM_y_YGXCZC(i,j,k,bi,bj)*
+     &        (BT_dsigmady_ZC(i,j,k,bi,bj)**2)
+
+          ENDDO
+        ENDDO
+      ENDDO
+        
+
+C interpolate numerators to ZG
+      DO k=2,Nr
+        DO j=1,sNy+1
+          DO i=1,sNx+1
+            numX_YCXGZG(i,j,k,bi,bj) = numX_YCXGZC(i,j,k-1,bi,bj) + 
+     &        0.5*drF(k-1)*((numX_YCXGZC(i,j,k,bi,bj) 
+     &        - numX_YCXGZC(i,j,k-1,bi,bj))/drC(k))
+
+            numY_YGXCZG(i,j,k,bi,bj) = numY_YGXCZC(i,j,k-1,bi,bj) + 
+     &        0.5*drF(k-1)*((numY_YGXCZC(i,j,k,bi,bj) 
+     &        - numY_YGXCZC(i,j,k-1,bi,bj))/drC(k))
+          ENDDO
+        ENDDO
+      ENDDO
+
+C calculate x and y components of flux
+
+      DO k=2,Nr
+        DO j=1,sNy+1
+          DO i=1,sNx+1
+C            x-component 
+            fluxX_YCXGZG(i,j,k,bi,bj) = numX_YCXGZG(i,j,k,bi,bj)/
+     &        BT_dsigmadzW_ZG(i,j,k,bi,bj)
+
+C           y-component
+            fluxY_YGXCZG(i,j,k,bi,bj) = numY_YGXCZG(i,j,k,bi,bj)/
+     &        BT_dsigmadzS_ZG(i,j,k,bi,bj)
+          ENDDO
+        ENDDO
+      ENDDO
+
+C calculate depth integral of x and y components of flux
+      DO k=1,Nr+1
+        DO j=1,sNy+1
+          DO i=1,sNx+1
+            fluxXInt_YCXG(i,j,bi,bj) = 
+     &        fluxXInt_YCXG(i,j,bi,bj) + 
+     &        fluxX_YCXGZG(i,j,k,bi,bj)*drC(k)
+
+            fluxYInt_YGXC(i,j,bi,bj) = 
+     &        fluxYInt_YGXC(i,j,bi,bj) + 
+     &        fluxY_YGXCZG(i,j,k,bi,bj)*drC(k)
+          ENDDO
+        ENDDO
+      ENDDO
+
+C interpolate flux to YCXC
+
+      DO j=1,sNy
+        DO i=1,sNx
+          fluxInt_YCXC(i,j,bi,bj) = (
+     &      fluxXInt_YCXG(i,j,bi,bj) + 
+     &      fluxXInt_YCXG(i+1,j,bi,bj) +
+     &      fluxYInt_YGXC(i,j,bi,bj) + 
+     &      fluxYInt_YGXC(i,j+1,bi,bj))/2
+        ENDDO
+      ENDDO
+
+C calculate EKE source term = depth average of flux term
+      DO j=1,sNy
+        DO i=1,sNx
+          IF (abs(R_low(i,j,bi,bj)).NE.0) THEN
+            gEKESource(i,j,bi,bj) = BT_mask(i,j,bi,bj)*
+     &        partition*(gravity/rhoConst)*
+     &        fluxInt_YCXC(i,j,bi,bj)/abs(R_low(i,j,bi,bj))  
+          ELSE 
+            gEKESource(i,j,bi,bj) = 0.
+          END IF
+        ENDDO
+      ENDDO
+
+C-------------------------------------
+C SECOND METHOD
+C-------------------------------------
 
 C--------------------------------------------------------------
 C     CALCULATE TOTAL EKE AND LAMBDA TENDENCY  
@@ -337,6 +514,7 @@ C--------------------------------------------------------------
      &      + gEKEConv(i,j,bi,bj) 
      &      - gEKEr(i,j,bi,bj) 
      &      + gEKEDiff(i,j,bi,bj)
+     &      + gEKESource(i,j,bi,bj)
 
           gLambda(i,j,1,bi,bj) = -gLambdaAdv(i,j,bi,bj) 
      &      - gLambdaGen(i,j,bi,bj) 
@@ -376,6 +554,147 @@ C--------------------------------------------------------------
      &     + deltaTMom*( gLambda(i,j,1,bi,bj) ),0.)
 
         ENDDO
+      ENDDO
+
+C--------------------------------------------------------------
+C     MULTIPLY EKE AND LAMBDA BY BT_MASK TO SET TO ZERO IN 
+C     SPONGE REGIONS
+C--------------------------------------------------------------
+      DO j=1,sNy
+        DO i=1,sNx
+            EKE(i,j,1,bi,bj) = BT_mask(i,j,bi,bj)*
+     &        EKE(i,j,1,bi,bj)
+            Lambda(i,j,1,bi,bj) = BT_mask(i,j,bi,bj)*
+     &        Lambda(i,j,1,bi,bj)
+        ENDDO
+      ENDDO
+
+C--------------------------------------------------------------
+C     CALL DIAGNOSTICS
+C--------------------------------------------------------------
+
+C       custom: parameterized EKE
+      CALL DIAGNOSTICS_FILL(EKE,'EKE     ',1,1,2,bi,bj,myThid)
+C       custom: parameterized EKE tendency
+      CALL DIAGNOSTICS_FILL(gEKE,'gEKE    ',1,1,2,bi,bj,myThid)
+C      custom: parameterized EKE conversion
+      CALL DIAGNOSTICS_FILL(gEKEConv,'gEKEConv',1,1,2,bi,bj,myThid)
+C       custom: parameterized EKE advection
+      CALL DIAGNOSTICS_FILL(gEKEAdv,'gEKEAdv ',1,1,2,bi,bj,myThid)
+C       custom: parameterized EKE drag
+      CALL DIAGNOSTICS_FILL(gEKEr,'gEKEr   ',1,1,2,bi,bj,myThid)
+C       custom: parameterized EKE diffusion
+      CALL DIAGNOSTICS_FILL(gEKEDiff,'gEKEDiff',1,1,2,bi,bj,myThid)
+C     SOURCE TERM
+C       custom: parameterized EKE source term
+      CALL DIAGNOSTICS_FILL(gEKESource,'gEKESour',1,1,2,bi,bj,myThid)
+C       custom: parameterized Lambda
+      CALL DIAGNOSTICS_FILL(Lambda,'Lambda  ',1,1,2,bi,bj,myThid)
+C       custom: parameterized Lambda tendency
+      CALL DIAGNOSTICS_FILL(gLambda,'gLambda ',1,1,2,bi,bj,myThid)
+C       custom: parameterized Lambda generation
+      CALL DIAGNOSTICS_FILL(gLambdaGen,'gLambdaGen',
+     &     1,1,2,bi,bj,myThid)
+C       custom: parameterized Lambda advection
+      CALL DIAGNOSTICS_FILL(gLambdaAdv,'gLambdaAdv',
+     &     1,1,2,bi,bj,myThid)
+C       custom: parameterized Lambda drag
+      CALL DIAGNOSTICS_FILL(gLambdar,'gLambdar',
+     &     1,1,2,bi,bj,myThid)
+C       custom: parameterized Lambda diffusion
+      CALL DIAGNOSTICS_FILL(gLambdaDiff,'gLambdaDiff',
+     &     1,1,2,bi,bj,myThid)
+C       custom: parameterized bar(q'u')
+      CALL DIAGNOSTICS_FILL(quEDDY_YGXC,'quEDDY  ',
+     &     1,1,2,bi,bj,myThid)
+
+C       custom: parameterized bar(q'v')
+      CALL DIAGNOSTICS_FILL(qvEDDY_YCXG,'qvEDDY  ',
+     &     1,1,2,bi,bj,myThid)
+
+C       custom: fluxXInt_YCXG
+        CALL DIAGNOSTICS_FILL(fluxXInt_YCXG,'fluxXInt',
+     &     1,1,2,bi,bj,myThid)
+C       custom: fluxYInt_YGXC
+        CALL DIAGNOSTICS_FILL(fluxYInt_YGXC,'fluxYInt',
+     &     1,1,2,bi,bj,myThid)
+C       custom: fluxInt_YCXC
+        CALL DIAGNOSTICS_FILL(fluxInt_YCXC,'fluxInt ',
+     &     1,1,2,bi,bj,myThid)
+C       custom: BT_mask
+        CALL DIAGNOSTICS_FILL(BT_mask,'BT_mask ',
+     &     1,1,2,bi,bj,myThid)
+
+
+
+
+C       custom: qYCXC
+      CALL DIAGNOSTICS_FILL(q_YCXC,'qYCXC   ',1,1,2,bi,bj,myThid)
+C       custom: dqdxYCXG
+      CALL DIAGNOSTICS_FILL(dqdx_YCXG,'dqdxYCXG',1,1,2,bi,bj,myThid)
+C       custom: dqdyYGXC
+      CALL DIAGNOSTICS_FILL(dqdy_YGXC,'dqdyYGXC',1,1,2,bi,bj,myThid)
+C       custom: dqdxYGXC
+      CALL DIAGNOSTICS_FILL(dqdx_YGXC,'dqdxYGXC',1,1,2,bi,bj,myThid)
+C       custom: dqdyYCXG
+      CALL DIAGNOSTICS_FILL(dqdy_YCXG,'dqdyYCXG',1,1,2,bi,bj,myThid)
+C       custom: modGradq_YCXG
+      CALL DIAGNOSTICS_FILL(modGradq_YCXG,'modqYCXG',1,1,2,bi,bj,myThid)
+C       custom: modGradq_YGXC
+      CALL DIAGNOSTICS_FILL(modGradq_YGXC,'modqYGXC',1,1,2,bi,bj,myThid)
+
+
+
+      
+
+C     SOURCE TERM TESTING
+      DO k = 1,Nr
+C       custom: kGM_x_YCXGZC
+        CALL DIAGNOSTICS_FILL(kGM_x_YCXGZC(:,:,k,:,:),'kGMxZC  ',
+     &     k,1,2,bi,bj,myThid)
+C       custom: kGM_y_YGXCZC
+        CALL DIAGNOSTICS_FILL(kGM_y_YGXCZC(:,:,k,:,:),'kGMyZC  ',
+     &     k,1,2,bi,bj,myThid)
+C       custom: numX_YCXGZC
+        CALL DIAGNOSTICS_FILL(numX_YCXGZC(:,:,k,:,:),'numxZC  ',
+     &     k,1,2,bi,bj,myThid)
+C       custom: numY_YGXCZC
+        CALL DIAGNOSTICS_FILL(numY_YGXCZC(:,:,k,:,:),'numyZC  ',
+     &     k,1,2,bi,bj,myThid)
+C       custom: numX_YCXGZG
+        CALL DIAGNOSTICS_FILL(numX_YCXGZG(:,:,k,:,:),'numxZG  ',
+     &     k,1,2,bi,bj,myThid)
+C       custom: numY_YGXCZG
+        CALL DIAGNOSTICS_FILL(numY_YGXCZG(:,:,k,:,:),'numyZG  ',
+     &     k,1,2,bi,bj,myThid)
+C       custom: flux_YCXGZG
+        CALL DIAGNOSTICS_FILL(fluxX_YCXGZG(:,:,k,:,:),'fluxX   ',
+     &     k,1,2,bi,bj,myThid)
+C       custom: flux_YGXCZG
+        CALL DIAGNOSTICS_FILL(fluxY_YGXCZG(:,:,k,:,:),'fluxY   ',
+     &     k,1,2,bi,bj,myThid)
+C       custom: GM taperX
+        CALL DIAGNOSTICS_FILL(taperX(:,:,k,:,:),'taperX  ',
+     &     k,1,2,bi,bj,myThid)
+C       custom: GM taperY
+        CALL DIAGNOSTICS_FILL(taperY(:,:,k,:,:),'taperY  ',
+     &     k,1,2,bi,bj,myThid)
+C       custom: isoneutral density
+        CALL DIAGNOSTICS_FILL(BT_isoRho(:,:,k,:,:),'isoRho  ',
+     &     k,1,2,bi,bj,myThid)
+C       custom: dsigmadx
+        CALL DIAGNOSTICS_FILL(BT_dsigmadx_ZC(:,:,k,:,:),'dsigmadx',
+     &     k,1,2,bi,bj,myThid)
+C       custom: dsigmady
+        CALL DIAGNOSTICS_FILL(BT_dsigmady_ZC(:,:,k,:,:),'dsigmady',
+     &     k,1,2,bi,bj,myThid)
+C       custom: dsigmadzW
+        CALL DIAGNOSTICS_FILL(BT_dsigmadzW_ZG(:,:,k,:,:),'sigmadzW',
+     &     k,1,2,bi,bj,myThid)
+C       custom: dsigmadzS
+        CALL DIAGNOSTICS_FILL(BT_dsigmadzS_ZG(:,:,k,:,:),'sigmadzS',
+     &     k,1,2,bi,bj,myThid)
+
       ENDDO
 
 
