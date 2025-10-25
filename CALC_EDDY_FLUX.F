@@ -468,7 +468,7 @@ C calculate depth integral of x and y components of flux
      &        fluxXInt_YCXG(i,j,bi,bj) + 
      &        fluxX_YCXGZG(i,j,k,bi,bj)*drC(k)
 
-             fluxYInt_YGXC(i,j,bi,bj) = 
+            fluxYInt_YGXC(i,j,bi,bj) = 
      &        fluxYInt_YGXC(i,j,bi,bj) + 
      &        fluxY_YGXCZG(i,j,k,bi,bj)*drC(k)
           ENDDO
@@ -483,7 +483,7 @@ C interpolate flux to YCXC
      &      fluxXInt_YCXG(i,j,bi,bj) + 
      &      fluxXInt_YCXG(i+1,j,bi,bj) +
      &      fluxYInt_YGXC(i,j,bi,bj) + 
-     &      fluxYInt_YGXC(i,j+1,bi,bj))/4
+     &      fluxYInt_YGXC(i,j+1,bi,bj))/2
         ENDDO
       ENDDO
 
