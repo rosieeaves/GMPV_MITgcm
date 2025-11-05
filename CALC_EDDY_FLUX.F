@@ -70,7 +70,6 @@ C      _RL  grad_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 C      _RL  flux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 C      _RL  flux_zInt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C      _RL  kappa_GM(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL  partition
 C      _RL  q_YCXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     YGXC
 C      _RL  EKE_YGXC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -160,8 +159,6 @@ C    Initialize arrays with zero values
         ENDDO
       ENDDO
 
-      partition = 0.3
-
 C--------------------------------l------------------------------
 C     MULTIPLY EKE AND LAMBDA BY BT_MASK TO SET TO ZERO IN 
 C     SPONGE REGIONS
@@ -202,8 +199,7 @@ C     CALCULATE EKE & Lambda ADVECTION TERM
 C--------------------------------------------------------------
 C   H = abs(R_low)
 
-            gEKEAdv(i,j,bi,bj) = (1./(4*abs(R_low(i,j,bi,bj))
-     &        *rA(i,j,bi,bj)))
+            gEKEAdv(i,j,bi,bj) = (1./(4*rA(i,j,bi,bj)))
 
      &        *((EKE(i,j,1,bi,bj) + EKE(i,j+1,1,bi,bj))
      &        *vVelInt(i,j+1,bi,bj)*dxG(i,j+1,bi,bj)
@@ -221,8 +217,10 @@ C   H = abs(R_low)
      &        *uVelInt(i,j,bi,bj)*dyG(i,j,bi,bj)
      &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1))
 
-            gLambdaAdv(i,j,bi,bj) = (1./(4*abs(R_low(i,j,bi,bj))
-     &        *rA(i,j,bi,bj)))
+     &        *BT_mask(i,j,bi,bj)
+
+
+            gLambdaAdv(i,j,bi,bj) = (1./(4*rA(i,j,bi,bj)))
 
      &        *((Lambda(i,j,1,bi,bj) + Lambda(i,j+1,1,bi,bj))
      &        *vVelInt(i,j+1,bi,bj)*dxG(i,j+1,bi,bj)
@@ -249,11 +247,11 @@ C     CALCULATE EKE & Lambda LINEAR DRAG
 C--------------------------------------------------------------
 
             gEKEr(i,j,bi,bj) = r_EKE(i,j,bi,bj)
-     &        *EKE(i,j,1,bi,bj)
+     &        *abs(R_low(i,j,bi,bj))*EKE(i,j,1,bi,bj)
      &        *BT_mask(i,j,bi,bj)
 
             gLambdar(i,j,bi,bj) = r_Lambda(i,j,bi,bj)
-     &        *Lambda(i,j,1,bi,bj)
+     &        *abs(R_low(i,j,bi,bj))*Lambda(i,j,1,bi,bj)
      &        *BT_mask(i,j,bi,bj)
 
 C--------------------------------------------------------------
@@ -263,37 +261,47 @@ C--------------------------------------------------------------
 C if one or both of R_low = 0 then product = 0
 C if neither R_low are zero then product > 0 => ceiling >= 1
 C min => get zero when one or both of R_low is zero and one when neither is zero.
+C diffusion = mu grad dot H grad K
 
-            gEKEDiff(i,j,bi,bj) = (mu(i,j,bi,bj)/(rA(i,j,bi,bj)
-     &        *abs(R_low(i,j,bi,bj))))
-     &        *((EKE(i,j+1,1,bi,bj)*abs(R_low(i,j+1,bi,bj))
-     &        - EKE(i,j,1,bi,bj)*abs(R_low(i,j,bi,bj)))
+            gEKEDiff(i,j,bi,bj) = (mu(i,j,bi,bj)/(2*rA(i,j,bi,bj)))*
+
+     &        *((EKE(i,j+1,1,bi,bj) - EKE(i,j,1,bi,bj))
+     &        *(abs(R_low(i,j+1,bi,bj)) + abs(R_low(i,j,bi,bj)))
      &        *min(ceiling(abs(R_low(i,j+1,bi,bj)*R_low(i,j,bi,bj))),1)
-     &        +(EKE(i+1,j,1,bi,bj)*abs(R_low(i+1,j,bi,bj))
-     &        - EKE(i,j,1,bi,bj)*abs(R_low(i,j,bi,bj)))
+
+     &        + (EKE(i+1,j,1,bi,bj) - EKE(i,j,1,bi,bj))
+     &        *(abs(R_low(i+1,j,bi,bj)) + abs(R_low(i,j,bi,bj)))
      &        *min(ceiling(abs(R_low(i+1,j,bi,bj)*R_low(i,j,bi,bj))),1)
-     &        -(EKE(i,j,bi,1,bj)*abs(R_low(i,j,bi,bj))
-     &        - EKE(i,j-1,1,bi,bj)*abs(R_low(i,j-1,bi,bj)))
-     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i,j-1,bi,bj))),1)
-     &        -(EKE(i,j,1,bi,bj)*abs(R_low(i,j,bi,bj))
-     &        - EKE(i-1,j,1,bi,bj)*abs(R_low(i-1,j,bi,bj)))
-     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1))
+
+     &        - (EKE(i,j,1,bi,bj) - EKE(i,j-1,1,bi,bj))
+     &        *(abs(R_low(i,j,bi,bj)) + abs(R_low(i,j-1,bi,bj)))
+     &        *min(ceiling(abs(R_low(i,j-1,bi,bj)*R_low(i,j,bi,bj))),1)
+
+     &        - (EKE(i,j,1,bi,bj) - EKE(i-1,j,1,bi,bj))
+     &        *(abs(R_low(i,j,bi,bj)) + abs(R_low(i-1,j,bi,bj)))
+     &        *min(ceiling(abs(R_low(i-1,j,bi,bj)*R_low(i,j,bi,bj))),1))
+
      &        *BT_mask(i,j,bi,bj)
 
-            gLambdaDiff(i,j,bi,bj) = (mu(i,j,bi,bj)/(rA(i,j,bi,bj)
-     &        *abs(R_low(i,j,bi,bj))))
-     &        *((Lambda(i,j+1,1,bi,bj)*abs(R_low(i,j+1,bi,bj))
-     &        - Lambda(i,j,1,bi,bj)*abs(R_low(i,j,bi,bj)))
+
+            gLambdaDiff(i,j,bi,bj) = (mu(i,j,bi,bj)/(2*rA(i,j,bi,bj)))*
+
+     &        *((Lambda(i,j+1,1,bi,bj) - Lambda(i,j,1,bi,bj))
+     &        *(abs(R_low(i,j+1,bi,bj)) + abs(R_low(i,j,bi,bj)))
      &        *min(ceiling(abs(R_low(i,j+1,bi,bj)*R_low(i,j,bi,bj))),1)
-     &        +(Lambda(i+1,j,1,bi,bj)*abs(R_low(i+1,j,bi,bj))
-     &        - Lambda(i,j,1,bi,bj)*abs(R_low(i,j,bi,bj)))
+
+     &        + (Lambda(i+1,j,1,bi,bj) - Lambda(i,j,1,bi,bj))
+     &        *(abs(R_low(i+1,j,bi,bj)) + abs(R_low(i,j,bi,bj)))
      &        *min(ceiling(abs(R_low(i+1,j,bi,bj)*R_low(i,j,bi,bj))),1)
-     &        -(Lambda(i,j,1,bi,bj)*abs(R_low(i,j,bi,bj))
-     &        - Lambda(i,j-1,1,bi,bj)*abs(R_low(i,j-1,bi,bj)))
-     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i,j-1,bi,bj))),1)
-     &        -(Lambda(i,j,1,bi,bj)*abs(R_low(i,j,bi,bj))
-     &        - Lambda(i-1,j,1,bi,bj)*abs(R_low(i-1,j,bi,bj)))
-     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1))
+
+     &        - (Lambda(i,j,1,bi,bj) - Lambda(i,j-1,1,bi,bj))
+     &        *(abs(R_low(i,j,bi,bj)) + abs(R_low(i,j-1,bi,bj)))
+     &        *min(ceiling(abs(R_low(i,j-1,bi,bj)*R_low(i,j,bi,bj))),1)
+
+     &        - (Lambda(i,j,1,bi,bj) - Lambda(i-1,j,1,bi,bj))
+     &        *(abs(R_low(i,j,bi,bj)) + abs(R_low(i-1,j,bi,bj)))
+     &        *min(ceiling(abs(R_low(i-1,j,bi,bj)*R_low(i,j,bi,bj))),1))
+
      &        *BT_mask(i,j,bi,bj)
 
           ELSE
@@ -374,12 +382,15 @@ C     and BAR(Q'V')*DQDY (ENSTROPHY GENERATION)AT YCXG
 C     ENERGY CONVERSION AND ENSTROPHY GENERATION AT YCXC
       DO j=1,sNy
         DO i=1,sNx
-          gEKEConv(i,j,bi,bj) = BT_mask(i,j,bi,bj)*
+          gEKEConv(i,j,bi,bj) = BT_mask(i,j,bi,bj)
+     &      *abs(R_low(i,j,bi,bj))*
      &      (energyConv_YGXC(i,j,bi,bj) 
      &      + energyConv_YGXC(i,j+1,bi,bj) 
      &      + energyConv_YCXG(i,j,bi,bj) 
      &      + energyConv_YCXG(i+1,j,bi,bj))/2
-          gLambdaGen(i,j,bi,bj) = BT_mask(i,j,bi,bj)*
+
+          gLambdaGen(i,j,bi,bj) = BT_mask(i,j,bi,bj)
+     &      *abs(R_low(i,j,bi,bj))*
      &      (enstrophyGen_YGXC(i,j,bi,bj) 
      &      + enstrophyGen_YGXC(i,j+1,bi,bj) 
      &      + enstrophyGen_YCXG(i,j,bi,bj) 
@@ -492,8 +503,8 @@ C calculate EKE source term = depth average of flux term
         DO i=1,sNx
           IF (abs(R_low(i,j,bi,bj)).NE.0) THEN
             gEKESource(i,j,bi,bj) = BT_mask(i,j,bi,bj)*
-     &        partition*(gravity/rhoConst)*
-     &        fluxInt_YCXC(i,j,bi,bj)/abs(R_low(i,j,bi,bj))  
+     &        APE_EKE_frac(i,j,bi,bj)*(gravity/rhoConst)*
+     &        fluxInt_YCXC(i,j,bi,bj)
           ELSE 
             gEKESource(i,j,bi,bj) = 0.
           END IF
@@ -547,11 +558,15 @@ C--------------------------------------------------------------
 
       DO j=jMin,jMax
         DO i=iMin,iMax
-          EKE(i,j,1,bi,bj) = max(EKE(i,j,1,bi,bj)
-     &     + deltaTMom*( gEKE(i,j,1,bi,bj) ),0.)
+          EKE(i,j,1,bi,bj) = max((abs(R_low(i,j,bi,bj))
+     &      *EKE(i,j,1,bi,bj)
+     &     + deltaTMom*( gEKE(i,j,1,bi,bj) ))/abs(R_low(i,j,bi,bj)),
+     &      0.)
 
-          Lambda(i,j,1,bi,bj) = max(Lambda(i,j,1,bi,bj)
-     &     + deltaTMom*( gLambda(i,j,1,bi,bj) ),0.)
+          Lambda(i,j,1,bi,bj) = max((abs(R_low(i,j,bi,bj))
+     &      *Lambda(i,j,1,bi,bj)
+     &     + deltaTMom*( gLambda(i,j,1,bi,bj) ))/abs(R_low(i,j,bi,bj)),
+     &      0.)
 
         ENDDO
       ENDDO

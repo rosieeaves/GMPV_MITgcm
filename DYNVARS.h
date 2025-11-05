@@ -43,6 +43,7 @@ C     gLambdaNm, gLambdaNm1   :: parameterixed eddy kinetic energy time tendenci
      &                   uVel,vVel,wVel,theta,salt,
      &                   EKE,Lambda,
      &                   gamma_q,r_EKE,r_Lambda,mu,
+     &                   APA_EKE_frac,
      &                   quEDDY_YGXC,qvEDDY_YCXG,
      &                   gU,   gV, gEKE, gLambda,
      &                   gEKEConv, gEKEAdv, 
@@ -71,6 +72,7 @@ C     gLambdaNm, gLambdaNm1   :: parameterixed eddy kinetic energy time tendenci
      &                   uVel,vVel,wVel,theta,salt,
      &                   EKE,Lambda,
      &                   gamma_q,r_EKE,r_Lambda,mu,
+     &                   APE_EKE_frac,
      &                   quEDDY_YGXC,qvEDDY_YCXG,
      &                   gU,   gV, gEKE, gLambda,
      &                   gEKEConv, gEKEAdv, 
@@ -106,6 +108,7 @@ C     PARAMETERIZATION
       _RL  EKE  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
       _RL  Lambda  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
       _RL  gamma_q(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  APE_EKE_frac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  r_EKE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  r_Lambda(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  mu(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
