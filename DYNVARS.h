@@ -43,7 +43,7 @@ C     gLambdaNm, gLambdaNm1   :: parameterixed eddy kinetic energy time tendenci
      &                   uVel,vVel,wVel,theta,salt,
      &                   EKE,Lambda,
      &                   gamma_q,r_EKE,r_Lambda,mu,
-     &                   APA_EKE_frac,
+     &                   APE_EKE_frac,
      &                   quEDDY_YGXC,qvEDDY_YCXG,
      &                   gU,   gV, gEKE, gLambda,
      &                   gEKEConv, gEKEAdv, 

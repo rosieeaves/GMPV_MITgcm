@@ -263,45 +263,34 @@ C if neither R_low are zero then product > 0 => ceiling >= 1
 C min => get zero when one or both of R_low is zero and one when neither is zero.
 C diffusion = mu grad dot H grad K
 
-            gEKEDiff(i,j,bi,bj) = (mu(i,j,bi,bj)/(2*rA(i,j,bi,bj)))*
-
-     &        *((EKE(i,j+1,1,bi,bj) - EKE(i,j,1,bi,bj))
-     &        *(abs(R_low(i,j+1,bi,bj)) + abs(R_low(i,j,bi,bj)))
+            gEKEDiff(i,j,bi,bj) = (mu(i,j,bi,bj)/rA(i,j,bi,bj))
+     &        *((EKE(i,j+1,1,bi,bj)*abs(R_low(i,j+1,bi,bj))
+     &        - EKE(i,j,1,bi,bj)*abs(R_low(i,j,bi,bj)))
      &        *min(ceiling(abs(R_low(i,j+1,bi,bj)*R_low(i,j,bi,bj))),1)
-
-     &        + (EKE(i+1,j,1,bi,bj) - EKE(i,j,1,bi,bj))
-     &        *(abs(R_low(i+1,j,bi,bj)) + abs(R_low(i,j,bi,bj)))
+     &        +(EKE(i+1,j,1,bi,bj)*abs(R_low(i+1,j,bi,bj))
+     &        - EKE(i,j,1,bi,bj)*abs(R_low(i,j,bi,bj)))
      &        *min(ceiling(abs(R_low(i+1,j,bi,bj)*R_low(i,j,bi,bj))),1)
-
-     &        - (EKE(i,j,1,bi,bj) - EKE(i,j-1,1,bi,bj))
-     &        *(abs(R_low(i,j,bi,bj)) + abs(R_low(i,j-1,bi,bj)))
-     &        *min(ceiling(abs(R_low(i,j-1,bi,bj)*R_low(i,j,bi,bj))),1)
-
-     &        - (EKE(i,j,1,bi,bj) - EKE(i-1,j,1,bi,bj))
-     &        *(abs(R_low(i,j,bi,bj)) + abs(R_low(i-1,j,bi,bj)))
-     &        *min(ceiling(abs(R_low(i-1,j,bi,bj)*R_low(i,j,bi,bj))),1))
-
+     &        -(EKE(i,j,bi,1,bj)*abs(R_low(i,j,bi,bj))
+     &        - EKE(i,j-1,1,bi,bj)*abs(R_low(i,j-1,bi,bj)))
+     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i,j-1,bi,bj))),1)
+     &        -(EKE(i,j,1,bi,bj)*abs(R_low(i,j,bi,bj))
+     &        - EKE(i-1,j,1,bi,bj)*abs(R_low(i-1,j,bi,bj)))
+     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1))
      &        *BT_mask(i,j,bi,bj)
 
-
-            gLambdaDiff(i,j,bi,bj) = (mu(i,j,bi,bj)/(2*rA(i,j,bi,bj)))*
-
-     &        *((Lambda(i,j+1,1,bi,bj) - Lambda(i,j,1,bi,bj))
-     &        *(abs(R_low(i,j+1,bi,bj)) + abs(R_low(i,j,bi,bj)))
+            gLambdaDiff(i,j,bi,bj) = (mu(i,j,bi,bj)/rA(i,j,bi,bj))
+     &        *((Lambda(i,j+1,1,bi,bj)*abs(R_low(i,j+1,bi,bj))
+     &        - Lambda(i,j,1,bi,bj)*abs(R_low(i,j,bi,bj)))
      &        *min(ceiling(abs(R_low(i,j+1,bi,bj)*R_low(i,j,bi,bj))),1)
-
-     &        + (Lambda(i+1,j,1,bi,bj) - Lambda(i,j,1,bi,bj))
-     &        *(abs(R_low(i+1,j,bi,bj)) + abs(R_low(i,j,bi,bj)))
+     &        +(Lambda(i+1,j,1,bi,bj)*abs(R_low(i+1,j,bi,bj))
+     &        - Lambda(i,j,1,bi,bj)*abs(R_low(i,j,bi,bj)))
      &        *min(ceiling(abs(R_low(i+1,j,bi,bj)*R_low(i,j,bi,bj))),1)
-
-     &        - (Lambda(i,j,1,bi,bj) - Lambda(i,j-1,1,bi,bj))
-     &        *(abs(R_low(i,j,bi,bj)) + abs(R_low(i,j-1,bi,bj)))
-     &        *min(ceiling(abs(R_low(i,j-1,bi,bj)*R_low(i,j,bi,bj))),1)
-
-     &        - (Lambda(i,j,1,bi,bj) - Lambda(i-1,j,1,bi,bj))
-     &        *(abs(R_low(i,j,bi,bj)) + abs(R_low(i-1,j,bi,bj)))
-     &        *min(ceiling(abs(R_low(i-1,j,bi,bj)*R_low(i,j,bi,bj))),1))
-
+     &        -(Lambda(i,j,1,bi,bj)*abs(R_low(i,j,bi,bj))
+     &        - Lambda(i,j-1,1,bi,bj)*abs(R_low(i,j-1,bi,bj)))
+     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i,j-1,bi,bj))),1)
+     &        -(Lambda(i,j,1,bi,bj)*abs(R_low(i,j,bi,bj))
+     &        - Lambda(i-1,j,1,bi,bj)*abs(R_low(i-1,j,bi,bj)))
+     &        *min(ceiling(abs(R_low(i,j,bi,bj)*R_low(i-1,j,bi,bj))),1))
      &        *BT_mask(i,j,bi,bj)
 
           ELSE
@@ -558,16 +547,17 @@ C--------------------------------------------------------------
 
       DO j=jMin,jMax
         DO i=iMin,iMax
-          EKE(i,j,1,bi,bj) = max((abs(R_low(i,j,bi,bj))
-     &      *EKE(i,j,1,bi,bj)
-     &     + deltaTMom*( gEKE(i,j,1,bi,bj) ))/abs(R_low(i,j,bi,bj)),
-     &      0.)
+          IF (abs(R_low(i,j,bi,bj)).NE.0) THEN
+            EKE(i,j,1,bi,bj) = max((abs(R_low(i,j,bi,bj))
+     &        *EKE(i,j,1,bi,bj)
+     &        + deltaTMom*( gEKE(i,j,1,bi,bj) ))/
+     &        abs(R_low(i,j,bi,bj)),0.)
 
-          Lambda(i,j,1,bi,bj) = max((abs(R_low(i,j,bi,bj))
-     &      *Lambda(i,j,1,bi,bj)
-     &     + deltaTMom*( gLambda(i,j,1,bi,bj) ))/abs(R_low(i,j,bi,bj)),
-     &      0.)
-
+            Lambda(i,j,1,bi,bj) = max((abs(R_low(i,j,bi,bj))
+     &        *Lambda(i,j,1,bi,bj)
+     &        + deltaTMom*( gLambda(i,j,1,bi,bj) ))/
+     &        abs(R_low(i,j,bi,bj)),0.)
+          END IF
         ENDDO
       ENDDO
 
