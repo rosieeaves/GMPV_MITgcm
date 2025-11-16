@@ -46,6 +46,7 @@ C     gLambdaNm, gLambdaNm1   :: parameterixed eddy kinetic energy time tendenci
      &                   APE_EKE_frac,
      &                   quEDDY_YGXC,qvEDDY_YCXG,
      &                   gU,   gV, gEKE, gLambda,
+     &                   gEKEMask, gLambdaMask,
      &                   gEKEConv, gEKEAdv, 
      &                   gEKEDiff, gEKEr,
      &                   gEKESource,
@@ -75,6 +76,7 @@ C     gLambdaNm, gLambdaNm1   :: parameterixed eddy kinetic energy time tendenci
      &                   APE_EKE_frac,
      &                   quEDDY_YGXC,qvEDDY_YCXG,
      &                   gU,   gV, gEKE, gLambda,
+     &                   gEKEMask, gLambdaMask,
      &                   gEKEConv, gEKEAdv, 
      &                   gEKEDiff, gEKEr,
      &                   gEKESource,
@@ -115,11 +117,13 @@ C     PARAMETERIZATION
       _RL  gEKENm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy,2)
       _RL  gLambdaNm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy,2)
       _RL  gEKE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
+      _RL  gEKEMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)
       _RL  gEKEConv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  gEKEDiff(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  gEKEAdv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  gEKEr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  gLambda(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)     
+      _RL  gLambdaMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1,nSx,nSy)  
       _RL  gLambdaGen(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  gLambdaAdv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  gLambdar(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
