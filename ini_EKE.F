@@ -60,7 +60,7 @@ C create mask array to turn off param in sponge region
           END IF
 
           gamma_q(i,j,bi,bj)=0.1
-          r_EKE(i,j,bi,bj)=1.E-7
+          r_EKE(i,j,bi,bj)=1.E-8
           mu(i,j,bi,bj)=500
           APE_EKE_frac(i,j,bi,bj)=0.3
 
